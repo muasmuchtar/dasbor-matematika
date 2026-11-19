@@ -1,0 +1,780 @@
+<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriks & Determinan — Identitas, Determinan & Invers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f3;
+  --surface:#ffffff;
+  --surface-soft:#eef1f5;
+  --ink:#14161c;
+  --ink-soft:#565b68;
+  --ink-faint:#8b8f9c;
+  --border:#e2e5ea;
+  --border-soft:#ebeef2;
+
+  --brand-700:#0d47c4;
+  --brand-900:#0a1533;
+
+  --accent:#c81616;
+  --accent-ink:#7a0d0d;
+  --accent-soft:#fbe3e3;
+
+  --result:#8a6d00;
+  --result-ink:#5c4a00;
+  --result-soft:#f7f0cf;
+
+  --sidebar-bg:#0a1533;
+  --sidebar-ink:#d8ddf2;
+  --sidebar-ink-soft:#7f89b8;
+  --sidebar-active-line:#e8d400;
+
+  --shadow:0 1px 2px rgba(10,15,40,.05), 0 8px 24px -12px rgba(10,15,40,.16);
+  --radius:14px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12131a;
+    --surface:#1a1c26;
+    --surface-soft:#20222e;
+    --ink:#edeef4;
+    --ink-soft:#adb1c2;
+    --ink-faint:#75798c;
+    --border:#2c2f3e;
+    --border-soft:#252838;
+
+    --brand-700:#8fb0ff;
+    --accent:#ff7a7a;
+    --accent-ink:#ffb3b3;
+    --accent-soft:#3a1f1f;
+    --result:#f2e635;
+    --result-ink:#f6ee8f;
+    --result-soft:#332d10;
+
+    --sidebar-bg:#070c1f;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12131a;
+  --surface:#1a1c26;
+  --surface-soft:#20222e;
+  --ink:#edeef4;
+  --ink-soft:#adb1c2;
+  --ink-faint:#75798c;
+  --border:#2c2f3e;
+  --border-soft:#252838;
+
+  --brand-700:#8fb0ff;
+  --accent:#ff7a7a;
+  --accent-ink:#ffb3b3;
+  --accent-soft:#3a1f1f;
+  --result:#f2e635;
+  --result-ink:#f6ee8f;
+  --result-soft:#332d10;
+
+  --sidebar-bg:#070c1f;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Source Sans 3',system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;margin:0;color:var(--ink);}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+.shell{display:flex;min-height:100vh;}
+
+.sidebar{
+  width:278px;flex-shrink:0;background:var(--sidebar-bg);color:var(--sidebar-ink);
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.6rem 1.1rem 2rem;
+}
+.sidebar-brand{padding:.3rem .6rem 1.3rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:1rem;}
+.sidebar-brand .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sidebar-active-line);font-weight:600;}
+.sidebar-brand h1{font-size:1.18rem;color:#fff;margin-top:.3rem;line-height:1.25;}
+.sidebar-brand p{font-size:.78rem;color:var(--sidebar-ink-soft);margin:.4rem 0 0;}
+
+.nav-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--sidebar-ink-soft);padding:.9rem .6rem .35rem;}
+.nav-btn{
+  display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;background:none;border:none;
+  color:var(--sidebar-ink);font-family:inherit;font-size:.86rem;padding:.58rem .6rem;border-radius:10px;
+  cursor:pointer;border-left:3px solid transparent;margin-bottom:.12rem;transition:background .15s ease,color .15s ease;
+}
+.nav-btn .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--sidebar-ink-soft);width:1.3rem;flex-shrink:0;}
+.nav-btn:hover{background:rgba(255,255,255,.06);}
+.nav-btn.active{background:rgba(232,212,0,.13);color:#fff;border-left-color:var(--sidebar-active-line);font-weight:600;}
+.nav-btn.active .num{color:var(--sidebar-active-line);}
+.sidebar-foot{margin-top:1.4rem;padding:.8rem .6rem 0;border-top:1px solid rgba(255,255,255,.1);font-size:.72rem;color:var(--sidebar-ink-soft);}
+
+main{flex:1;min-width:0;padding:2.6rem 3rem 5rem;max-width:1000px;}
+.mobile-topbar{display:none;}
+.view{display:none;}
+.view.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.view-head{margin-bottom:1.8rem;}
+.view-head .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:700;}
+.view-head h2{font-size:1.85rem;margin-top:.35rem;}
+.view-head .lede{color:var(--ink-soft);font-size:1rem;margin-top:.55rem;max-width:66ch;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 1.6rem;margin-bottom:1.3rem;box-shadow:var(--shadow);}
+.card h3{font-size:1.16rem;margin-bottom:.2rem;}
+.card .card-sub{color:var(--ink-soft);font-size:.88rem;margin-bottom:1rem;}
+
+.tujuan-box,.diskusi-box{border-radius:10px;padding:.85rem 1rem;margin:.9rem 0;font-size:.9rem;}
+.tujuan-box{background:var(--result-soft);border:1px solid color-mix(in srgb, var(--result) 30%, transparent);}
+.tujuan-box .lbl{color:var(--result-ink);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
+.diskusi-box{background:var(--surface-soft);border:1px solid color-mix(in srgb, var(--brand-700) 25%, var(--border));}
+.diskusi-box .lbl{color:var(--brand-700);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
+
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.9rem;margin-top:1rem;}
+.concept-tile{border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;background:var(--surface-soft);}
+.concept-tile h4{font-size:.95rem;margin-bottom:.3rem;}
+.concept-tile p{font-size:.83rem;color:var(--ink-soft);margin:0;}
+.concept-tile.is-accent{border-color:color-mix(in srgb, var(--accent) 35%, var(--border));background:var(--accent-soft);}
+.concept-tile.is-result{border-color:color-mix(in srgb, var(--result) 35%, var(--border));background:var(--result-soft);}
+.op-icon{display:inline-flex;align-items:center;justify-content:center;min-width:2.4rem;height:2.4rem;padding:0 .35rem;border-radius:9px;background:rgba(0,0,0,.06);color:inherit;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.02rem;margin-bottom:.6rem;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .op-icon{background:rgba(255,255,255,.08);}}
+:root[data-theme="dark"] .op-icon{background:rgba(255,255,255,.08);}
+
+/* ---------- MATRIX COMPONENT ---------- */
+.matrix-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;margin:.6rem 0;}
+.matrix-row.center{justify-content:center;}
+.mat-op{font-size:1.25rem;color:var(--ink-faint);padding:0 .1rem;font-family:'JetBrains Mono',monospace;}
+.mat-label{font-family:'Fraunces',serif;font-style:italic;font-size:1.15rem;color:var(--ink);margin-right:.15rem;}
+.matrix{display:inline-flex;align-items:stretch;vertical-align:middle;color:var(--ink);}
+.matrix.is-accent{color:var(--accent-ink);}
+.matrix.is-result{color:var(--result-ink);}
+.matrix.is-brand{color:var(--brand-700);}
+.bracket{width:.5rem;flex-shrink:0;}
+.bracket.left{border-top:2.5px solid currentColor;border-bottom:2.5px solid currentColor;border-left:2.5px solid currentColor;border-radius:7px 0 0 7px;margin-right:.4rem;}
+.bracket.right{border-top:2.5px solid currentColor;border-bottom:2.5px solid currentColor;border-right:2.5px solid currentColor;border-radius:0 7px 7px 0;margin-left:.4rem;}
+.bracket.bar-left{width:0;border-left:2.5px solid currentColor;margin-right:.5rem;}
+.bracket.bar-right{width:0;border-right:2.5px solid currentColor;margin-left:.5rem;}
+.matrix-grid{display:grid;gap:.28rem .95rem;align-items:center;padding:.35rem 0;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;font-size:.95rem;font-weight:500;}
+.matrix-grid span{text-align:center;min-width:1.4em;}
+.frac{display:inline-flex;flex-direction:column;font-size:.82em;line-height:1.15;vertical-align:middle;text-align:center;margin:0 .12em;font-family:'JetBrains Mono',monospace;}
+.frac .num{border-bottom:1.3px solid currentColor;padding:0 .2em .05em;}
+.frac .den{padding:.05em .2em 0;}
+
+.formula-box{background:var(--surface-soft);border:1px solid var(--border);border-radius:11px;padding:1rem 1.1rem;margin:.9rem 0;text-align:center;overflow-x:auto;}
+.formula-box.is-accent{background:var(--accent-soft);border-color:color-mix(in srgb, var(--accent) 35%, var(--border));}
+.formula-box .cap{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.5rem;text-align:left;}
+
+.proof-list{list-style:none;margin:1rem 0 0;padding:0;}
+.proof-item{display:flex;gap:.8rem;padding:.7rem 0;border-top:1px solid var(--border-soft);}
+.proof-item:first-child{border-top:none;}
+.proof-item .pnum{flex-shrink:0;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--brand-900);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;}
+.proof-item .ptext{font-size:.9rem;padding-top:.15rem;}
+.proof-item .ptext b{color:var(--ink);}
+
+.prompt-box{background:var(--surface-soft);border:1.5px dashed color-mix(in srgb, var(--brand-700) 45%, var(--border));border-radius:11px;padding:1rem 1.1rem;margin-top:1rem;}
+.prompt-box .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-700);font-weight:700;display:block;margin-bottom:.4rem;}
+
+.answer-box{background:var(--result-soft);border:1px solid color-mix(in srgb, var(--result) 35%, transparent);border-radius:11px;padding:.9rem 1.1rem;margin-top:.9rem;}
+.answer-box .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--result-ink);font-weight:700;display:block;margin-bottom:.4rem;}
+
+.sub-ex{border-top:1px solid var(--border-soft);padding-top:1rem;margin-top:1rem;}
+.sub-ex:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+.sub-lbl{font-size:.78rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;}
+
+.term-list{margin:1rem 0 0;padding:0;list-style:none;}
+.term-item{display:flex;gap:.9rem;padding:.6rem 0;border-top:1px solid var(--border-soft);}
+.term-item:first-child{border-top:none;}
+.term-item .tk{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--brand-700);flex-shrink:0;min-width:2.4rem;}
+.term-item .td{font-size:.88rem;color:var(--ink-soft);}
+
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.9rem;margin-top:1rem;}
+.app-tile{border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;background:var(--surface-soft);text-align:center;}
+.app-tile .icon{width:26px;height:26px;margin:0 auto .5rem;color:var(--brand-700);}
+.app-tile h4{font-size:.9rem;margin-bottom:.25rem;}
+.app-tile p{font-size:.8rem;color:var(--ink-soft);margin:0;}
+
+.roadmap-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.1rem;}
+.roadmap-step{flex:1;min-width:150px;border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;background:var(--surface-soft);}
+.roadmap-step .k{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);font-weight:700;}
+.roadmap-step h4{font-size:.92rem;margin:.25rem 0;}
+.roadmap-step p{font-size:.79rem;color:var(--ink-soft);margin:0;}
+.roadmap-arrow{align-self:center;color:var(--ink-faint);font-size:1.2rem;padding:0 .1rem;}
+
+.next-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem;}
+.next-card{border:1px solid var(--border);border-radius:11px;padding:1rem 1.1rem;background:var(--surface-soft);}
+.next-card .tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);font-weight:700;}
+.next-card h4{font-size:1rem;margin:.3rem 0 .35rem;}
+.next-card p{font-size:.85rem;color:var(--ink-soft);margin:0;}
+
+.source-tag{background:var(--brand-900);color:#e2e7ff;border-radius:11px;padding:.9rem 1.1rem;margin-top:1.6rem;font-size:.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem;}
+.source-tag b{color:#fff;}
+
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+@media (max-width:880px){
+  .shell{display:block;}
+  .sidebar{position:fixed;top:0;left:0;height:100vh;z-index:40;width:82%;max-width:300px;transform:translateX(-100%);transition:transform .28s ease;box-shadow:0 0 40px rgba(0,0,0,.35);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,20,.5);z-index:35;}
+  .sidebar-overlay.show{display:block;}
+  .mobile-topbar{display:flex;align-items:center;gap:.8rem;position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:.85rem 1.1rem;}
+  .mobile-topbar h1{font-size:1rem;flex:1;}
+  .hamburger{width:38px;height:38px;flex-shrink:0;border-radius:9px;border:1px solid var(--border);background:var(--surface-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .hamburger span,.hamburger span::before,.hamburger span::after{content:"";display:block;width:18px;height:2px;background:var(--ink);position:relative;}
+  .hamburger span::before{position:absolute;top:-6px;}
+  .hamburger span::after{position:absolute;top:6px;}
+  main{padding:1.4rem 1.1rem 4rem;}
+  .view-head h2{font-size:1.45rem;}
+  .card{padding:1.2rem 1.1rem;}
+  .roadmap-row{flex-direction:column;}
+}
+</style>
+
+<body>
+</head><body><div class="shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="tag">Pertemuan 13</span>
+      <h1>Matriks &amp; Determinan</h1>
+      <p>Identitas, Determinan &amp; Invers</p>
+    </div>
+    <nav class="nav-group">
+      <button class="nav-btn active" data-target="ringkasan"><span class="num">00</span> Ringkasan</button>
+      <div class="nav-label">Determinan &amp; Invers 2×2</div>
+      <button class="nav-btn" data-target="identitas-det2"><span class="num">01</span> Identitas &amp; Determinan 2×2</button>
+      <button class="nav-btn" data-target="invers2"><span class="num">02</span> Invers Matriks 2×2</button>
+      <div class="nav-label">Determinan &amp; Invers 3×3</div>
+      <button class="nav-btn" data-target="minor-kofaktor"><span class="num">03</span> Minor &amp; Kofaktor</button>
+      <button class="nav-btn" data-target="det3"><span class="num">04</span> Determinan 3×3</button>
+      <button class="nav-btn" data-target="invers3"><span class="num">05</span> Invers Matriks 3×3</button>
+      <div class="nav-label">Latihan &amp; Penutup</div>
+      <button class="nav-btn" data-target="latihan"><span class="num">06</span> Latihan Mandiri</button>
+      <button class="nav-btn" data-target="ringkasan-akhir"><span class="num">07</span> Ringkasan &amp; Referensi</button>
+    </nav>
+    <div class="sidebar-foot">P13: Matriks &amp; Determinan · 15 slide</div>
+  </aside>
+
+  <main>
+    <div class="mobile-topbar">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Buka menu"><span></span></button>
+      <h1 style="font-family:'Fraunces',serif;">Matriks &amp; Determinan</h1>
+    </div>
+
+    <!-- ============ RINGKASAN ============ -->
+    <section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Pertemuan 13</span>
+        <h2>Matriks &amp; Determinan: Konsep Dasar</h2>
+        <p class="lede">Unit ini adalah fondasi bagi Pertemuan 14 (menyelesaikan SPL dengan metode invers matriks).</p>
+      </div>
+
+      <div class="card">
+        <h3>Enam Tahap Menuju Invers 3×3</h3>
+        <p class="card-sub">Alur pembahasan Pertemuan 13</p>
+        <div class="roadmap-row">
+          <div class="roadmap-step"><span class="k">01</span><h4>Identitas [I]</h4><p>Elemen netral perkalian matriks.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">02</span><h4>Determinan 2×2</h4><p>Notasi |A| dan rumus ad−bc.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">03</span><h4>Invers 2×2</h4><p>Tukar diagonal, balik tanda, bagi determinan.</p></div>
+        </div>
+        <div class="roadmap-row">
+          <div class="roadmap-step"><span class="k">04</span><h4>Minor &amp; Kofaktor</h4><p>Determinan 2×2 sisa, dengan pola tanda papan catur.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">05</span><h4>Determinan 3×3</h4><p>Ekspansi kofaktor sepanjang baris/kolom.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">06</span><h4>Invers 3×3</h4><p>A⁻¹ = adj(A) / |A|.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Peta Jalan: P12 → P13 → P14</h3>
+        <div class="next-grid">
+          <div class="next-card"><span class="tag">P12</span><h4>Notasi &amp; Operasi Dasar</h4><p>Penjumlahan, pengurangan, perkalian skalar &amp; matriks.</p></div>
+          <div class="next-card"><span class="tag">P13 (Sekarang)</span><h4>Determinan &amp; Invers</h4><p>Matriks identitas, determinan, dan invers matriks (2×2 dan 3×3).</p></div>
+          <div class="next-card"><span class="tag">P14</span><h4>Penerapan pada SPL</h4><p>Menerapkan invers matriks untuk menyelesaikan sistem persamaan linear.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 01 IDENTITAS & DETERMINAN 2x2 ============ -->
+    <section class="view" id="view-identitas-det2">
+      <div class="view-head">
+        <span class="eyebrow">01 · Fondasi</span>
+        <h2>Matriks Identitas &amp; Determinan 2×2</h2>
+        <p class="lede">Identitas adalah "elemen netral" perkalian matriks; determinan meringkas sebuah matriks menjadi satu angka tunggal.</p>
+      </div>
+
+      <div class="card">
+        <h3>(A) Matriks Identitas [I]</h3>
+        <p class="card-sub">Matriks Identitas Satuan</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Mengenali matriks identitas dan menjelaskan perannya sebagai 'elemen netral' perkalian matriks.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Pada bilangan real, 1 adalah elemen netral perkalian (a×1=a). Mengapa matriks identitas I berperan serupa untuk perkalian matriks (A×I=A)? Berlakukah ini untuk perkalian dari kiri maupun kanan?</div>
+
+        <div class="matrix-row">
+          <span class="mat-label">I₂ =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>1</span><span>0</span><span>0</span><span>1</span></div><span class="bracket right"></span></div>
+          <span class="mat-label" style="margin-left:.6rem;">I₃ =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.4em,auto));"><span>1</span><span>0</span><span>0</span><span>0</span><span>1</span><span>0</span><span>0</span><span>0</span><span>1</span></div><span class="bracket right"></span></div>
+        </div>
+        <div class="term-list">
+          <div class="term-item"><span class="tk">I</span><span class="td">Semua elemen diagonal utama (↖) bernilai 1, elemen lainnya bernilai 0. A × I = I × A = A untuk sembarang matriks bujursangkar A.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>(B) Determinan Matriks 2×2</h3>
+        <p class="card-sub">Definisi Determinan Matriks 2×2</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menuliskan notasi determinan (garis vertikal ganda) dan menghitungnya dengan rumus ad−bc.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Determinan sebuah matriks adalah satu angka tunggal, sedangkan matriksnya sendiri berupa susunan banyak angka. Informasi apa yang 'hilang' saat kita meringkas seluruh matriks menjadi satu angka determinan?</div>
+
+        <div class="formula-box">
+          <span class="cap">Definisi</span>
+          <div class="matrix-row center">
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>a</span><span>b</span><span>c</span><span>d</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= ad − bc</span>
+          </div>
+        </div>
+
+        <div class="formula-box is-accent">
+          <span class="cap">Contoh</span>
+          <div class="matrix-row center">
+            <div class="matrix is-accent"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>3</span><span>−4</span><span>1</span><span>6</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= (3 × 6) − (−4 × 1) = 18 − (−4) = 22</span>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Contoh Soal 1 — Menghitung Determinan 2×2</div>
+          <div class="matrix-row">
+            <span class="mat-op">Carilah nilai</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>3</span><span>−2</span><span>7</span><span>4</span></div><span class="bracket bar-right"></span></div>
+          </div>
+          <div class="answer-box"><span class="lbl">Jawaban</span>(3 × 4) − (−2 × 7) = 12 − (−14) = <b>26</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 INVERS MATRIKS 2x2 ============ -->
+    <section class="view" id="view-invers2">
+      <div class="view-head">
+        <span class="eyebrow">02 · Invers 2×2</span>
+        <h2>Menurunkan Rumus Invers Matriks 2×2</h2>
+        <p class="lede">Dari syarat A × A⁻¹ = I, kita susun sistem persamaan, selesaikan, lalu generalisasi menjadi rumus cepat.</p>
+      </div>
+
+      <div class="card">
+        <h3>Bagian 1 — Menyusun Sistem dari A × A⁻¹ = I</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menyusun sistem persamaan dari syarat A×A⁻¹=I untuk mencari elemen invers matriks.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Persamaan b+2d=0 dan 3a+4c=0 berasal dari elemen OFF-DIAGONAL hasil kali. Mengapa hanya dua dari empat persamaan yang ditampilkan di sini — ke mana perginya dua persamaan lainnya (dari elemen diagonal)?</div>
+
+        <div class="matrix-row">
+          <span class="mat-label">A =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>1</span><span>2</span><span>3</span><span>4</span></div><span class="bracket right"></span></div>
+          <span class="mat-label" style="margin-left:.6rem;">A⁻¹ =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>a</span><span>b</span><span>c</span><span>d</span></div><span class="bracket right"></span></div>
+          <span class="mat-op">A × A⁻¹ = I</span>
+        </div>
+
+        <ol class="proof-list">
+          <li class="proof-item"><span class="pnum">1</span><span class="ptext">Kalikan &amp; samakan dengan I:<br>
+            <div class="matrix-row" style="margin-top:.4rem;">
+              <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(3.6em,auto));font-size:.85rem;"><span>a + 2c</span><span>b + 2d</span><span>3a + 4c</span><span>3b + 4d</span></div><span class="bracket right"></span></div>
+              <span class="mat-op">=</span>
+              <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>1</span><span>0</span><span>0</span><span>1</span></div><span class="bracket right"></span></div>
+            </div>
+          </span></li>
+          <li class="proof-item"><span class="pnum">2</span><span class="ptext"><b>Persamaan dari elemen OFF-diagonal:</b><br>b + 2d = 0 ⇒ b = −2d <br>3a + 4c = 0 ⇒ a = −4/3 c</span></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>Bagian 2 — Solusi &amp; Rumus Cepat Invers 2×2</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menyelesaikan sistem persamaan untuk memperoleh a,b,c,d, lalu menggeneralisasinya menjadi rumus cepat.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Hubungkan aturan tukar diagonal utama dan balik tanda diagonal sekunder dengan hasil a=−2, b=1, c=3/2, d=−1/2. Mengapa pola ini berlaku pada rumus invers 2×2?</div>
+
+        <div class="term-list">
+          <div class="term-item"><span class="tk">2/3 c = 1</span><span class="td">⇒ c = 3/2</span></div>
+          <div class="term-item"><span class="tk">−2d = 1</span><span class="td">⇒ d = −1/2</span></div>
+          <div class="term-item"><span class="tk">b = −2d</span><span class="td">⇒ b = 1</span></div>
+          <div class="term-item"><span class="tk">a = −4/3 c</span><span class="td">⇒ a = −2</span></div>
+        </div>
+
+        <div class="answer-box">
+          <span class="lbl">A⁻¹ (dari sistem persamaan)</span>
+          <div class="matrix-row">
+            <span class="mat-label">A⁻¹ =</span>
+            <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−2</span><span>1</span><span>3/2</span><span>−1/2</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+
+        <div class="formula-box" style="margin-top:1.1rem;">
+          <span class="cap">Rumus Cepat (Berlaku Umum)</span>
+          <div class="matrix-row center">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>p</span><span>q</span><span>r</span><span>s</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">⁻¹ =</span>
+            <span class="frac"><span class="num">1</span><span class="den">ps − qr</span></span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>s</span><span>−q</span><span>−r</span><span>p</span></div><span class="bracket right"></span></div>
+          </div>
+          <p style="font-size:.83rem;color:var(--ink-soft);margin:.6rem 0 0;">Tukar posisi diagonal utama (p ↔ s), balik tanda diagonal sekunder (q, r), lalu bagi dengan determinan.</p>
+        </div>
+
+        <div class="sub-ex" style="margin-top:1rem;">
+          <div class="sub-lbl">Verifikasi dengan Contoh yang Sama</div>
+          <div class="matrix-row">
+            <span class="frac"><span class="num">1</span><span class="den">(1)(4) − (2)(3)</span></span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>4</span><span>−2</span><span>−3</span><span>1</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">=</span>
+            <span class="frac"><span class="num">1</span><span class="den">−2</span></span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>4</span><span>−2</span><span>−3</span><span>1</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">=</span>
+            <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−2</span><span>1</span><span>3/2</span><span>−1/2</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Contoh Soal 2 — Menerapkan Rumus Cepat Invers 2×2</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menerapkan rumus cepat (tukar diagonal, balik tanda, bagi determinan) pada soal baru.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Determinan pada soal ini adalah 26. Bagaimana Anda memverifikasi hasil akhir A⁻¹ tanpa mengulang seluruh perhitungan — cukup dengan satu perkalian matriks?</div>
+
+        <div class="matrix-row">
+          <span class="mat-op">Carilah invers matriks di bawah ini</span>
+        </div>
+        <div class="matrix-row">
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>3</span><span>−2</span><span>7</span><span>4</span></div><span class="bracket right"></span></div>
+        </div>
+
+        <div class="answer-box">
+          <span class="lbl">Hasil Akhir</span>
+          <div class="matrix-row">
+            <span class="frac"><span class="num">1</span><span class="den">26</span></span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>4</span><span>2</span><span>−7</span><span>3</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">=</span>
+            <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(2.2em,auto));"><span>2/13</span><span>1/13</span><span>−7/26</span><span>3/26</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 MINOR & KOFAKTOR ============ -->
+    <section class="view" id="view-minor-kofaktor">
+      <div class="view-head">
+        <span class="eyebrow">03 · Fondasi Menuju 3×3</span>
+        <h2>Minor &amp; Kofaktor Elemen Matriks 3×3</h2>
+        <p class="lede">Minor adalah determinan 2×2 sisa setelah menutup baris &amp; kolom suatu elemen; kofaktor adalah minor yang diberi tanda mengikuti pola papan catur.</p>
+      </div>
+
+      <div class="card">
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menghitung minor suatu elemen (determinan 2×2 sisa) dan mengubahnya menjadi kofaktor lewat pola tanda.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Pola tanda kofaktor membentuk papan catur (+,−,+ / −,+,− / +,−,+). Rumuskan pola ini secara matematis menggunakan posisi baris i dan kolom j (petunjuk: pangkat dari −1).</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Matriks Contoh</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.4em,auto));"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Pola Tanda Kofaktor</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.4em,auto));"><span>+</span><span>−</span><span>+</span><span>−</span><span>+</span><span>−</span><span>+</span><span>−</span><span>+</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">Cᵢⱼ = (−1)ⁱ⁺ʲ × Mᵢⱼ</span>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Minor Elemen 4 (baris 2, kolom 1) — tutup baris &amp; kolomnya</div>
+          <div class="matrix-row">
+            <span class="mat-op">M₂₁ =</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>2</span><span>3</span><span>8</span><span>9</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= (2 × 9) − (3 × 8) = 18 − 24 = −6</span>
+          </div>
+          <div class="answer-box"><span class="lbl">Kofaktor Elemen 4</span>C₂₁ = −M₂₁ = −(−6) = <b>6</b> — karena posisinya (baris 2, kolom 1) bertanda −.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 DETERMINAN 3x3 ============ -->
+    <section class="view" id="view-det3">
+      <div class="view-head">
+        <span class="eyebrow">04 · Determinan 3×3</span>
+        <h2>Ekspansi Kofaktor: Lewati Elemen Nol</h2>
+        <p class="lede">Determinan 3×3 dihitung lewat ekspansi kofaktor sepanjang satu baris atau kolom — pilih yang mengandung elemen nol untuk mempercepat perhitungan.</p>
+      </div>
+
+      <div class="card">
+        <h3>Bagian 1 — Strategi Ekspansi</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Memilih baris/kolom ekspansi yang efisien dan menghitung minor &amp; kofaktor elemen bukan-nol.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Elemen bernilai 0 tidak perlu dihitung karena 0×kofaktor=0. Berdasarkan strategi ini, baris atau kolom seperti apa yang PALING menguntungkan dipilih untuk ekspansi determinan matriks besar?</div>
+
+        <div class="matrix-row">
+          <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.4em,auto));"><span>3</span><span>4</span><span>−1</span><span>2</span><span>0</span><span>7</span><span>1</span><span>−3</span><span>−2</span></div><span class="bracket bar-right"></span></div>
+        </div>
+        <p style="font-size:.88rem;color:var(--ink-soft);">Elemen 0 di baris 2 tidak perlu dihitung — kita pakai elemen 2 dan 7 sebagai objek perhitungan.</p>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Minor &amp; Kofaktor Elemen 2 dan 7</div>
+          <div class="matrix-row">
+            <span class="mat-op">M₂₁ =</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>4</span><span>−1</span><span>−3</span><span>−2</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= −8 − 3 = −11</span>
+          </div>
+          <div class="matrix-row">
+            <span class="mat-op">M₂₃ =</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>3</span><span>4</span><span>1</span><span>−3</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= −9 − 4 = −13</span>
+          </div>
+          <div class="answer-box"><span class="lbl">Kofaktor</span>C₂₁ = −M₂₁ = <b>11</b> &nbsp;&nbsp;·&nbsp;&nbsp; C₂₃ = −M₂₃ = <b>13</b></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Bagian 2 — Menjumlahkan &amp; Verifikasi</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menjumlahkan elemen×kofaktor untuk memperoleh determinan, dan memverifikasinya lewat baris/kolom lain.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Baris 2 dan kolom 3 menghasilkan nilai determinan yang SAMA (113). Bagaimana Anda meyakinkan seorang teman sekelas bahwa ini bukan kebetulan, melainkan sifat umum determinan?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Ekspansi Baris ke-2</div>
+          <p class="mono" style="font-size:.92rem;">|A| = 2(11) + 0 + 7(13) = 22 + 91 = <b>113</b></p>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Verifikasi: Ekspansi Kolom ke-3 (Hasil Sama)</div>
+          <div class="matrix-row">
+            <span class="mat-op">|A| = (−1)</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>2</span><span>0</span><span>1</span><span>−3</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">− 7</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>3</span><span>4</span><span>1</span><span>−3</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">+ (−2)</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>3</span><span>4</span><span>2</span><span>0</span></div><span class="bracket bar-right"></span></div>
+          </div>
+          <div class="answer-box"><span class="lbl">Hasil</span>= 6 + 91 + 16 = <b>113</b> — sama seperti ekspansi baris ke-2.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 INVERS MATRIKS 3x3 ============ -->
+    <section class="view" id="view-invers3">
+      <div class="view-head">
+        <span class="eyebrow">05 · Invers 3×3</span>
+        <h2>Konsep Adjoin: A⁻¹ = adj(A) / |A|</h2>
+        <p class="lede">Adjoin diperoleh dari tiga langkah: bentuk matriks kofaktor B, transpos B, lalu adj(A) = Bᵀ.</p>
+      </div>
+
+      <div class="card">
+        <h3>Tiga Langkah Memperoleh adj(A)</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menjelaskan tiga langkah memperoleh adj(A): matriks kofaktor B, transpos B (menjadi B-transpos), lalu adj(A) = B-transpos.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Mengapa langkah TRANSPOS diperlukan antara matriks kofaktor B dan adjoin A — apa yang akan salah jika kita langsung memakai B (tanpa transpos) sebagai adjoin?</div>
+
+        <div class="formula-box is-accent">
+          <div class="matrix-row center">
+            <span class="mat-op" style="color:var(--accent-ink);font-size:1.3rem;">A⁻¹ =</span>
+            <span class="frac" style="color:var(--accent-ink);font-size:1rem;"><span class="num">adj A</span><span class="den">|A|</span></span>
+          </div>
+        </div>
+
+        <ol class="proof-list">
+          <li class="proof-item"><span class="pnum">1</span><span class="ptext"><b>Bentuk matriks kofaktor B</b><br>Hitung kofaktor Cᵢⱼ setiap elemen A (minor × tanda posisi).</span></li>
+          <li class="proof-item"><span class="pnum">2</span><span class="ptext"><b>Transpos B menjadi Bᵀ</b><br>Tukar baris menjadi kolom pada matriks kofaktor B.</span></li>
+          <li class="proof-item"><span class="pnum">3</span><span class="ptext"><b>adj(A) = Bᵀ</b><br>Adjoin adalah TRANSPOS matriks kofaktor — bukan matriks kofaktor itu sendiri.</span></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>Contoh Soal — Bagian 1: Menghitung Matriks Kofaktor B</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menghitung kesembilan kofaktor matriks A dan menyusunnya menjadi matriks B.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Hanya A₁₁, A₁₂, A₁₃ yang dihitung penuh di sini ('dan seterusnya' untuk sisanya). Hitung sendiri A₂₁ dan bandingkan dengan nilai pada matriks B — apakah tanda kofaktornya sudah benar?</div>
+
+        <div class="matrix-row">
+          <span class="mat-label">A =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.2em,auto));"><span>2</span><span>3</span><span>5</span><span>4</span><span>1</span><span>6</span><span>1</span><span>4</span><span>0</span></div><span class="bracket right"></span></div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Contoh Perhitungan (A₁₁, A₁₂, A₁₃) — dan seterusnya untuk elemen lain</div>
+          <div class="matrix-row">
+            <span class="mat-op">A₁₁ = +</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>1</span><span>6</span><span>4</span><span>0</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= 0 − 24 = −24</span>
+          </div>
+          <div class="matrix-row">
+            <span class="mat-op">A₁₂ = −</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>4</span><span>6</span><span>1</span><span>0</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= −(0 − 6) = 6</span>
+          </div>
+          <div class="matrix-row">
+            <span class="mat-op">A₁₃ = +</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>4</span><span>1</span><span>1</span><span>4</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">= 16 − 1 = 15</span>
+          </div>
+        </div>
+
+        <div class="answer-box">
+          <span class="lbl">Matriks Kofaktor B</span>
+          <div class="matrix-row">
+            <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.8em,auto));"><span>−24</span><span>6</span><span>15</span><span>20</span><span>−5</span><span>−5</span><span>13</span><span>8</span><span>−10</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Contoh Soal — Bagian 2: Transpos, Determinan &amp; Invers Akhir</h3>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Mentranspos matriks kofaktor, menghitung determinan, lalu menyusun A⁻¹ akhir.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Determinan A=45 dihitung dari baris pertama menggunakan kofaktor yang SAMA seperti pada penyusunan B. Mengapa perhitungan determinan dan adjoin bisa saling memakai hasil yang sama, menghemat pekerjaan?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Bᵀ = adj A</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.8em,auto));"><span>−24</span><span>20</span><span>13</span><span>6</span><span>−5</span><span>8</span><span>15</span><span>−5</span><span>−10</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Determinan A (Ekspansi Baris Pertama)</div>
+          <div class="matrix-row">
+            <span class="mat-op">|A| = 2</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>1</span><span>6</span><span>4</span><span>0</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">− 3</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>4</span><span>6</span><span>1</span><span>0</span></div><span class="bracket bar-right"></span></div>
+            <span class="mat-op">+ 5</span>
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.2em,auto));"><span>4</span><span>1</span><span>1</span><span>4</span></div><span class="bracket bar-right"></span></div>
+          </div>
+          <p class="mono" style="font-size:.92rem;">= 2(−24) − 3(−6) + 5(15) = −48 + 18 + 75 = <b>45</b></p>
+        </div>
+
+        <div class="answer-box">
+          <span class="lbl">Hasil Akhir — A⁻¹</span>
+          <div class="matrix-row">
+            <span class="frac"><span class="num">1</span><span class="den">45</span></span>
+            <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.8em,auto));"><span>−24</span><span>20</span><span>13</span><span>6</span><span>−5</span><span>8</span><span>15</span><span>−5</span><span>−10</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 06 LATIHAN MANDIRI ============ -->
+    <section class="view" id="view-latihan">
+      <div class="view-head">
+        <span class="eyebrow">06 · Latihan Mandiri</span>
+        <h2>Latihan: Determinan &amp; Invers 3×3</h2>
+        <p class="lede">Mengerjakan soal determinan dan invers 3×3 secara mandiri tanpa bimbingan langkah-demi-langkah.</p>
+      </div>
+
+      <div class="card">
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Mengerjakan soal determinan dan invers 3×3 secara mandiri tanpa bimbingan langkah-demi-langkah.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Sebelum menghitung invers pada soal kedua, periksa dulu apakah determinannya nol. Mengapa pemeriksaan ini WAJIB dilakukan pertama kali, sebelum menginvestasikan waktu menghitung kofaktor dan adjoin?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">1. Hitunglah Determinan di Bawah Ini</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket bar-left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>1</span><span>4</span><span>−3</span><span>−5</span><span>2</span><span>6</span><span>−1</span><span>−4</span><span>2</span></div><span class="bracket bar-right"></span></div>
+          </div>
+          <div class="prompt-box"><span class="lbl">Tugas Anda</span>Hitunglah nilai determinan matriks 3×3 di atas.</div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">2. Carilah Invers Matriks di Bawah Ini</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.4em,auto));"><span>1</span><span>5</span><span>−2</span><span>3</span><span>−1</span><span>4</span><span>−3</span><span>6</span><span>−7</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="prompt-box"><span class="lbl">Tugas Anda</span>Periksa dulu determinannya, lalu carilah invers matriks di atas jika ada.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RINGKASAN & REFERENSI ============ -->
+    <section class="view" id="view-ringkasan-akhir">
+      <div class="view-head">
+        <span class="eyebrow">Penutup</span>
+        <h2>Fondasi yang Sama, Menuju Pertemuan 14</h2>
+        <p class="lede">Determinan dan invers yang baru dipelajari di sini adalah alat utama yang langsung dipakai Pertemuan 14 untuk menyelesaikan sistem persamaan linear.</p>
+      </div>
+
+      <div class="card">
+        <h3>Rangkuman Enam Tahap</h3>
+        <div class="concept-grid">
+          <div class="concept-tile"><div class="op-icon">I</div><h4>Identitas</h4><p>Elemen netral perkalian matriks: A × I = A.</p></div>
+          <div class="concept-tile"><div class="op-icon">|A|</div><h4>Determinan 2×2 &amp; 3×3</h4><p>Satu angka tunggal via ad−bc atau ekspansi kofaktor.</p></div>
+          <div class="concept-tile is-result"><div class="op-icon">A⁻¹</div><h4>Invers 2×2 &amp; 3×3</h4><p>Rumus cepat untuk 2×2; adj(A)/|A| untuk 3×3.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Penerapan Nyata Determinan &amp; Invers</h3>
+        <div class="app-grid">
+          <div class="app-tile">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h.01M11 9h.01M15 9h.01M7 13h.01M11 13h.01M15 13h.01M7 17h4"/></svg>
+            <h4>Kriptografi</h4>
+            <p>Hill Cipher mengenkripsi pesan lewat perkalian matriks kunci, dan mendekripsinya memakai invers matriks kunci tersebut.</p>
+          </div>
+          <div class="app-tile">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
+            <h4>Analisis Struktur</h4>
+            <p>Matriks kekakuan (stiffness matrix) pada elemen hingga memerlukan invers untuk menghitung perpindahan struktur.</p>
+          </div>
+          <div class="app-tile">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="7" r="2.2"/><circle cx="19" cy="7" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M7 8l3 8M17 8l-3 8M7.2 6.5h9.6"/></svg>
+            <h4>Rantai Markov</h4>
+            <p>Determinan &amp; invers matriks transisi dipakai untuk menganalisis kestabilan jangka panjang suatu sistem probabilistik.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Ke Mana Selanjutnya?</h3>
+        <div class="next-grid">
+          <div class="next-card"><span class="tag">Pertemuan 14</span><h4>Penerapan pada SPL</h4><p>Menerapkan invers matriks untuk menyelesaikan sistem persamaan linear 2 dan 3 variabel.</p></div>
+        </div>
+        <div class="source-tag">
+          <span>Sumber: <b>P13_MATRIKS_DETERMINAN</b> — Pertemuan 13</span>
+          <span>15 slide · Identitas, Determinan &amp; Invers Matriks</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+(function(){
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const views = document.querySelectorAll('.view');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function showView(target, opts){
+    opts = opts || {};
+    views.forEach(v => v.classList.toggle('active', v.id === 'view-' + target));
+    navButtons.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+    if(!opts.skipScroll){ window.scrollTo({top:0, behavior:'smooth'}); }
+  }
+
+  function openSidebar(){
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+  function closeSidebar(){
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+
+  hamburgerBtn && hamburgerBtn.addEventListener('click', openSidebar);
+  overlay && overlay.addEventListener('click', closeSidebar);
+
+  showView('ringkasan', {skipScroll:true});
+})();
+</script>
+
+</body></html>

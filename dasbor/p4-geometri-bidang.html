@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dasbor Geometri Bidang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  color-scheme: light;
+  --navy-950:#0c1a30;
+  --navy-900:#12233f;
+  --navy-800:#1a3157;
+  --navy-700:#2f5496;
+  --navy-600:#3f65ab;
+  --navy-500:#4372c4;
+  --navy-100:#e2e8f4;
+
+  --paper:#f7f8fb;
+  --surface:#ffffff;
+  --surface-2:#eef1f8;
+  --ink:#16233a;
+  --ink-soft:#55647e;
+  --ink-faint:#8592ab;
+  --line:#dde3ef;
+
+  --accent:#ec7d30;
+  --accent-ink:#8a3f10;
+  --accent-soft:#fdeadb;
+
+  --result:#a8500f;
+  --result-soft:#faece0;
+
+  --given:#2f5496;
+  --given-soft:#e7edf9;
+
+  --shadow: 0 1px 2px rgba(20,43,102,.06), 0 12px 28px -12px rgba(20,43,102,.22);
+
+  --sidebar-bg1:#0c1a30;
+  --sidebar-bg2:#1a3157;
+  --sidebar-ink:#eef2fb;
+  --sidebar-ink-soft:#a9b7d8;
+  --sidebar-line:rgba(255,255,255,.12);
+  --sidebar-active-bg:rgba(236,125,48,.18);
+  --sidebar-active-line:#ec7d30;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0a1424;
+    --surface:#111d33;
+    --surface-2:#16233d;
+    --ink:#e8edf8;
+    --ink-soft:#aab8d4;
+    --ink-faint:#7c88a3;
+    --line:#233152;
+    --navy-100:#1b2a4a;
+
+    --accent:#ff9d55;
+    --accent-ink:#ffd6ac;
+    --accent-soft:#3a2712;
+
+    --result:#e0a458;
+    --result-soft:#33260f;
+
+    --given:#9fbdf5;
+    --given-soft:#1b2b4d;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0a1424;
+  --surface:#111d33;
+  --surface-2:#16233d;
+  --ink:#e8edf8;
+  --ink-soft:#aab8d4;
+  --ink-faint:#7c88a3;
+  --line:#233152;
+  --navy-100:#1b2a4a;
+
+  --accent:#ff9d55;
+  --accent-ink:#ffd6ac;
+  --accent-soft:#3a2712;
+
+  --result:#e0a458;
+  --result-soft:#33260f;
+
+  --given:#9fbdf5;
+  --given-soft:#1b2b4d;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -14px rgba(0,0,0,.6);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Fraunces", Georgia, serif;
+  margin:0;
+  text-wrap:balance;
+  color:var(--ink);
+}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+.mathy, .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric:tabular-nums;}
+
+.frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 .2em; line-height:1.15; font-size:.94em; position:relative; top:.05em;}
+.frac .num{padding:0 .18em .06em; border-bottom:1.4px solid currentColor;}
+.frac .den{padding:.06em .18em 0;}
+sup, sub{line-height:0;}
+
+/* ============ LAYOUT SHELL ============ */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:278px; flex:0 0 278px;
+  background:linear-gradient(175deg, var(--sidebar-bg1), var(--sidebar-bg2) 78%);
+  color:var(--sidebar-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--sidebar-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px;}
+
+.brand{padding:26px 22px 18px; border-bottom:1px solid var(--sidebar-line);}
+.brand-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:rgba(236,125,48,.18); color:var(--accent-ink, var(--accent));
+  margin-bottom:14px;
+}
+.brand-mark svg{width:21px; height:21px; stroke:var(--accent); fill:none;}
+.brand h1{font-size:1.28rem; font-weight:700; color:#fff; line-height:1.2;}
+.brand .sub{margin-top:6px; font-size:.78rem; color:var(--sidebar-ink-soft); line-height:1.4;}
+.brand .sub b{color:var(--sidebar-ink); font-weight:600;}
+
+nav.navlist{padding:14px 12px 26px; flex:1;}
+.nav-group-label{
+  font-size:.66rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sidebar-ink-soft); opacity:.75;
+  padding:16px 12px 6px;
+}
+.nav-group-label:first-child{padding-top:6px;}
+.nav-btn{
+  width:100%; display:flex; align-items:center; gap:11px;
+  padding:9px 12px; margin:2px 0; border:none; background:transparent;
+  border-radius:9px; color:var(--sidebar-ink-soft); text-align:left;
+  font-size:.87rem; font-weight:500; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-btn svg{width:17px; height:17px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7;}
+.nav-btn:hover{background:rgba(255,255,255,.07); color:#fff;}
+.nav-btn.active{
+  background:var(--sidebar-active-bg); color:#fff; font-weight:600;
+  border-left:3px solid var(--sidebar-active-line);
+}
+
+.sidebar-foot{padding:16px 22px 22px; border-top:1px solid var(--sidebar-line); font-size:.72rem; color:var(--sidebar-ink-soft); line-height:1.5;}
+
+main{flex:1; min-width:0;}
+.view{display:none; padding:44px 48px 80px; max-width:980px;}
+.view.active{display:block;}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:100px; margin-bottom:14px;
+}
+.view-head h2{font-size:clamp(1.5rem,1.25rem + 1.1vw,2.05rem); font-weight:700;}
+.view-head .lede{margin-top:10px; font-size:1rem; color:var(--ink-soft); max-width:60ch; line-height:1.55;}
+
+.objective{
+  margin-top:18px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px;
+}
+.objective svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--navy-600); fill:none; stroke-width:1.8;}
+.objective .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy-600); display:block; margin-bottom:3px;}
+.objective p{font-size:.92rem; color:var(--ink); line-height:1.5;}
+
+/* ============ TOPBAR MOBILE ============ */
+.mobile-topbar{display:none;}
+.hamburger-btn{
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+  width:38px; height:38px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.25); border-radius:8px; cursor:pointer; padding:0; flex:none;
+}
+.hamburger-btn span{display:block; width:17px; height:1.6px; background:#fff; border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px;}
+.stat-tile{padding:18px 18px 16px;}
+.stat-tile .num{font-family:"Fraunces",serif; font-weight:700; font-size:1.9rem; color:var(--navy-700); line-height:1;}
+.stat-tile .lbl{margin-top:6px; font-size:.8rem; color:var(--ink-soft);}
+
+.nav-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.nav-card{
+  padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(20,43,102,.06),0 18px 30px -14px rgba(20,43,102,.28);}
+.nav-card .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--navy-100); color:var(--navy-700);
+}
+.nav-card .icon-wrap svg{width:19px; height:19px; stroke:var(--navy-700); fill:none; stroke-width:1.7;}
+.nav-card h3{font-size:1rem; font-weight:600;}
+.nav-card p{font-size:.85rem; color:var(--ink-soft); line-height:1.45;}
+.nav-card .tag{font-size:.7rem; font-weight:700; color:var(--navy-600); letter-spacing:.03em;}
+
+.section-block{margin-top:34px;}
+.section-block > h3.block-title{font-size:1.15rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+.section-block > h3.block-title .n{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px;
+  background:var(--navy-700); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+.section-block > .part-label{
+  font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy-600);
+  margin:18px 0 -6px;
+}
+
+/* discussion callout */
+.discuss{
+  margin-top:16px; display:flex; gap:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.discuss svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--accent-ink); fill:none; stroke-width:1.8;}
+.discuss .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px;}
+.discuss p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* example card */
+.example-card{padding:22px 24px; margin-top:16px;}
+.example-head{display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+.example-badge{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px;
+  border-radius:10px; background:var(--navy-700); color:#fff; font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.85rem;
+}
+.example-head h4{font-size:1.02rem; font-weight:700; color:var(--ink);}
+.example-head .sub{font-size:.8rem; color:var(--ink-soft); margin-top:1px;}
+
+.given-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+.chip{
+  font-family:"JetBrains Mono",monospace; font-size:.82rem; font-weight:500;
+  padding:5px 11px; border-radius:100px; background:var(--given-soft); color:var(--given); border:1px solid color-mix(in srgb, var(--given) 25%, transparent);
+}
+
+/* geometry diagram */
+.diagram-wrap{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:18px 14px; margin-bottom:16px; display:flex; justify-content:center;
+}
+.diagram-wrap svg{width:100%; max-width:420px; height:auto; overflow:visible;}
+.diagram-wrap svg text{font-family:"JetBrains Mono", ui-monospace, monospace;}
+.diag-line{stroke:var(--navy-700); stroke-width:2.2; fill:none;}
+.diag-line-soft{stroke:var(--ink-faint); stroke-width:1.6; fill:none; stroke-dasharray:4 3;}
+.diag-point{fill:var(--navy-900);}
+.diag-label{fill:var(--ink); font-size:13px; font-weight:600;}
+.diag-given{fill:var(--given); font-size:12.5px; font-weight:600;}
+.diag-unknown{fill:var(--accent-ink); font-size:12.5px; font-weight:700;}
+.diag-result{fill:var(--result); font-size:12.5px; font-weight:700;}
+.diag-arc{stroke:var(--ink-faint); stroke-width:1.4; fill:none;}
+:root[data-theme="dark"] .diag-unknown, @media (prefers-color-scheme:dark){ .diag-unknown{fill:var(--accent);} }
+
+.problem-line{
+  font-size:1.15rem; color:var(--given); background:var(--given-soft); border-radius:10px; padding:14px 16px;
+  margin-bottom:14px; overflow-x:auto;
+}
+.steps{margin-bottom:16px;}
+.step-line{
+  font-size:1.02rem; color:var(--ink); padding:5px 0; overflow-x:auto; white-space:nowrap;
+}
+.step-line:not(:first-child){padding-left:1.35em; color:var(--ink-soft);}
+.step-line .tag{color:var(--ink-faint); font-size:.82rem; margin-left:.6em;}
+
+.answer-box{
+  display:flex; align-items:center; gap:12px; background:var(--result-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--result) 30%, transparent);
+}
+.answer-box svg{width:18px; height:18px; flex:none; stroke:var(--result); fill:none; stroke-width:2.2;}
+.answer-box .val{font-size:1.08rem; font-weight:600; color:var(--result); font-family:"JetBrains Mono",monospace;}
+.answer-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--result); opacity:.85; display:block; margin-bottom:2px;}
+.answer-box .val + .val{margin-left:18px;}
+.answer-multi{display:flex; flex-wrap:wrap; gap:8px 22px;}
+
+/* summary list */
+.summary-list{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.summary-item{display:flex; gap:13px; padding:15px 17px; align-items:flex-start;}
+.summary-item .dot{
+  width:8px; height:8px; border-radius:100px; background:var(--accent); flex:none; margin-top:7px;
+}
+.summary-item h4{font-size:.94rem; font-weight:700; margin-bottom:3px;}
+.summary-item p{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+
+.source-tag{
+  margin-top:26px; display:flex; align-items:center; gap:10px; padding:16px 18px; border-radius:12px;
+  background:var(--navy-900); color:#fff;
+}
+.source-tag svg{width:20px; height:20px; flex:none; stroke:var(--accent); fill:none; stroke-width:1.7;}
+.source-tag .t1{font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sidebar-ink-soft); display:block; margin-bottom:2px;}
+.source-tag .t2{font-size:.95rem; font-weight:600;}
+
+.flow-strip{
+  margin-top:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line);
+  font-family:"JetBrains Mono",monospace; font-size:.85rem; color:var(--ink-soft); overflow-x:auto;
+}
+.flow-strip .arrow{color:var(--accent); font-weight:700;}
+
+.peta-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:16px;}
+.peta-tile{padding:16px 14px; text-align:left; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+.peta-tile:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(20,43,102,.06),0 18px 30px -14px rgba(20,43,102,.28);}
+.peta-tile .code{font-family:"JetBrains Mono",monospace; font-size:.72rem; font-weight:700; color:var(--accent-ink); background:var(--accent-soft); padding:2px 8px; border-radius:100px; display:inline-block; margin-bottom:8px;}
+.peta-tile h4{font-size:.88rem; font-weight:700; margin-bottom:5px; line-height:1.3;}
+.peta-tile p{font-size:.76rem; color:var(--ink-soft); line-height:1.4;}
+
+/* ============ MOBILE ============ */
+@media (max-width:880px){
+  .shell{display:block;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:14px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(120deg, var(--sidebar-bg1), var(--sidebar-bg2));
+    padding:13px 16px; border-bottom:1px solid var(--sidebar-line);
+  }
+  .mobile-topbar .t{color:#fff; font-weight:700; font-size:.98rem; font-family:"Fraunces",serif;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; width:82%; max-width:300px;
+    transform:translateX(-100%); transition:transform .28s ease;
+    box-shadow:2px 0 28px rgba(0,0,0,.35);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{position:fixed; inset:0; background:rgba(6,10,26,.55); z-index:55;}
+  .sidebar-overlay.show{display:block;}
+  main{width:100%; min-width:0;}
+  .view{padding:26px 18px 60px; scroll-margin-top:78px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-cards{grid-template-columns:1fr;}
+  .peta-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:520px){
+  .problem-line, .step-line{font-size:.92rem;}
+  .peta-grid{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .nav-card, .peta-tile{transition:none;}
+}
+</style>
+
+
+</head>
+<body>
+<div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="t">Geometri Bidang</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M4 20 20 20 12 4Z" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 20 12 12 16 20" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </div>
+      <h1>Geometri Bidang</h1>
+      <div class="sub">5.1 &mdash; Elemen Geometri Bidang<br><b>Bab 5.1</b> &middot; sumber Bill Cox</div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-group-label">Mulai di sini</div>
+      <button class="nav-btn" data-target="ringkasan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        Ringkasan
+      </button>
+
+      <div class="nav-group-label">Materi pokok</div>
+      <button class="nav-btn" data-target="pembagian-garis">
+        <svg viewBox="0 0 24 24"><path d="M3 12h18" stroke-linecap="round"/><circle cx="9" cy="12" r="1.8"/><circle cx="3" cy="12" r="1.6"/><circle cx="21" cy="12" r="1.6"/></svg>
+        5.1.1 Pembagian Garis
+      </button>
+      <button class="nav-btn" data-target="sudut-garis">
+        <svg viewBox="0 0 24 24"><path d="M4 18 18 4M4 4l14 14" stroke-linecap="round"/></svg>
+        5.1.2 Sudut pada Garis
+      </button>
+      <button class="nav-btn" data-target="sudut-segitiga">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 11 5l9 14" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        5.1.3 Sudut Segitiga
+      </button>
+      <button class="nav-btn" data-target="kekongruenan">
+        <svg viewBox="0 0 24 24"><path d="M3 6h8v8H3z" stroke-linejoin="round"/><path d="M13 10h8v8h-8z" stroke-linejoin="round"/><path d="M6.5 16.5l3-3" stroke-linecap="round"/></svg>
+        5.1.4 Kekongruenan
+      </button>
+      <button class="nav-btn" data-target="kesebangunan">
+        <svg viewBox="0 0 24 24"><path d="M4 19h7L7.5 6z" stroke-linejoin="round"/><path d="M13 19h9L18 9z" stroke-linejoin="round"/></svg>
+        5.1.5 Kesebangunan
+      </button>
+
+      <div class="nav-group-label">Penutup</div>
+      <button class="nav-btn" data-target="ringkasan-akhir">
+        <svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg>
+        Ringkasan &amp; Referensi
+      </button>
+    </nav>
+    <div class="sidebar-foot">Dasbor referensi kuliah &middot; 14 slide dipetakan ke 6 bagian</div>
+  </aside>
+
+  <main id="mainArea">
+
+<section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Geometri &middot; Bab 5.1</span>
+        <h2>5.1 &mdash; Elemen Geometri Bidang</h2>
+        <p class="lede">Referensi kerja untuk satu pertemuan geometri bidang: pembagian ruas garis, sudut pada garis berpotongan dan sejajar, jumlah sudut segitiga, kekongruenan, hingga kesebangunan &mdash; sepuluh contoh soal terurai dipetakan dari 14 slide perkuliahan.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Prinsip utama</span>Setiap sifat sudut &mdash; berpelurus, bertolak belakang, sehadap &mdash; adalah alat penurunan berantai: satu sudut yang diketahui bisa membuka seluruh rangkaian sudut lain di sekitarnya.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-tile"><div class="num">5</div><div class="lbl">Sub-topik (5.1.1&ndash;5.1.5)</div></div>
+        <div class="card stat-tile"><div class="num">10</div><div class="lbl">Contoh soal terurai</div></div>
+        <div class="card stat-tile"><div class="num">11</div><div class="lbl">Diskusi kelas</div></div>
+        <div class="card stat-tile"><div class="num">14</div><div class="lbl">Slide sumber</div></div>
+      </div>
+
+      <div class="flow-strip">
+        <span>AP:PB = 3:2</span><span class="arrow">&rarr;</span>
+        <span>a+b+c=180&deg;</span><span class="arrow">&rarr;</span>
+        <span>&triangle;ACD &cong; &triangle;ABC</span><span class="arrow">&rarr;</span>
+        <span>AB/DE = BC/EF = CA/FD</span>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Peta materi</h3>
+        <div class="peta-grid">
+          <button class="card peta-tile" data-goto="pembagian-garis">
+            <span class="code">5.1.1</span>
+            <h4>Pembagian Ruas Garis</h4>
+            <p>Titik membagi garis secara internal &amp; eksternal dalam rasio tertentu.</p>
+          </button>
+          <button class="card peta-tile" data-goto="sudut-garis">
+            <span class="code">5.1.2</span>
+            <h4>Sudut pada Garis</h4>
+            <p>Sudut berpelurus, bertolak belakang, sehadap pada garis sejajar.</p>
+          </button>
+          <button class="card peta-tile" data-goto="sudut-segitiga">
+            <span class="code">5.1.3</span>
+            <h4>Sudut dalam Segitiga</h4>
+            <p>Jumlah sudut dalam &amp; sudut luar, segitiga sama kaki.</p>
+          </button>
+          <button class="card peta-tile" data-goto="kekongruenan">
+            <span class="code">5.1.4</span>
+            <h4>Kekongruenan Segitiga</h4>
+            <p>Kriteria SSS yang sah vs. kasus SSA yang ambigu.</p>
+          </button>
+          <button class="card peta-tile" data-goto="kesebangunan">
+            <span class="code">5.1.5</span>
+            <h4>Kesebangunan Segitiga</h4>
+            <p>Rasio sisi bersesuaian &amp; kaitannya dengan Teorema Pythagoras.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Jelajahi materi</h3>
+        <div class="nav-cards">
+          <button class="card nav-card" data-goto="pembagian-garis">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 12h18" stroke-linecap="round"/><circle cx="9" cy="12" r="1.8"/><circle cx="3" cy="12" r="1.6"/><circle cx="21" cy="12" r="1.6"/></svg></div>
+            <h3>Pembagian Ruas Garis</h3>
+            <p>Menentukan panjang segmen hasil pembagian internal maupun eksternal oleh sebuah titik dengan rasio tertentu.</p>
+            <span class="tag">Contoh 1&ndash;2 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="sudut-garis">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 18 18 4M4 4l14 14" stroke-linecap="round"/></svg></div>
+            <h3>Sudut pada Garis</h3>
+            <p>Sudut berpelurus dan bertolak belakang pada garis berpotongan, sehadap pada garis sejajar, hingga rangkaian sudut panjang.</p>
+            <span class="tag">Contoh 3&ndash;5 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="sudut-segitiga">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 11 5l9 14" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+            <h3>Sudut dalam Segitiga</h3>
+            <p>Jumlah sudut dalam 180&deg;, teorema sudut luar, dan sifat sudut alas sama besar pada segitiga sama kaki.</p>
+            <span class="tag">Contoh 6&ndash;7 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="kekongruenan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 6h8v8H3z" stroke-linejoin="round"/><path d="M13 10h8v8h-8z" stroke-linejoin="round"/><path d="M6.5 16.5l3-3" stroke-linecap="round"/></svg></div>
+            <h3>Kekongruenan Segitiga</h3>
+            <p>Pembuktian kongruen dengan kriteria SSS yang sah, serta kasus sisi&ndash;sisi&ndash;sudut (SSA) yang ambigu.</p>
+            <span class="tag">Contoh 8&ndash;9 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="kesebangunan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 19h7L7.5 6z" stroke-linejoin="round"/><path d="M13 19h9L18 9z" stroke-linejoin="round"/></svg></div>
+            <h3>Kesebangunan Segitiga</h3>
+            <p>Rasio sisi bersesuaian pada segitiga sebangun, melengkapi sisi yang belum diketahui, dan verifikasi sudut siku-siku.</p>
+            <span class="tag">Contoh 10 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="ringkasan-akhir">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg></div>
+            <h3>Ringkasan &amp; Referensi</h3>
+            <p>Rangkuman lima poin utama bab 5.1 dan rujukan sumber untuk belajar lebih lanjut.</p>
+            <span class="tag">Penutup &rarr;</span>
+          </button>
+        </div>
+      </div>
+</section>
+
+<!-- ===================== 5.1.1 PEMBAGIAN GARIS ===================== -->
+<section class="view" id="view-pembagian-garis">
+  <div class="view-head">
+    <span class="eyebrow">5.1.1 &middot; Pembagian Garis</span>
+    <h2>Pembagian Ruas Garis</h2>
+    <p class="lede">Sebuah titik dapat membagi ruas garis secara internal (di antara dua ujung) maupun eksternal (di luar ruas), masing-masing dengan rasio tertentu.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">1</span>Pembagian ruas garis internal</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Menentukan panjang dua segmen hasil pembagian sebuah ruas garis oleh sebuah titik internal dengan rasio tertentu.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">1</span>
+        <div><h4>Titik P membagi AB secara internal</h4><div class="sub">AB = 30 cm, AP : PB = 3 : 2</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 400 130">
+          <line x1="30" y1="70" x2="370" y2="70" class="diag-line"/>
+          <circle cx="30" cy="70" r="4.5" class="diag-point"/>
+          <circle cx="238" cy="70" r="4.5" class="diag-point"/>
+          <circle cx="370" cy="70" r="4.5" class="diag-point"/>
+          <text x="30" y="98" text-anchor="middle" class="diag-label">A</text>
+          <text x="238" y="98" text-anchor="middle" class="diag-label">P</text>
+          <text x="370" y="98" text-anchor="middle" class="diag-label">B</text>
+          <text x="134" y="52" text-anchor="middle" class="diag-unknown">x</text>
+          <text x="304" y="52" text-anchor="middle" class="diag-unknown">30 &minus; x</text>
+          <path d="M30 40 238 40" class="diag-arc"/>
+          <path d="M238 40 370 40" class="diag-arc"/>
+        </svg>
+      </div>
+      <div class="problem-line">AB = 30 cm,&nbsp; AP : PB = 3 : 2</div>
+      <div class="steps">
+        <div class="step-line"><span class="frac"><span class="num">x</span><span class="den">30 &minus; x</span></span> = <span class="frac"><span class="num">3</span><span class="den">2</span></span></div>
+        <div class="step-line">2x = 3(30 &minus; x) = 90 &minus; 3x</div>
+        <div class="step-line">5x = 90</div>
+        <div class="step-line">x = 18</div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">AP = 18 cm</span><span class="val">PB = 12 cm</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Jika rasio AP:PB mendekati 1:1, ke mana posisi P bergerak? Bagaimana rumus berubah jika rasio berupa m:n secara umum?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">2</span>Pembagian ruas garis eksternal</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Membedakan pembagian internal dan eksternal, serta menurunkan posisi titik P yang berada di luar ruas AB.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">2</span>
+        <div><h4>Titik P membagi AB secara eksternal</h4><div class="sub">AB = 30 cm, AP : PB = 3 : 2 (P di luar ruas)</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 400 130">
+          <line x1="30" y1="70" x2="370" y2="70" class="diag-line"/>
+          <circle cx="30" cy="70" r="4.5" class="diag-point"/>
+          <circle cx="210" cy="70" r="4.5" class="diag-point"/>
+          <circle cx="370" cy="70" r="4.5" class="diag-point"/>
+          <text x="30" y="98" text-anchor="middle" class="diag-label">A</text>
+          <text x="210" y="98" text-anchor="middle" class="diag-label">B</text>
+          <text x="370" y="98" text-anchor="middle" class="diag-label">P</text>
+          <text x="200" y="30" text-anchor="middle" class="diag-unknown">x</text>
+          <path d="M30 46 370 46" class="diag-arc"/>
+          <text x="120" y="52" text-anchor="middle" class="diag-given">30</text>
+          <path d="M30 40 210 40" class="diag-arc"/>
+          <text x="290" y="52" text-anchor="middle" class="diag-unknown">x &minus; 30</text>
+          <path d="M210 40 370 40" class="diag-arc"/>
+        </svg>
+      </div>
+      <div class="problem-line">AB = 30 cm,&nbsp; AP : PB = 3 : 2&nbsp; (P di luar segmen AB)</div>
+      <div class="steps">
+        <div class="step-line"><span class="frac"><span class="num">AP</span><span class="den">PB</span></span> = <span class="frac"><span class="num">x</span><span class="den">x &minus; 30</span></span> = <span class="frac"><span class="num">3</span><span class="den">2</span></span></div>
+        <div class="step-line">2x = 3(x &minus; 30)</div>
+        <div class="step-line">2x = 3x &minus; 90</div>
+        <div class="step-line">x = 90</div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">AP = 90 cm</span><span class="val">PB = 60 cm</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Mengapa titik P harus berada di luar segmen AB untuk pembagian eksternal? Apa makna geometris jika rasio tersebut ditulis negatif?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5.1.2 SUDUT PADA GARIS ===================== -->
+<section class="view" id="view-sudut-garis">
+  <div class="view-head">
+    <span class="eyebrow">5.1.2 &middot; Sudut pada Garis</span>
+    <h2>Sudut pada Garis</h2>
+    <p class="lede">Garis berpotongan menghasilkan sudut berpelurus dan bertolak belakang; garis sejajar yang dipotong sebuah transversal menambahkan sudut sehadap &mdash; dan ketiganya bisa dirangkai berantai.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">3</span>Sudut berpelurus dan bertolak belakang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Menghitung sudut-sudut yang terbentuk oleh dua garis lurus yang berpotongan menggunakan sifat berpelurus dan bertolak belakang.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">3</span>
+        <div><h4>Dua garis berpotongan, l&#8321; dan l&#8322;</h4><div class="sub">Salah satu sudut = 40&deg;</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 320 200">
+          <line x1="40" y1="40" x2="280" y2="160" class="diag-line"/>
+          <line x1="40" y1="160" x2="280" y2="40" class="diag-line"/>
+          <text x="160" y="26" text-anchor="middle" class="diag-label">l&#8321;</text>
+          <text x="160" y="188" text-anchor="middle" class="diag-label">l&#8322;</text>
+          <text x="185" y="90" class="diag-given">40&deg;</text>
+          <text x="120" y="90" class="diag-unknown">a</text>
+          <text x="185" y="128" class="diag-unknown">b</text>
+          <text x="120" y="128" class="diag-unknown">c</text>
+        </svg>
+      </div>
+      <div class="problem-line">Sudut 40&deg; diketahui pada perpotongan l&#8321; dan l&#8322;</div>
+      <div class="steps">
+        <div class="step-line">a = 180&deg; &minus; 40&deg; = 140&deg;<span class="tag">(berpelurus)</span></div>
+        <div class="step-line">c = 180&deg; &minus; 40&deg; = 140&deg;<span class="tag">(berpelurus)</span></div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">a = c = 140&deg;</span><span class="val">b = 40&deg;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Buktikan secara umum bahwa sudut bertolak belakang selalu sama besar, menggunakan sifat sudut berpelurus dua kali berturut-turut.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">4</span>Sudut sehadap pada garis sejajar</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Menerapkan sifat sudut sehadap, bertolak belakang, dan berpelurus secara berantai pada dua garis sejajar yang dipotong sebuah transversal.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">4</span>
+        <div><h4>Transversal memotong dua garis sejajar</h4><div class="sub">Satu sudut sehadap = 60&deg;</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 340 190">
+          <line x1="20" y1="55" x2="320" y2="55" class="diag-line"/>
+          <line x1="20" y1="145" x2="320" y2="145" class="diag-line"/>
+          <path d="M14 50l10 10M14 60l10-10" class="diag-line" stroke-width="1.6"/>
+          <path d="M14 140l10 10M14 150l10-10" class="diag-line" stroke-width="1.6"/>
+          <line x1="90" y1="15" x2="250" y2="185" class="diag-line"/>
+          <text x="255" y="70" class="diag-given">60&deg;</text>
+          <text x="130" y="45" class="diag-unknown">a</text>
+          <text x="228" y="160" class="diag-unknown">b</text>
+          <text x="168" y="160" class="diag-unknown">c</text>
+        </svg>
+      </div>
+      <div class="problem-line">Sudut sehadap 60&deg; diketahui pada garis sejajar pertama</div>
+      <div class="steps">
+        <div class="step-line">a = 60&deg;<span class="tag">(bertolak belakang)</span></div>
+        <div class="step-line">b = a = 60&deg;<span class="tag">(sehadap)</span></div>
+        <div class="step-line">c = 180&deg; &minus; 60&deg; = 120&deg;<span class="tag">(berpelurus)</span></div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">a = 60&deg;</span><span class="val">b = 60&deg;</span><span class="val">c = 120&deg;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Jika transversal tegak lurus terhadap kedua garis sejajar, apa yang terjadi pada semua pasangan sudut ini?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="part-label">Contoh 5 &middot; Rangkaian sudut</div>
+    <h3 class="block-title"><span class="n">5</span>Rangkaian sudut pada garis sejajar</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Merunut beberapa sudut sekaligus dengan menggabungkan sifat sehadap, bertolak belakang, dan berpelurus dalam satu rangkaian logis.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">5</span>
+        <div><h4>Empat garis sejajar dipotong satu transversal</h4><div class="sub">Sudut pertama = 85&deg;</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 340 230">
+          <line x1="20" y1="25" x2="320" y2="25" class="diag-line"/>
+          <line x1="20" y1="85" x2="320" y2="85" class="diag-line"/>
+          <line x1="20" y1="145" x2="320" y2="145" class="diag-line"/>
+          <line x1="20" y1="205" x2="320" y2="205" class="diag-line"/>
+          <line x1="70" y1="5" x2="270" y2="225" class="diag-line"/>
+          <text x="215" y="20" class="diag-given">85&deg;</text>
+          <text x="198" y="80" class="diag-unknown">a</text>
+          <text x="181" y="140" class="diag-unknown">b</text>
+          <text x="140" y="140" class="diag-unknown">c</text>
+          <text x="163" y="200" class="diag-unknown">d</text>
+          <text x="122" y="200" class="diag-unknown">e</text>
+        </svg>
+      </div>
+      <div class="problem-line">Sudut sehadap pertama = 85&deg; &middot; empat garis sejajar l&#8321;&hellip;l&#8324; dipotong satu transversal</div>
+      <div class="steps">
+        <div class="step-line">a = 85&deg;<span class="tag">(sehadap)</span></div>
+        <div class="step-line">b = a = 85&deg;<span class="tag">(sehadap)</span></div>
+        <div class="step-line">c = b = 85&deg;<span class="tag">(bertolak belakang)</span></div>
+        <div class="step-line">d = c = 85&deg;<span class="tag">(sehadap)</span></div>
+        <div class="step-line">e = 180&deg; &minus; 85&deg; = 95&deg;<span class="tag">(berpelurus)</span></div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">a = b = c = d = 85&deg;</span><span class="val">e = 95&deg;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Bisakah nilai e ditemukan tanpa menghitung a, b, c, d terlebih dahulu? Tunjukkan jalur logika terpendek.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5.1.3 SUDUT SEGITIGA ===================== -->
+<section class="view" id="view-sudut-segitiga">
+  <div class="view-head">
+    <span class="eyebrow">5.1.3 &middot; Sudut dalam Segitiga</span>
+    <h2>Sudut dalam Segitiga</h2>
+    <p class="lede">Jumlah sudut dalam sebuah segitiga selalu 180&deg;, dan sudut luar sama dengan jumlah dua sudut dalam yang tidak bersisian dengannya.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">6</span>Sudut dalam dan sudut luar segitiga</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Menghitung sudut dalam yang belum diketahui menggunakan jumlah sudut segitiga (180&deg;) dan menerapkan teorema sudut luar.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">6</span>
+        <div><h4>Segitiga dengan dua sudut dalam diketahui</h4><div class="sub">70&deg; dan 60&deg;; sisi diperpanjang membentuk sudut luar b</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 340 200">
+          <path d="M60 170 190 30 260 170Z" class="diag-line"/>
+          <line x1="260" y1="170" x2="330" y2="170" class="diag-line-soft"/>
+          <text x="62" y="188" class="diag-given">70&deg;</text>
+          <text x="222" y="188" class="diag-given">60&deg;</text>
+          <text x="188" y="52" class="diag-unknown">a</text>
+          <text x="278" y="160" class="diag-unknown">b</text>
+        </svg>
+      </div>
+      <div class="problem-line">Dua sudut dalam segitiga = 70&deg; dan 60&deg;</div>
+      <div class="steps">
+        <div class="step-line">a = 180&deg; &minus; 70&deg; &minus; 60&deg; = 50&deg;</div>
+        <div class="step-line">b = 70&deg; + 60&deg; = 130&deg;<span class="tag">(sudut luar)</span></div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">a = 50&deg;</span><span class="val">b = 130&deg;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Buktikan teorema sudut luar (sudut luar = jumlah dua sudut dalam yang tidak bersisian) hanya menggunakan sifat jumlah sudut dalam segitiga.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">7</span>Sudut pada segitiga sama kaki</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Menggabungkan sifat segitiga sama kaki (sudut alas sama besar) dengan jumlah sudut dalam dan teorema sudut luar.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">7</span>
+        <div><h4>Segitiga sama kaki, sudut alas 65&deg;</h4><div class="sub">Apeks b, dan sudut luar c pada salah satu titik alas</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 340 200">
+          <path d="M90 170 190 30 290 170Z" class="diag-line"/>
+          <line x1="290" y1="170" x2="330" y2="170" class="diag-line-soft"/>
+          <text x="185" y="52" class="diag-unknown">b</text>
+          <text x="92" y="188" class="diag-given">a = 65&deg;</text>
+          <text x="252" y="188" class="diag-given">65&deg;</text>
+          <text x="300" y="160" class="diag-unknown">c</text>
+        </svg>
+      </div>
+      <div class="problem-line">Segitiga sama kaki dengan sudut alas 65&deg;</div>
+      <div class="steps">
+        <div class="step-line">a = 65&deg;<span class="tag">(segitiga sama kaki)</span></div>
+        <div class="step-line">b = 180&deg; &minus; 2(65&deg;) = 50&deg;</div>
+        <div class="step-line">c = b + 65&deg; = 115&deg;</div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">a = 65&deg;</span><span class="val">b = 50&deg;</span><span class="val">c = 115&deg;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Turunkan rumus umum b = 180&deg; &minus; 2&times;(sudut alas). Apa yang terjadi pada b jika segitiga tersebut sama sisi (equilateral)?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5.1.4 KEKONGRUENAN ===================== -->
+<section class="view" id="view-kekongruenan">
+  <div class="view-head">
+    <span class="eyebrow">5.1.4 &middot; Kekongruenan</span>
+    <h2>Kekongruenan Segitiga</h2>
+    <p class="lede">Kekongruenan (SSS, SAS, ASA, RHS) membuktikan dua segitiga identik ukurannya &mdash; namun harus dicek hati-hati, karena kombinasi sisi&ndash;sisi&ndash;sudut (SSA) tidak selalu menjamin kongruen.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">8</span>Kekongruenan segitiga: SSS</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Membuktikan dua segitiga kongruen menggunakan kriteria SSS (tiga pasang sisi bersesuaian sama panjang).</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">8</span>
+        <div><h4>Segiempat ABCD dengan diagonal AC</h4><div class="sub">AD = BC dan DC = AB</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 320 200">
+          <path d="M60 40 260 40 260 160 60 160Z" class="diag-line"/>
+          <line x1="60" y1="40" x2="260" y2="160" class="diag-line"/>
+          <text x="48" y="34" class="diag-label">A</text>
+          <text x="272" y="34" class="diag-label">B</text>
+          <text x="272" y="172" class="diag-label">C</text>
+          <text x="48" y="172" class="diag-label">D</text>
+        </svg>
+      </div>
+      <div class="problem-line">AD = BC,&nbsp; DC = AB,&nbsp; AC = AC (sisi berimpit)</div>
+      <div class="steps">
+        <div class="step-line">AD = BC</div>
+        <div class="step-line">DC = AB</div>
+        <div class="step-line">AC = AC<span class="tag">(sisi berimpit)</span></div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">&triangle;ACD &cong; &triangle;ABC&nbsp; (SSS)</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Bentuk segiempat apa yang pasti terbentuk dari kekongruenan SSS ini (petunjuk: jajaran genjang)? Buktikan.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">9</span>Kasus ambigu sisi&ndash;sisi&ndash;sudut (SSA)</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Mengenali bahwa kombinasi dua sisi sama panjang dan satu sudut yang bukan sudut apit (SSA) tidak menjamin kekongruenan.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">9</span>
+        <div><h4>Segiempat ABCD dengan sudut ditandai sama</h4><div class="sub">AB = AD, AC = AC, &ang;ACD &asymp; &ang;ACB</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 320 200">
+          <path d="M60 100 220 30 260 170 220 100Z" class="diag-line"/>
+          <line x1="60" y1="100" x2="260" y2="170" class="diag-line"/>
+          <text x="46" y="104" class="diag-label">A</text>
+          <text x="222" y="22" class="diag-label">B</text>
+          <text x="272" y="176" class="diag-label">C</text>
+          <text x="222" y="98" class="diag-label" text-anchor="middle" dy="-6">D</text>
+        </svg>
+      </div>
+      <div class="problem-line">AB = AD,&nbsp; AC = AC (sisi berimpit),&nbsp; &ang;ACD = &ang;ACB (ditandai sama, tapi bukan sudut apit)</div>
+      <div class="steps">
+        <div class="step-line">AB = AD</div>
+        <div class="step-line">AC = AC<span class="tag">(sisi berimpit)</span></div>
+        <div class="step-line">&ang;ACD = &ang;ACB</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">SSA &rArr; belum tentu kongruen</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Berikan contoh dua segitiga dengan data SSA sama tetapi bentuk berbeda. Kapan kriteria sisi miring dan sisi siku (RHS) menjamin kongruen?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5.1.5 KESEBANGUNAN ===================== -->
+<section class="view" id="view-kesebangunan">
+  <div class="view-head">
+    <span class="eyebrow">5.1.5 &middot; Kesebangunan</span>
+    <h2>Kesebangunan Segitiga</h2>
+    <p class="lede">Dua segitiga sebangun memiliki rasio sisi bersesuaian yang sama &mdash; rasio ini dapat dipakai untuk melengkapi sisi yang belum diketahui, lalu diverifikasi ulang dengan Teorema Pythagoras.</p>
+  </div>
+
+  <div class="section-block">
+    <div class="part-label">Contoh 10 &middot; Bagian 1</div>
+    <h3 class="block-title"><span class="n">10</span>Kesebangunan dan rasio sisi</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Tujuan belajar</span>Menuliskan dan menghitung rasio kesebangunan dari dua segitiga sebangun berdasarkan sisi-sisi yang bersesuaian.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">10a</span>
+        <div><h4>&triangle;ABC ~ &triangle;DEF</h4><div class="sub">AB = 4, BC = 5, CA = 3;&nbsp; FE = 3</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 360 190">
+          <path d="M30 160 110 40 170 160Z" class="diag-line"/>
+          <text x="20" y="176" class="diag-label">A</text>
+          <text x="112" y="30" class="diag-label">C</text>
+          <text x="176" y="176" class="diag-label">B</text>
+          <text x="52" y="94" class="diag-given">4</text>
+          <text x="150" y="94" class="diag-given">3</text>
+          <text x="97" y="182" class="diag-given">5</text>
+
+          <path d="M210 160 290 40 350 160Z" class="diag-line"/>
+          <text x="200" y="176" class="diag-label">D</text>
+          <text x="292" y="30" class="diag-label">F</text>
+          <text x="356" y="176" class="diag-label">E</text>
+          <text x="332" y="94" class="diag-given">3</text>
+        </svg>
+      </div>
+      <div class="problem-line">&triangle;ABC ~ &triangle;DEF&nbsp; &rArr;&nbsp; AB/DE = BC/EF = CA/FD</div>
+      <div class="steps">
+        <div class="step-line">BC / FE = 5 / 3</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">BC / FE = 5 / 3</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Mengapa urutan korespondensi titik sudut (A&harr;D, B&harr;E, C&harr;F) harus diperhatikan saat menuliskan rasio kesebangunan? Kesalahan apa yang muncul jika tertukar?</p></div>
+    </div>
+
+    <div class="part-label">Contoh 10 &middot; Bagian 2</div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">10b</span>
+        <div><h4>Melengkapi sisi dan menguji sudut siku-siku</h4><div class="sub">Mencari DE dan DF, lalu memverifikasi &ang;BAC dengan kebalikan Teorema Pythagoras</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 360 190">
+          <path d="M30 160 110 40 170 160Z" class="diag-line"/>
+          <text x="20" y="176" class="diag-label">A</text>
+          <text x="112" y="30" class="diag-label">C</text>
+          <text x="176" y="176" class="diag-label">B</text>
+          <text x="52" y="94" class="diag-given">4</text>
+          <text x="150" y="94" class="diag-given">3</text>
+          <text x="97" y="182" class="diag-given">5</text>
+          <path d="M40 152h8v8h-8z" class="diag-line" stroke-width="1.4"/>
+
+          <path d="M210 160 290 40 350 160Z" class="diag-line"/>
+          <text x="200" y="176" class="diag-label">D</text>
+          <text x="292" y="30" class="diag-label">F</text>
+          <text x="356" y="176" class="diag-label">E</text>
+          <text x="332" y="94" class="diag-given">3</text>
+          <text x="238" y="94" class="diag-result">12/5</text>
+          <text x="277" y="182" class="diag-result">9/5</text>
+        </svg>
+      </div>
+      <div class="problem-line">AB/DE = 4/DE = 5/3&nbsp; &rArr;&nbsp; DE = 12/5 cm &middot;&middot; AC/DF = 3/DF = 5/3&nbsp; &rArr;&nbsp; DF = 9/5 cm</div>
+      <div class="steps">
+        <div class="step-line"><span class="frac"><span class="num">AB</span><span class="den">DE</span></span> = <span class="frac"><span class="num">4</span><span class="den">DE</span></span> = <span class="frac"><span class="num">5</span><span class="den">3</span></span>&nbsp; &rArr;&nbsp; DE = 12/5 cm</div>
+        <div class="step-line"><span class="frac"><span class="num">AC</span><span class="den">DF</span></span> = <span class="frac"><span class="num">3</span><span class="den">DF</span></span> = <span class="frac"><span class="num">5</span><span class="den">3</span></span>&nbsp; &rArr;&nbsp; DF = 9/5 cm</div>
+        <div class="step-line">3&sup2; + 4&sup2; = 5&sup2;&nbsp; &rArr;&nbsp; &ang;BAC = 90&deg;</div>
+      </div>
+      <div class="answer-box answer-multi">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">DE = 12/5 cm</span><span class="val">DF = 9/5 cm</span><span class="val">&ang;BAC = 90&deg;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Segitiga 3-4-5 ini klasik. Bagaimana tukang bangunan/surveyor memakai rasio ini di lapangan untuk membuat sudut siku-siku tanpa busur derajat?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RINGKASAN AKHIR ===================== -->
+<section class="view" id="view-ringkasan-akhir">
+  <div class="view-head">
+    <span class="eyebrow">Penutup</span>
+    <h2>Ringkasan &amp; Referensi</h2>
+    <p class="lede">Lima gagasan inti dari bab 5.1 &mdash; Elemen Geometri Bidang, dan rujukan sumber untuk pendalaman lebih lanjut.</p>
+  </div>
+
+  <div class="summary-list">
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Pembagian ruas garis</h4><p>Titik dapat membagi ruas garis secara internal maupun eksternal dalam rasio tertentu.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Sudut pada garis</h4><p>Garis berpotongan menghasilkan sudut berpelurus &amp; bertolak belakang; garis sejajar menambahkan sudut sehadap.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Sudut dalam segitiga</h4><p>Jumlah sudut dalam segitiga selalu 180&deg;; sudut luar = jumlah dua sudut dalam yang tidak bersisian.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Kekongruenan segitiga</h4><p>Kekongruenan (SSS, SAS, ASA, RHS) harus dicek hati-hati &mdash; kombinasi SSA tidak menjamin kongruen.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Kesebangunan segitiga</h4><p>Kesebangunan menyamakan rasio sisi bersesuaian, dan dapat diverifikasi ulang dengan Teorema Pythagoras.</p></div>
+    </div>
+  </div>
+
+  <div class="source-tag">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <div><span class="t1">Sumber materi</span><span class="t2">Bill Cox &mdash; Higher Engineering Mathematics, Bab 5.1</span></div>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function showView(target, opts){
+    opts = opts || {};
+    document.querySelectorAll('main > section.view').forEach(s=>s.classList.remove('active'));
+    const el = document.getElementById('view-'+target);
+    if(el){ el.classList.add('active'); if(!opts.skipScroll){ el.scrollIntoView({block:'start'}); } }
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target === target);
+    });
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> showView(el.dataset.goto));
+  });
+
+  showView('ringkasan', {skipScroll:true});
+</script>
+
+</body>
+</html>

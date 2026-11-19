@@ -1,0 +1,1174 @@
+<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dasbor Trigonometri: Rasio Sudut Lancip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  color-scheme: light;
+  --brand-900:#153a63;
+  --brand-800:#1c4c81;
+  --brand-700:#2f6bab;
+  --brand-600:#4484ce;
+  --brand-100:#e4eefa;
+
+  --paper:#f7f9fb;
+  --surface:#ffffff;
+  --surface-2:#eef3f9;
+  --ink:#152233;
+  --ink-soft:#5b6b7d;
+  --ink-faint:#8fa0b3;
+  --line:#dbe6f0;
+
+  --accent:#f19e4d;
+  --accent-ink:#9a5518;
+  --accent-soft:#fdecd9;
+
+  --result:#c98a00;
+  --result-ink:#7a5400;
+  --result-soft:#fff6d6;
+
+  --given:#153a63;
+  --given-soft:#e4eefa;
+
+  --shadow: 0 1px 2px rgba(21,58,99,.07), 0 12px 28px -12px rgba(21,58,99,.22);
+
+  --sidebar-bg1:#12335c;
+  --sidebar-bg2:#1c4c81;
+  --sidebar-ink:#eef6ff;
+  --sidebar-ink-soft:#a9c3de;
+  --sidebar-line:rgba(255,255,255,.12);
+  --sidebar-active-bg:rgba(241,158,77,.2);
+  --sidebar-active-line:#f19e4d;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0a1420;
+    --surface:#101f30;
+    --surface-2:#15293d;
+    --ink:#eaf1fa;
+    --ink-soft:#a9c3de;
+    --ink-faint:#71879e;
+    --line:#1f3750;
+    --brand-100:#16324f;
+    --brand-700:#7fb2e8;
+    --brand-600:#a9cdf0;
+
+    --accent:#ffb066;
+    --accent-ink:#ffd9ad;
+    --accent-soft:#3a2712;
+
+    --result:#ffd166;
+    --result-ink:#ffe9ad;
+    --result-soft:#3a2f0c;
+
+    --given:#dbe8f7;
+    --given-soft:#16304a;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 14px 32px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0a1420;
+  --surface:#101f30;
+  --surface-2:#15293d;
+  --ink:#eaf1fa;
+  --ink-soft:#a9c3de;
+  --ink-faint:#71879e;
+  --line:#1f3750;
+  --brand-100:#16324f;
+  --brand-700:#7fb2e8;
+  --brand-600:#a9cdf0;
+
+  --accent:#ffb066;
+  --accent-ink:#ffd9ad;
+  --accent-soft:#3a2712;
+
+  --result:#ffd166;
+  --result-ink:#ffe9ad;
+  --result-soft:#3a2f0c;
+
+  --given:#dbe8f7;
+  --given-soft:#16304a;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.45), 0 14px 32px -14px rgba(0,0,0,.7);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Fraunces", Georgia, serif;
+  margin:0;
+  text-wrap:balance;
+  color:var(--ink);
+}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+.mathy, .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric:tabular-nums;}
+
+.frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 .2em; line-height:1.15; font-size:.94em; position:relative; top:.05em;}
+.frac .num{padding:0 .18em .06em; border-bottom:1.4px solid currentColor;}
+.frac .den{padding:.06em .18em 0;}
+sup, sub{line-height:0;}
+
+/* ============ LAYOUT SHELL ============ */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:278px; flex:0 0 278px;
+  background:linear-gradient(175deg, var(--sidebar-bg1), var(--sidebar-bg2) 78%);
+  color:var(--sidebar-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--sidebar-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px;}
+
+.brand{padding:24px 22px 16px; border-bottom:1px solid var(--sidebar-line);}
+.brand-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:rgba(241,158,77,.2); color:var(--accent);
+  margin-bottom:12px;
+}
+.brand-mark svg{width:21px; height:21px; stroke:var(--accent); fill:none;}
+.brand h1{font-size:1.18rem; font-weight:700; color:#fff; line-height:1.2;}
+.brand .sub{margin-top:6px; font-size:.76rem; color:var(--sidebar-ink-soft); line-height:1.4;}
+.brand .sub b{color:var(--sidebar-ink); font-weight:600;}
+
+nav.navlist{padding:10px 12px 22px; flex:1;}
+.nav-group-label{
+  font-size:.64rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sidebar-ink-soft); opacity:.75;
+  padding:14px 12px 5px;
+}
+.nav-group-label:first-child{padding-top:5px;}
+.nav-btn{
+  width:100%; display:flex; align-items:center; gap:10px;
+  padding:8px 12px; margin:1px 0; border:none; background:transparent;
+  border-radius:9px; color:var(--sidebar-ink-soft); text-align:left;
+  font-size:.83rem; font-weight:500; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-btn svg{width:16px; height:16px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7;}
+.nav-btn:hover{background:rgba(255,255,255,.07); color:#fff;}
+.nav-btn.active{
+  background:var(--sidebar-active-bg); color:#fff; font-weight:600;
+  border-left:3px solid var(--sidebar-active-line);
+}
+
+.sidebar-foot{padding:14px 22px 20px; border-top:1px solid var(--sidebar-line); font-size:.7rem; color:var(--sidebar-ink-soft); line-height:1.5;}
+
+main{flex:1; min-width:0;}
+.view{display:none; padding:44px 48px 80px; max-width:980px;}
+.view.active{display:block;}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:100px; margin-bottom:14px;
+}
+.view-head h2{font-size:clamp(1.4rem,1.2rem + 1vw,1.95rem); font-weight:700;}
+.view-head .lede{margin-top:10px; font-size:1rem; color:var(--ink-soft); max-width:62ch; line-height:1.55;}
+
+.objective{
+  margin-top:18px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px;
+}
+.objective svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--brand-600); fill:none; stroke-width:1.8;}
+.objective .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-600); display:block; margin-bottom:3px;}
+.objective p{font-size:.92rem; color:var(--ink); line-height:1.5;}
+
+/* ============ TOPBAR MOBILE ============ */
+.mobile-topbar{display:none;}
+.hamburger-btn{
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+  width:38px; height:38px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.25); border-radius:8px; cursor:pointer; padding:0; flex:none;
+}
+.hamburger-btn span{display:block; width:17px; height:1.6px; background:#fff; border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px;}
+.stat-tile{padding:18px 18px 16px;}
+.stat-tile .num{font-family:"Fraunces",serif; font-weight:700; font-size:1.9rem; color:var(--brand-700); line-height:1;}
+.stat-tile .lbl{margin-top:6px; font-size:.8rem; color:var(--ink-soft);}
+
+.nav-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.nav-card{
+  padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(21,58,99,.07),0 18px 30px -14px rgba(21,58,99,.3);}
+.nav-card .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--brand-100); color:var(--brand-700);
+}
+.nav-card .icon-wrap svg{width:19px; height:19px; stroke:var(--brand-700); fill:none; stroke-width:1.7;}
+.nav-card h3{font-size:.98rem; font-weight:600;}
+.nav-card p{font-size:.84rem; color:var(--ink-soft); line-height:1.45;}
+.nav-card .tag{font-size:.7rem; font-weight:700; color:var(--brand-600); letter-spacing:.03em;}
+
+.section-block{margin-top:34px;}
+.section-block > h3.block-title{font-size:1.1rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+.section-block > h3.block-title .n{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px;
+  background:var(--brand-900); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+
+/* discussion callout */
+.discuss{
+  margin-top:16px; display:flex; gap:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+}
+.discuss svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--accent-ink); fill:none; stroke-width:1.8;}
+.discuss .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px;}
+.discuss p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* example card (worked numeric problems) */
+.example-card{padding:22px 24px; margin-top:16px;}
+.example-head{display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+.example-badge{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px;
+  border-radius:10px; background:var(--brand-900); color:#fff; font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.85rem;
+}
+.example-head h4{font-size:1.02rem; font-weight:700; color:var(--ink);}
+.example-head .sub{font-size:.8rem; color:var(--ink-soft); margin-top:1px;}
+
+/* geometry diagram */
+.diagram-wrap{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:18px 14px; margin-bottom:16px; display:flex; justify-content:center;
+}
+.diagram-wrap svg{width:100%; max-width:420px; height:auto; overflow:visible;}
+.diagram-wrap svg text{font-family:"JetBrains Mono", ui-monospace, monospace;}
+.diag-line{stroke:var(--brand-700); stroke-width:2.2; fill:none;}
+.diag-line-soft{stroke:var(--ink-faint); stroke-width:1.4; fill:none; stroke-dasharray:4 3;}
+.diag-point{fill:var(--brand-900);}
+.diag-label{fill:var(--ink); font-size:13px; font-weight:600;}
+.diag-given{fill:var(--given); font-size:12.5px; font-weight:600;}
+.diag-unknown{fill:var(--accent-ink); font-size:12.5px; font-weight:700;}
+.diag-result{fill:var(--result-ink); font-size:12.5px; font-weight:700;}
+.diag-arc{stroke:var(--ink-faint); stroke-width:1.4; fill:none;}
+
+.problem-line{
+  font-size:1.1rem; color:var(--given); background:var(--given-soft); border-radius:10px; padding:14px 16px;
+  margin-bottom:14px; overflow-x:auto;
+}
+.steps{margin-bottom:16px;}
+.step-line{
+  font-size:1.02rem; color:var(--ink); padding:5px 0; overflow-x:auto; white-space:nowrap;
+}
+.step-line:not(:first-child){padding-left:1.35em; color:var(--ink-soft);}
+.step-line .tag{color:var(--ink-faint); font-size:.82rem; margin-left:.6em;}
+
+.answer-box{
+  display:flex; align-items:center; gap:12px; background:var(--accent-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.answer-box svg{width:18px; height:18px; flex:none; stroke:var(--accent-ink); fill:none; stroke-width:2.2;}
+.answer-box .val{font-size:1.05rem; font-weight:600; color:var(--accent-ink); font-family:"JetBrains Mono",monospace;}
+.answer-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); opacity:.9; display:block; margin-bottom:2px;}
+.answer-box .val + .val{margin-left:18px;}
+.answer-multi{display:flex; flex-wrap:wrap; gap:8px 22px;}
+
+/* open-ended practice prompt (Latihan Mandiri, no worked solution) */
+.prompt-box{
+  display:flex; align-items:flex-start; gap:12px; background:var(--brand-100); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--brand-700) 25%, transparent);
+}
+.prompt-box svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--brand-700); fill:none; stroke-width:2;}
+.prompt-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-700); opacity:.9; display:block; margin-bottom:3px;}
+.prompt-box p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* sub-example divider inside one card (multiple mini worked cases) */
+.sub-ex{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);}
+.sub-ex:first-child{margin-top:0; padding-top:0; border-top:none;}
+.sub-ex .sub-lbl{font-size:.72rem; font-weight:700; color:var(--brand-600); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+
+/* concept grid: definitional relations / formula reference tiles */
+.concept-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-top:16px;}
+.concept-tile{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center;}
+.concept-tile .mini-svg{width:100%; max-width:130px; height:auto; margin:2px auto 10px; display:block;}
+.concept-tile .tt{font-size:.86rem; font-weight:700; color:var(--ink); margin-bottom:8px;}
+.concept-tile .eq{font-family:"JetBrains Mono",monospace; font-size:.98rem; color:var(--result-ink); margin-bottom:4px; overflow-x:auto;}
+.concept-tile p.note{font-size:.78rem; color:var(--ink-soft); line-height:1.4; margin-top:4px;}
+
+/* proof / property list */
+.proof-list{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+.proof-item{display:flex; gap:14px; align-items:center; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+.proof-item .pnum{
+  display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:100px;
+  background:var(--brand-900); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace; flex:none;
+}
+.proof-item .body{flex:1; min-width:0;}
+.proof-item .eq{font-family:"JetBrains Mono",monospace; font-size:1rem; color:var(--result-ink); font-weight:600; overflow-x:auto;}
+.proof-item p{font-size:.86rem; color:var(--ink-soft); margin-top:3px; line-height:1.45;}
+
+/* formula card (reference formulas, no plugged-in numbers) */
+.formula-box{
+  background:var(--result-soft); border:1px solid color-mix(in srgb, var(--result) 45%, transparent);
+  border-radius:12px; padding:16px 18px; margin-bottom:14px; text-align:center;
+}
+.formula-box .eq{font-family:"JetBrains Mono",monospace; font-size:1.15rem; color:var(--result-ink); overflow-x:auto;}
+.formula-box .eq + .eq{margin-top:10px;}
+
+/* definitions list (terms) */
+.term-list{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px;}
+.term-item{background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:11px 14px;}
+.term-item b{color:var(--brand-700); font-weight:700;}
+.term-item span{font-size:.85rem; color:var(--ink-soft);}
+
+.summary-list{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.summary-item{display:flex; gap:13px; padding:15px 17px; align-items:flex-start;}
+.summary-item .dot{width:8px; height:8px; border-radius:100px; background:var(--accent); flex:none; margin-top:7px;}
+.summary-item h4{font-size:.94rem; font-weight:700; margin-bottom:3px;}
+.summary-item p{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+
+.source-tag{
+  margin-top:26px; display:flex; align-items:center; gap:10px; padding:16px 18px; border-radius:12px;
+  background:var(--brand-900); color:#fff;
+}
+.source-tag svg{width:20px; height:20px; flex:none; stroke:var(--accent); fill:none; stroke-width:1.7;}
+.source-tag .t1{font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sidebar-ink-soft); display:block; margin-bottom:2px;}
+.source-tag .t2{font-size:.95rem; font-weight:600;}
+
+.flow-strip{
+  margin-top:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line);
+  font-family:"JetBrains Mono",monospace; font-size:.85rem; color:var(--ink-soft); overflow-x:auto;
+}
+.flow-strip .arrow{color:var(--accent-ink); font-weight:700;}
+
+.peta-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px;}
+.peta-tile{padding:16px 14px; text-align:left; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+.peta-tile:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(21,58,99,.07),0 18px 30px -14px rgba(21,58,99,.3);}
+.peta-tile .code{font-family:"JetBrains Mono",monospace; font-size:.72rem; font-weight:700; color:var(--accent-ink); background:var(--accent-soft); padding:2px 8px; border-radius:100px; display:inline-block; margin-bottom:8px;}
+.peta-tile h4{font-size:.86rem; font-weight:700; margin-bottom:5px; line-height:1.3;}
+.peta-tile p{font-size:.75rem; color:var(--ink-soft); line-height:1.4;}
+
+/* ============ MOBILE ============ */
+@media (max-width:880px){
+  .shell{display:block;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:14px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(120deg, var(--sidebar-bg1), var(--sidebar-bg2));
+    padding:13px 16px; border-bottom:1px solid var(--sidebar-line);
+  }
+  .mobile-topbar .t{color:#fff; font-weight:700; font-size:.95rem; font-family:"Fraunces",serif;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; width:82%; max-width:300px;
+    transform:translateX(-100%); transition:transform .28s ease;
+    box-shadow:2px 0 28px rgba(0,0,0,.35);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{position:fixed; inset:0; background:rgba(4,12,20,.55); z-index:55;}
+  .sidebar-overlay.show{display:block;}
+  main{width:100%; min-width:0;}
+  .view{padding:26px 18px 60px; scroll-margin-top:78px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-cards{grid-template-columns:1fr;}
+  .peta-grid{grid-template-columns:repeat(2,1fr);}
+  .term-list{grid-template-columns:1fr;}
+}
+@media (max-width:520px){
+  .problem-line, .step-line{font-size:.92rem;}
+  .peta-grid{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .nav-card, .peta-tile{transition:none;}
+}
+</style>
+
+</head><body><div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="t">Trigonometri</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 17 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19v-6" stroke-dasharray="2.4 2.4"/></svg>
+      </div>
+      <h1>Trigonometri</h1>
+      <div class="sub">Rasio Sudut Lancip<br><b>15 slide</b> &middot; sumber Bird</div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-group-label">Mulai di sini</div>
+      <button class="nav-btn" data-target="ringkasan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        Ringkasan
+      </button>
+
+      <div class="nav-group-label">Materi pokok</div>
+      <button class="nav-btn" data-target="pythagoras">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 4 6l15 13" stroke-linejoin="round" stroke-linecap="round"/><rect x="4" y="14.5" width="4.5" height="4.5" stroke-width="1.4"/></svg>
+        01 Teorema Pythagoras
+      </button>
+      <button class="nav-btn" data-target="rasio">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 17 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 19a8 8 0 0 1 2.3-9.4" stroke-linecap="round"/></svg>
+        02 Rasio Trigonometri
+      </button>
+      <button class="nav-btn" data-target="contoh">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/></svg>
+        03 Contoh Soal
+      </button>
+      <button class="nav-btn" data-target="rangkuman">
+        <svg viewBox="0 0 24 24"><path d="M4 20 6 14 16 4l4 4-10 10-6 2Z" stroke-linejoin="round"/><path d="M13 7l4 4"/></svg>
+        04 Rangkuman &amp; Latihan
+      </button>
+
+      <div class="nav-group-label">Penutup</div>
+      <button class="nav-btn" data-target="ringkasan-akhir">
+        <svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg>
+        Ringkasan &amp; Referensi
+      </button>
+    </nav>
+    <div class="sidebar-foot">Dasbor referensi kuliah &middot; 15 slide dipetakan ke 5 bagian</div>
+  </aside>
+
+  <main id="mainArea">
+
+<section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Trigonometri &middot; Bab 8</span>
+        <h2>Trigonometri: Rasio Sudut Lancip</h2>
+        <p class="lede">Cabang matematika yang berkaitan dengan pengukuran sisi dan sudut segitiga. Dasbor ini memetakan Teorema Pythagoras sebagai fondasi, keenam rasio trigonometri pada sudut lancip, empat contoh soal penerapan, hingga rangkuman dan latihan mandiri &mdash; 13 kartu materi dari 15 slide perkuliahan.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Prinsip utama</span>Semua rasio trigonometri hanyalah nama untuk perbandingan dua dari tiga sisi segitiga siku-siku (depan, samping, miring) relatif terhadap satu sudut lancip &theta; &mdash; dan Teorema Pythagoras mengikat ketiga sisi itu menjadi satu identitas: sin&sup2;&theta; + cos&sup2;&theta; = 1.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-tile"><div class="num">4</div><div class="lbl">Sub-topik (01&ndash;04)</div></div>
+        <div class="card stat-tile"><div class="num">13</div><div class="lbl">Kartu materi</div></div>
+        <div class="card stat-tile"><div class="num">13</div><div class="lbl">Diskusi kelas</div></div>
+        <div class="card stat-tile"><div class="num">15</div><div class="lbl">Slide sumber</div></div>
+      </div>
+
+      <div class="flow-strip">
+        <span>a&sup2;+b&sup2;=c&sup2;</span><span class="arrow">&rarr;</span>
+        <span>sin&theta;=depan/miring</span><span class="arrow">&rarr;</span>
+        <span>sin&sup2;&theta;+cos&sup2;&theta;=1</span><span class="arrow">&rarr;</span>
+        <span>tan&theta;=sin&theta;/cos&theta;</span>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Peta materi</h3>
+        <div class="peta-grid">
+          <button class="card peta-tile" data-goto="pythagoras">
+            <span class="code">01</span>
+            <h4>Teorema Pythagoras</h4>
+            <p>Definisi, contoh mencari sisi, dan soal kontekstual navigasi.</p>
+          </button>
+          <button class="card peta-tile" data-goto="rasio">
+            <span class="code">02</span>
+            <h4>Rasio Trigonometri</h4>
+            <p>Sisi depan/samping/miring, enam rasio, dan identitas Pythagoras.</p>
+          </button>
+          <button class="card peta-tile" data-goto="contoh">
+            <span class="code">03</span>
+            <h4>Contoh Soal</h4>
+            <p>Empat penerapan: rasio dari satu nilai, koordinat, hingga gradien garis.</p>
+          </button>
+          <button class="card peta-tile" data-goto="rangkuman">
+            <span class="code">04</span>
+            <h4>Rangkuman &amp; Latihan</h4>
+            <p>Enam rasio sekaligus, dan tiga soal segitiga siku-siku untuk berlatih mandiri.</p>
+          </button>
+          <button class="card peta-tile" data-goto="ringkasan-akhir">
+            <span class="code">&#8226;</span>
+            <h4>Ringkasan &amp; Referensi</h4>
+            <p>Lima gagasan inti dan rujukan sumber untuk pendalaman.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Jelajahi materi</h3>
+        <div class="nav-cards">
+          <button class="card nav-card" data-goto="pythagoras">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 4 6l15 13" stroke-linejoin="round" stroke-linecap="round"/><rect x="4" y="14.5" width="4.5" height="4.5" stroke-width="1.4"/></svg></div>
+            <h3>Teorema Pythagoras</h3>
+            <p>Fondasi seluruh rasio trigonometri: b&sup2;=a&sup2;+c&sup2; pada segitiga siku-siku, dengan dua contoh penerapan.</p>
+            <span class="tag">Kartu 1&ndash;3 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="rasio">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 17 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 19a8 8 0 0 1 2.3-9.4" stroke-linecap="round"/></svg></div>
+            <h3>Rasio Trigonometri</h3>
+            <p>Sisi depan, samping, miring; sin/cos/tan; sec/cosec/cot; dan identitas sin&sup2;&theta;+cos&sup2;&theta;=1.</p>
+            <span class="tag">Kartu 4&ndash;7 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="contoh">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/></svg></div>
+            <h3>Contoh Soal</h3>
+            <p>Mencari lima rasio dari cos X, rasio kebalikan dari nilai desimal, jarak dua titik, dan gradien garis.</p>
+            <span class="tag">Kartu 8&ndash;11 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="rangkuman">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 20 6 14 16 4l4 4-10 10-6 2Z" stroke-linejoin="round"/><path d="M13 7l4 4"/></svg></div>
+            <h3>Rangkuman &amp; Latihan</h3>
+            <p>Enam rasio trigonometri dalam satu referensi, dan tiga segitiga siku-siku untuk dilatih mandiri.</p>
+            <span class="tag">Kartu 12&ndash;13 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="ringkasan-akhir">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg></div>
+            <h3>Ringkasan &amp; Referensi</h3>
+            <p>Rangkuman lima poin utama dan rujukan sumber untuk belajar lebih lanjut.</p>
+            <span class="tag">Penutup &rarr;</span>
+          </button>
+        </div>
+      </div>
+</section>
+<!-- ===================== 01 TEOREMA PYTHAGORAS ===================== -->
+<section class="view" id="view-pythagoras">
+  <div class="view-head">
+    <span class="eyebrow">01 &middot; Teorema Pythagoras</span>
+    <h2>Teorema Pythagoras</h2>
+    <p class="lede">Sebelum mendefinisikan rasio trigonometri, tinjau kembali Teorema Pythagoras &mdash; fondasi yang mengikat ketiga sisi segitiga siku-siku.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">1</span>Teorema Pythagoras</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menyatakan kembali Teorema Pythagoras sebagai fondasi untuk mendefinisikan rasio trigonometri.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M40 110 160 110 40 30Z" class="diag-line" fill="none"/>
+          <path d="M40 100 50 100 50 110" class="diag-line-soft" stroke-dasharray="0"/>
+          <text x="24" y="124" class="diag-label">B</text>
+          <text x="166" y="124" class="diag-label">A</text>
+          <text x="24" y="22" class="diag-label">C</text>
+          <text x="94" y="128" class="diag-given">c</text>
+          <text x="20" y="72" class="diag-given">a</text>
+          <text x="108" y="64" class="diag-given">b</text>
+        </svg>
+      </div>
+      <div class="formula-box">
+        <div class="eq">b&sup2; = a&sup2; + c&sup2;</div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Teorema Pythagoras hanya berlaku pada segitiga siku-siku. Bagaimana cara memodifikasi hubungan ini (misalnya dengan Aturan Kosinus) agar berlaku untuk segitiga sembarang?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">2</span>Mencari Panjang EF</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menerapkan Teorema Pythagoras untuk mencari panjang sisi segitiga siku-siku yang belum diketahui.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">2</span>
+        <div><h4>Segitiga DEF, siku-siku di E</h4><div class="sub">f = 5 cm,&nbsp; e = 13 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M40 110 160 110 40 30Z" class="diag-line" fill="none"/>
+          <path d="M40 100 50 100 50 110" class="diag-line-soft" stroke-dasharray="0"/>
+          <text x="24" y="124" class="diag-label">E</text>
+          <text x="166" y="124" class="diag-label">F</text>
+          <text x="24" y="22" class="diag-label">D</text>
+          <text x="90" y="128" class="diag-unknown">d = ?</text>
+          <text x="14" y="72" class="diag-given">f = 5</text>
+          <text x="96" y="64" class="diag-given">e = 13</text>
+        </svg>
+      </div>
+      <div class="problem-line">f = 5 cm,&nbsp; e = 13 cm (hipotenusa),&nbsp; d = EF = ?</div>
+      <div class="steps">
+        <div class="step-line">e&sup2; = d&sup2; + f&sup2;</div>
+        <div class="step-line">13&sup2; = d&sup2; + 5&sup2;</div>
+        <div class="step-line">169 = d&sup2; + 25</div>
+        <div class="step-line">d&sup2; = 169 &minus; 25 = 144</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">d = EF = &radic;144 = 12 cm</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Pada segitiga DEF, e=13 cm adalah hipotenusa (sisi terpanjang, di hadapan sudut siku-siku di E). Bagaimana cara mengetahui dengan pasti sisi mana yang merupakan hipotenusa hanya dari melihat gambar, tanpa diberi tahu?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">3</span>Jarak Dua Pesawat Terbang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menerapkan Teorema Pythagoras pada soal kontekstual navigasi/penerbangan.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">3</span>
+        <div><h4>Dua pesawat dari titik A</h4><div class="sub">1200 km utara,&nbsp; 880 km barat</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M150 110 40 110 150 30Z" class="diag-line" fill="none"/>
+          <path d="M150 100 140 100 140 110" class="diag-line-soft" stroke-dasharray="0"/>
+          <text x="156" y="124" class="diag-label">A</text>
+          <text x="24" y="124" class="diag-label">B</text>
+          <text x="156" y="22" class="diag-label">C</text>
+          <text x="80" y="128" class="diag-given">880 km</text>
+          <text x="160" y="70" class="diag-given">1200 km</text>
+          <text x="70" y="66" class="diag-unknown">BC = ?</text>
+          <path d="M172 100 172 78" class="diag-line" marker-end="url(#arrowN6)"/>
+          <defs><marker id="arrowN6" markerWidth="8" markerHeight="8" refX="4" refY="1" orient="auto"><path d="M0 6 4 0 8 6Z" fill="var(--brand-700)"/></marker></defs>
+          <text x="176" y="86" class="diag-label" font-size="11">U</text>
+        </svg>
+      </div>
+      <div class="problem-line">AC = 1200 km (utara),&nbsp; AB = 880 km (barat)</div>
+      <div class="steps">
+        <div class="step-line">BC&sup2; = AC&sup2; + AB&sup2; = 1200&sup2; + 880&sup2;</div>
+        <div class="step-line">= 1.440.000 + 774.400 = 2.214.400</div>
+        <div class="step-line">BC = &radic;2.214.400</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">BC = 1488 km</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Soal ini mengasumsikan Bumi datar (jalur lurus ke utara dan ke barat membentuk sudut siku-siku tepat). Untuk jarak antar-benua yang sangat jauh, asumsi ini mulai tidak akurat. Mengapa?</p></div>
+    </div>
+  </div>
+</section>
+<!-- ===================== 02 RASIO TRIGONOMETRI ===================== -->
+<section class="view" id="view-rasio">
+  <div class="view-head">
+    <span class="eyebrow">02 &middot; Rasio Trigonometri</span>
+    <h2>Rasio Trigonometri</h2>
+    <p class="lede">Enam rasio trigonometri pada sudut lancip &theta; semuanya didefinisikan dari tiga sisi segitiga siku-siku: sisi depan, sisi samping, dan sisi miring.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">4</span>Rasio Trigonometri pada Sudut Lancip</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mengidentifikasi sisi depan (opposite), sisi samping (adjacent), dan sisi miring (hypotenuse) relatif terhadap suatu sudut lancip &theta;.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M30 110 170 110 170 20Z" class="diag-line" fill="none"/>
+          <path d="M170 100 160 100 160 110" class="diag-line-soft" stroke-dasharray="0"/>
+          <text x="16" y="118" class="diag-label" font-size="13">&theta;</text>
+          <text x="96" y="128" class="diag-given">a</text>
+          <text x="178" y="68" class="diag-given">b</text>
+          <text x="86" y="60" class="diag-given">c</text>
+        </svg>
+      </div>
+      <div class="term-list">
+        <div class="term-item"><b>Sisi samping (a)</b><span>Berdekatan dengan sudut &theta; dan sudut siku-siku.</span></div>
+        <div class="term-item"><b>Sisi depan (b)</b><span>Terletak di seberang (berhadapan dengan) sudut &theta;.</span></div>
+        <div class="term-item"><b>Sisi miring (c)</b><span>Sisi terpanjang, selalu di hadapan sudut siku-siku.</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Jika &theta; diukur dari sudut yang berbeda pada segitiga yang sama (misalnya sudut di pojok kanan atas alih-alih kiri bawah), sisi mana yang berubah peran dari &lsquo;depan&rsquo; menjadi &lsquo;samping&rsquo;, dan sebaliknya?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">5</span>Sinus, Cosinus, dan Tangen</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menuliskan definisi sin &theta;, cos &theta;, dan tan &theta; sebagai perbandingan dua sisi segitiga siku-siku.</p>
+    </div>
+    <div class="card example-card">
+      <div class="concept-grid">
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Sinus</div>
+          <div class="eq">sin &theta; = b/c</div>
+          <p class="note">= depan/miring</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Cosinus</div>
+          <div class="eq">cos &theta; = a/c</div>
+          <p class="note">= samping/miring</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Tangen</div>
+          <div class="eq">tan &theta; = b/a</div>
+          <p class="note">= depan/samping</p>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Mnemonik SOH-CAH-TOA membantu mengingat ketiga rasio ini. Coba susun mnemonik serupa dalam Bahasa Indonesia menggunakan singkatan &lsquo;depan&rsquo;, &lsquo;samping&rsquo;, &lsquo;miring&rsquo;.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">6</span>Secan, Cosecan, dan Cotangen</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menuliskan definisi sec &theta;, cosec &theta;, dan cot &theta;, serta hubungan kebalikannya dengan cos &theta;, sin &theta;, dan tan &theta;.</p>
+    </div>
+    <div class="card example-card">
+      <div class="concept-grid">
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Secan</div>
+          <div class="eq">sec &theta; = c/a</div>
+          <p class="note">= 1/cos &theta;</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Cosecan</div>
+          <div class="eq">cosec &theta; = c/b</div>
+          <p class="note">= 1/sin &theta;</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Cotangen</div>
+          <div class="eq">cot &theta; = a/b</div>
+          <p class="note">= 1/tan &theta;</p>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>sec &theta; adalah kebalikan dari cos &theta;, BUKAN kebalikan dari sin &theta;. Mengapa penamaan &lsquo;se-can&rsquo; berpasangan dengan &lsquo;co-sinus&rsquo;, dan &lsquo;co-secan&rsquo; justru berpasangan dengan sinus (bukan cosinus)? (Petunjuk: perhatikan pola &lsquo;co-&rsquo; pada cosinus, cosecan, cotangen.)</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">7</span>Identitas Pythagoras dan Kuosien</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menurunkan identitas sin&sup2;&theta;+cos&sup2;&theta;=1 dari Teorema Pythagoras, dan menyatakan tan &theta; sebagai kuosien sin &theta; dan cos &theta;.</p>
+    </div>
+    <div class="card example-card">
+      <div class="steps">
+        <div class="step-line">a&sup2; + b&sup2; = c&sup2;</div>
+        <div class="step-line">(a&sup2;+b&sup2;)/c&sup2; = c&sup2;/c&sup2;</div>
+        <div class="step-line">(a/c)&sup2; + (b/c)&sup2; = 1</div>
+      </div>
+      <div class="formula-box">
+        <div class="eq">sin&sup2;&theta; + cos&sup2;&theta; = 1</div>
+        <div class="eq">tan &theta; = sin &theta; / cos &theta;</div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Identitas sin&sup2;&theta;+cos&sup2;&theta;=1 berlaku untuk SEMUA nilai &theta;, bukan hanya pada segitiga tertentu. Gunakan identitas ini untuk mencari cos &theta; jika hanya diketahui sin &theta;=0,6 (tanpa menggambar segitiga).</p></div>
+    </div>
+  </div>
+</section>
+<!-- ===================== 03 CONTOH SOAL ===================== -->
+<section class="view" id="view-contoh">
+  <div class="view-head">
+    <span class="eyebrow">03 &middot; Contoh Soal</span>
+    <h2>Contoh Soal</h2>
+    <p class="lede">Empat penerapan rasio trigonometri dengan angka nyata &mdash; dari mencari rasio lainnya, substitusi nilai desimal, jarak dua titik koordinat, hingga gradien dan sudut kemiringan garis.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">8</span>Lima Rasio Lainnya dari cos X</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mencari sisi segitiga yang belum diketahui dari satu rasio trigonometri, lalu menentukan kelima rasio lainnya.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">8</span>
+        <div><h4>Segitiga XYZ, siku-siku di Y</h4><div class="sub">cos X = 9/41</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M30 110 170 110 170 20Z" class="diag-line" fill="none"/>
+          <path d="M170 100 160 100 160 110" class="diag-line-soft" stroke-dasharray="0"/>
+          <text x="16" y="118" class="diag-label">X</text>
+          <text x="176" y="118" class="diag-label">Y</text>
+          <text x="176" y="16" class="diag-label">Z</text>
+          <text x="96" y="128" class="diag-given">9</text>
+          <text x="180" y="68" class="diag-unknown">40</text>
+          <text x="80" y="60" class="diag-given">41</text>
+        </svg>
+      </div>
+      <div class="problem-line">cos X = 9/41 (XY = 9,&nbsp; XZ = 41)</div>
+      <div class="steps">
+        <div class="step-line">YZ&sup2; = XZ&sup2; &minus; XY&sup2; = 41&sup2; &minus; 9&sup2; = 1681 &minus; 81 = 1600</div>
+        <div class="step-line">YZ = &radic;1600 = 40</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">sin X</span><span class="val">40/41</span></div>
+          <div><span class="lbl">tan X</span><span class="val">40/9</span></div>
+          <div><span class="lbl">cosec X</span><span class="val">41/40</span></div>
+          <div><span class="lbl">sec X</span><span class="val">41/9</span></div>
+          <div><span class="lbl">cot X</span><span class="val">9/40</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Diberikan cos X=9/41 saja (tanpa gambar), sudut X bisa berada di segitiga mana pun asalkan perbandingan sisi samping:miring = 9:41. Mengapa hasil kelima rasio lainnya tetap sama meski ukuran segitiga (bukan hanya perbandingannya) berbeda-beda?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">9</span>Rasio Kebalikan dari sin &theta; dan cos &theta;</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menghitung cosec &theta;, sec &theta;, tan &theta;, dan cot &theta; langsung dari nilai sin &theta; dan cos &theta; tanpa kalkulator.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">9</span>
+        <div><h4>Substitusi nilai desimal</h4><div class="sub">sin &theta; = 0,625,&nbsp; cos &theta; = 0,500</div></div>
+      </div>
+      <div class="problem-line">sin &theta; = 0,625,&nbsp; cos &theta; = 0,500</div>
+      <div class="steps">
+        <div class="step-line">cosec &theta; = 1/sin &theta; = 1/0,625 = 1,60</div>
+        <div class="step-line">sec &theta; = 1/cos &theta; = 1/0,500 = 2,00</div>
+        <div class="step-line">tan &theta; = sin &theta;/cos &theta; = 0,625/0,500 = 1,25</div>
+        <div class="step-line">cot &theta; = cos &theta;/sin &theta; = 0,500/0,625 = 0,80</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">cosec &theta;</span><span class="val">1,60</span></div>
+          <div><span class="lbl">sec &theta;</span><span class="val">2,00</span></div>
+          <div><span class="lbl">tan &theta;</span><span class="val">1,25</span></div>
+          <div><span class="lbl">cot &theta;</span><span class="val">0,80</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Nilai sin &theta;=0,625 dan cos &theta;=0,500 tidak memenuhi sin&sup2;&theta;+cos&sup2;&theta;=1 (jumlahnya 0,640625). Apa dampaknya pada rasio yang dihitung? Jelaskan batas penggunaan data ini sebagai latihan substitusi rumus.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">10</span>Jarak Dua Titik Koordinat</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menghitung jarak dua titik pada bidang koordinat dengan mengonstruksi segitiga siku-siku bantu.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">10</span>
+        <div><h4>Jarak A(2, 3) ke B(8, 7)</h4><div class="sub">titik bantu C = (8, 3)</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 160">
+          <line x1="20" y1="140" x2="170" y2="140" class="diag-line-soft"/>
+          <line x1="20" y1="140" x2="20" y2="10" class="diag-line-soft"/>
+          <text x="48" y="152" class="diag-label" font-size="10">2</text>
+          <text x="80" y="152" class="diag-label" font-size="10">4</text>
+          <text x="112" y="152" class="diag-label" font-size="10">6</text>
+          <text x="144" y="152" class="diag-label" font-size="10">8</text>
+          <text x="6" y="96" class="diag-label" font-size="10">3</text>
+          <text x="6" y="32" class="diag-label" font-size="10">7</text>
+          <path d="M52 92 148 92 148 28Z" class="diag-line" fill="none"/>
+          <circle cx="52" cy="92" r="2.6" class="diag-point"/>
+          <circle cx="148" cy="28" r="2.6" class="diag-point"/>
+          <circle cx="148" cy="92" r="2.6" class="diag-point"/>
+          <text x="26" y="86" class="diag-label" font-size="11">A (2, 3)</text>
+          <text x="152" y="24" class="diag-label" font-size="11">B (8, 7)</text>
+          <text x="152" y="86" class="diag-label" font-size="11">C</text>
+          <text x="94" y="106" class="diag-given" font-size="11">6</text>
+          <text x="158" y="60" class="diag-given" font-size="11">4</text>
+        </svg>
+      </div>
+      <div class="problem-line">A(2, 3),&nbsp; B(8, 7),&nbsp; C = (8, 3)</div>
+      <div class="steps">
+        <div class="step-line">AC = 8 &minus; 2 = 6,&nbsp; BC = 7 &minus; 3 = 4</div>
+        <div class="step-line">AB&sup2; = AC&sup2; + BC&sup2; = 6&sup2; + 4&sup2; = 36 + 16 = 52</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">AB = &radic;52 = 7,211 (3 desimal)</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Konstruksi titik bantu C=(8,3) mengubah soal jarak-dua-titik menjadi soal segitiga siku-siku biasa. Tuliskan rumus jarak umum d=&radic;((x&#8322;&minus;x&#8321;)&sup2;+(y&#8322;&minus;y&#8321;)&sup2;) dan tunjukkan bahwa ini persis Teorema Pythagoras dengan AC dan BC sebagai selisih koordinat.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">11</span>Gradien dan Sudut Garis AB</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menghitung gradien garis dan sudut kemiringannya terhadap horizontal menggunakan rasio tangen.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">11</span>
+        <div><h4>Gradien garis melalui A(2, 3) dan B(8, 7)</h4><div class="sub">titik bantu C = (8, 3)</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 160">
+          <line x1="20" y1="140" x2="170" y2="140" class="diag-line-soft"/>
+          <line x1="20" y1="140" x2="20" y2="10" class="diag-line-soft"/>
+          <path d="M52 92 148 92 148 28Z" class="diag-line" fill="none"/>
+          <circle cx="52" cy="92" r="2.6" class="diag-point"/>
+          <circle cx="148" cy="28" r="2.6" class="diag-point"/>
+          <circle cx="148" cy="92" r="2.6" class="diag-point"/>
+          <text x="26" y="86" class="diag-label" font-size="11">A (2, 3)</text>
+          <text x="152" y="24" class="diag-label" font-size="11">B (8, 7)</text>
+          <text x="152" y="86" class="diag-label" font-size="11">C</text>
+          <text x="94" y="106" class="diag-given" font-size="11">6</text>
+          <text x="158" y="60" class="diag-given" font-size="11">4</text>
+          <text x="34" y="106" class="diag-unknown" font-size="11">&ang;A</text>
+        </svg>
+      </div>
+      <div class="problem-line">AC = 6 (mendatar),&nbsp; BC = 4 (naik)</div>
+      <div class="steps">
+        <div class="step-line">gradien = tan A = BC/AC = 4/6 = 2/3</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Gradien</span><span class="val">2/3</span></div>
+          <div><span class="lbl">&ang;A</span><span class="val">tan&#8315;&sup1;(2/3) = 33,69&deg;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Gradien garis (2/3) dan tan A pada segitiga siku-siku ternyata bernilai identik. Jelaskan mengapa &lsquo;gradien = naik/turun &divide; mendatar&rsquo; pada garis lurus adalah definisi yang sama persis dengan tan &theta; = depan/samping.</p></div>
+    </div>
+  </div>
+</section>
+<!-- ===================== 04 RANGKUMAN & LATIHAN ===================== -->
+<section class="view" id="view-rangkuman">
+  <div class="view-head">
+    <span class="eyebrow">04 &middot; Rangkuman &amp; Latihan</span>
+    <h2>Rangkuman &amp; Latihan</h2>
+    <p class="lede">Melihat kembali keenam rasio trigonometri sekaligus sebagai satu kesatuan, lalu berlatih mandiri menyelesaikan tiga segitiga siku-siku.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">12</span>Enam Rasio Trigonometri</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mengingat kembali keenam rasio trigonometri sekaligus sebagai satu kesatuan sebelum berlatih mandiri.</p>
+    </div>
+    <div class="card example-card">
+      <div class="concept-grid">
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Sinus</div>
+          <div class="eq">sin &theta; = b/c</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Cosinus</div>
+          <div class="eq">cos &theta; = a/c</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Tangen</div>
+          <div class="eq">tan &theta; = b/a</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Cosecan</div>
+          <div class="eq">cosec &theta; = c/b</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Secan</div>
+          <div class="eq">sec &theta; = c/a</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M15 75 100 75 100 15Z" class="diag-line" fill="none"/><path d="M15 68 22 68 22 75" class="diag-line-soft" stroke-dasharray="0"/><text x="6" y="70" class="diag-label" font-size="11">&theta;</text><text x="53" y="86" class="diag-given" font-size="11">a</text><text x="105" y="48" class="diag-given" font-size="11">b</text><text x="48" y="40" class="diag-given" font-size="11">c</text></svg>
+          <div class="tt">Cotangen</div>
+          <div class="eq">cot &theta; = a/b</div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Kelompokkan keenam rasio ini menjadi tiga pasang kebalikan (sin&harr;cosec, cos&harr;sec, tan&harr;cot). Pasangan mana yang paling sering tertukar oleh pemula, dan mengapa?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">13</span>Latihan Segitiga Siku-Siku</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mencari seluruh sisi dan sudut yang belum diketahui pada segitiga siku-siku menggunakan Pythagoras dan rasio trigonometri.</p>
+    </div>
+    <div class="card example-card">
+      <div class="sub-ex">
+        <div class="sub-lbl">(i) Satu sudut + satu sisi</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <path d="M30 100 160 100 160 30Z" class="diag-line" fill="none"/>
+            <path d="M160 90 150 90 150 100" class="diag-line-soft" stroke-dasharray="0"/>
+            <text x="16" y="108" class="diag-label">A</text>
+            <text x="166" y="108" class="diag-label">C</text>
+            <text x="166" y="24" class="diag-label">B</text>
+            <text x="86" y="118" class="diag-given">5,0 cm</text>
+            <text x="38" y="90" class="diag-given" font-size="11">35&deg;</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga siku-siku di C, dengan &ang;A = 35&deg; dan AC = 5,0 cm. Carilah BC, AB, dan &ang;B menggunakan rasio trigonometri.</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">(ii) Dua sisi</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <path d="M30 100 130 100 30 20Z" class="diag-line" fill="none"/>
+            <path d="M30 90 40 90 40 100" class="diag-line-soft" stroke-dasharray="0"/>
+            <text x="16" y="14" class="diag-label">F</text>
+            <text x="16" y="108" class="diag-label">D</text>
+            <text x="136" y="108" class="diag-label">E</text>
+            <text x="12" y="66" class="diag-given">4 cm</text>
+            <text x="72" y="118" class="diag-given">3 cm</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga siku-siku di D, dengan DE = 3 cm dan DF = 4 cm. Carilah EF (hipotenusa), &ang;E, dan &ang;F.</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">(iii) Satu sudut + sisi miring</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <path d="M30 100 160 100 30 20Z" class="diag-line" fill="none"/>
+            <path d="M30 90 40 90 40 100" class="diag-line-soft" stroke-dasharray="0"/>
+            <text x="16" y="14" class="diag-label">G</text>
+            <text x="16" y="108" class="diag-label">H</text>
+            <text x="166" y="108" class="diag-label">I</text>
+            <text x="100" y="60" class="diag-given">15,0 mm</text>
+            <text x="150" y="94" class="diag-given" font-size="11">41&deg;</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga siku-siku di G, dengan &ang;I = 41&deg; dan sisi miring HI = 15,0 mm. Carilah GH, GI, dan &ang;H.</p>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Ketiga segitiga memberikan informasi awal yang berbeda jenis: (i) satu sudut + satu sisi, (ii) dua sisi, (iii) satu sudut + satu sisi miring. Strategi penyelesaian mana (Pythagoras dulu vs rasio trigonometri dulu) paling efisien untuk masing-masing kasus?</p></div>
+    </div>
+  </div>
+</section>
+<!-- ===================== RINGKASAN AKHIR ===================== -->
+<section class="view" id="view-ringkasan-akhir">
+  <div class="view-head">
+    <span class="eyebrow">Penutup</span>
+    <h2>Ringkasan &amp; Referensi</h2>
+    <p class="lede">Lima gagasan inti dari materi trigonometri rasio sudut lancip, dan rujukan sumber untuk pendalaman lebih lanjut.</p>
+  </div>
+
+  <div class="summary-list">
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Fondasi Pythagoras</h4><p>Teorema Pythagoras (b&sup2;=a&sup2;+c&sup2;) adalah fondasi seluruh rasio trigonometri pada segitiga siku-siku.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Enam rasio dari tiga sisi</h4><p>Enam rasio trigonometri (sin, cos, tan, cosec, sec, cot) semuanya didefinisikan dari tiga sisi: depan, samping, dan miring, relatif terhadap sudut &theta;.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Tiga pasang kebalikan</h4><p>Tiga rasio kebalikan (cosec, sec, cot) adalah kebalikan langsung dari sin, cos, tan berturut-turut &mdash; bukan berpasangan sesuai nama awalan &lsquo;co-&rsquo;.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Dua identitas kunci</h4><p>Identitas sin&sup2;&theta;+cos&sup2;&theta;=1 dan tan &theta;=sin &theta;/cos &theta; diturunkan langsung dari Teorema Pythagoras dan definisi rasio dasar.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Penerapan luas</h4><p>Trigonometri diterapkan luas: navigasi (jarak &amp; arah), geometri koordinat (jarak, gradien, sudut kemiringan garis), dan penyelesaian segitiga siku-siku secara umum.</p></div>
+    </div>
+  </div>
+
+  <div class="source-tag">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <div><span class="t1">Sumber materi</span><span class="t2">Bird &mdash; Higher Engineering Mathematics, hlm. 115&ndash;117</span></div>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function showView(target, opts){
+    opts = opts || {};
+    document.querySelectorAll('main > section.view').forEach(s=>s.classList.remove('active'));
+    const el = document.getElementById('view-'+target);
+    if(el){ el.classList.add('active'); if(!opts.skipScroll){ el.scrollIntoView({block:'start'}); } }
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target === target);
+    });
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> showView(el.dataset.goto));
+  });
+
+  showView('ringkasan', {skipScroll:true});
+</script>
+</body></html>

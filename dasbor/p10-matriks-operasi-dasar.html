@@ -1,0 +1,767 @@
+<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriks & Determinan — Operasi Dasar & Notasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaf7;
+  --surface:#ffffff;
+  --surface-soft:#f4f2ec;
+  --ink:#1c1f2b;
+  --ink-soft:#565b6b;
+  --ink-faint:#8a8f9e;
+  --border:#e4e1d8;
+  --border-soft:#ece9e0;
+
+  --brand-700:#3a3596;
+  --brand-900:#14123d;
+
+  --accent:#c8410f;
+  --accent-ink:#6b2f22;
+  --accent-soft:#fbe9e0;
+
+  --result:#0e8a5b;
+  --result-ink:#1f5c42;
+  --result-soft:#e3f4ec;
+
+  --info:#9c7209;
+  --info-ink:#5f4f18;
+  --info-soft:#f6ecd2;
+
+  --sidebar-bg:#14123d;
+  --sidebar-ink:#d9d7ef;
+  --sidebar-ink-soft:#8f8bc4;
+  --sidebar-active-line:#e0a90c;
+
+  --shadow:0 1px 2px rgba(20,18,61,.04), 0 8px 24px -12px rgba(20,18,61,.14);
+  --radius:14px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13141d;
+    --surface:#1b1c29;
+    --surface-soft:#20222f;
+    --ink:#edeef5;
+    --ink-soft:#aeb1c4;
+    --ink-faint:#767a90;
+    --border:#2d3040;
+    --border-soft:#262838;
+
+    --brand-700:#9d97ff;
+    --accent:#ff8a5c;
+    --accent-ink:#ffb59c;
+    --accent-soft:#3a2620;
+    --result:#3ddb96;
+    --result-ink:#8df0c4;
+    --result-soft:#173229;
+    --info:#f0c419;
+    --info-ink:#f5dd8f;
+    --info-soft:#332a13;
+
+    --sidebar-bg:#0d0c26;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13141d;
+  --surface:#1b1c29;
+  --surface-soft:#20222f;
+  --ink:#edeef5;
+  --ink-soft:#aeb1c4;
+  --ink-faint:#767a90;
+  --border:#2d3040;
+  --border-soft:#262838;
+
+  --brand-700:#9d97ff;
+  --accent:#ff8a5c;
+  --accent-ink:#ffb59c;
+  --accent-soft:#3a2620;
+  --result:#3ddb96;
+  --result-ink:#8df0c4;
+  --result-soft:#173229;
+  --info:#f0c419;
+  --info-ink:#f5dd8f;
+  --info-soft:#332a13;
+
+  --sidebar-bg:#0d0c26;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Source Sans 3',system-ui,sans-serif;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;margin:0;color:var(--ink);}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+.shell{display:flex;min-height:100vh;}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  width:272px;flex-shrink:0;background:var(--sidebar-bg);color:var(--sidebar-ink);
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.6rem 1.1rem 2rem;
+}
+.sidebar-brand{padding:.3rem .6rem 1.3rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:1rem;}
+.sidebar-brand .tag{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sidebar-active-line);font-weight:600;}
+.sidebar-brand h1{font-size:1.28rem;color:#fff;margin-top:.3rem;line-height:1.25;}
+.sidebar-brand p{font-size:.78rem;color:var(--sidebar-ink-soft);margin:.4rem 0 0;}
+
+.nav-group{margin-bottom:.3rem;}
+.nav-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--sidebar-ink-soft);padding:.9rem .6rem .35rem;}
+.nav-btn{
+  display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;background:none;border:none;
+  color:var(--sidebar-ink);font-family:inherit;font-size:.88rem;padding:.62rem .6rem;border-radius:10px;
+  cursor:pointer;border-left:3px solid transparent;margin-bottom:.15rem;transition:background .15s ease,color .15s ease;
+}
+.nav-btn .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--sidebar-ink-soft);width:1.3rem;flex-shrink:0;}
+.nav-btn:hover{background:rgba(255,255,255,.06);}
+.nav-btn.active{background:rgba(224,169,12,.13);color:#fff;border-left-color:var(--sidebar-active-line);font-weight:600;}
+.nav-btn.active .num{color:var(--sidebar-active-line);}
+
+.sidebar-foot{margin-top:1.4rem;padding:.8rem .6rem 0;border-top:1px solid rgba(255,255,255,.1);font-size:.72rem;color:var(--sidebar-ink-soft);}
+
+/* ---------- MAIN ---------- */
+main{flex:1;min-width:0;padding:2.6rem 3rem 5rem;max-width:980px;}
+.mobile-topbar{display:none;}
+.view{display:none;}
+.view.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.view-head{margin-bottom:1.8rem;}
+.view-head .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:700;}
+.view-head h2{font-size:1.9rem;margin-top:.35rem;}
+.view-head .lede{color:var(--ink-soft);font-size:1rem;margin-top:.55rem;max-width:64ch;}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.5rem 1.6rem;margin-bottom:1.3rem;box-shadow:var(--shadow);
+}
+.card h3{font-size:1.18rem;margin-bottom:.2rem;}
+.card .card-sub{color:var(--ink-soft);font-size:.88rem;margin-bottom:1rem;}
+
+.tujuan-box, .diskusi-box{
+  border-radius:10px;padding:.85rem 1rem;margin:.9rem 0;font-size:.9rem;
+}
+.tujuan-box{background:var(--result-soft);border:1px solid color-mix(in srgb, var(--result) 30%, transparent);}
+.tujuan-box .lbl{color:var(--result-ink);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
+.diskusi-box{background:var(--info-soft);border:1px solid color-mix(in srgb, var(--info) 32%, transparent);}
+.diskusi-box .lbl{color:var(--info-ink);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
+
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.9rem;margin-top:1rem;}
+.concept-tile{border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;background:var(--surface-soft);}
+.concept-tile .icon{width:28px;height:28px;margin-bottom:.5rem;color:var(--brand-700);}
+.op-icon{
+  display:inline-flex;align-items:center;justify-content:center;min-width:2.4rem;height:2.4rem;padding:0 .35rem;
+  border-radius:9px;background:rgba(0,0,0,.06);color:inherit;font-family:'JetBrains Mono',monospace;
+  font-weight:700;font-size:1.05rem;margin-bottom:.6rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .op-icon{background:rgba(255,255,255,.08);}}
+:root[data-theme="dark"] .op-icon{background:rgba(255,255,255,.08);}
+.concept-tile h4{font-size:.95rem;margin-bottom:.3rem;}
+.concept-tile p{font-size:.83rem;color:var(--ink-soft);margin:0;}
+.concept-tile.is-accent{border-color:color-mix(in srgb, var(--accent) 35%, var(--border));background:var(--accent-soft);}
+.concept-tile.is-accent .icon{color:var(--accent-ink);}
+.concept-tile.is-result{border-color:color-mix(in srgb, var(--result) 35%, var(--border));background:var(--result-soft);}
+.concept-tile.is-result .icon{color:var(--result-ink);}
+
+/* ---------- MATRIX COMPONENT ---------- */
+.matrix-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;margin:.6rem 0;}
+.matrix-row.center{justify-content:center;}
+.mat-op{font-size:1.25rem;color:var(--ink-faint);padding:0 .1rem;font-family:'JetBrains Mono',monospace;}
+.mat-label{font-family:'Fraunces',serif;font-style:italic;font-size:1.15rem;color:var(--ink);margin-right:.15rem;}
+.matrix{display:inline-flex;align-items:stretch;vertical-align:middle;color:var(--ink);}
+.matrix.is-accent{color:var(--accent-ink);}
+.matrix.is-result{color:var(--result-ink);}
+.matrix.is-brand{color:var(--brand-700);}
+.bracket{width:.5rem;flex-shrink:0;}
+.bracket.left{border-top:2.5px solid currentColor;border-bottom:2.5px solid currentColor;border-left:2.5px solid currentColor;border-radius:7px 0 0 7px;margin-right:.4rem;}
+.bracket.right{border-top:2.5px solid currentColor;border-bottom:2.5px solid currentColor;border-right:2.5px solid currentColor;border-radius:0 7px 7px 0;margin-left:.4rem;}
+.matrix-grid{
+  display:grid;gap:.28rem .95rem;align-items:center;padding:.35rem 0;
+  font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;font-size:.95rem;font-weight:500;
+}
+.matrix-grid span{text-align:center;min-width:1.4em;}
+.matrix-cap{align-self:center;font-size:1.4rem;color:var(--ink-faint);margin:0 .1rem;}
+
+.formula-box{
+  background:var(--surface-soft);border:1px solid var(--border);border-radius:11px;
+  padding:1rem 1.1rem;margin:.9rem 0;text-align:center;overflow-x:auto;
+}
+.formula-box.is-accent{background:var(--accent-soft);border-color:color-mix(in srgb, var(--accent) 35%, var(--border));}
+.formula-box .cap{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.5rem;text-align:left;}
+
+.proof-list{list-style:none;margin:1rem 0 0;padding:0;counter-reset:proof;}
+.proof-item{display:flex;gap:.8rem;padding:.7rem 0;border-top:1px solid var(--border-soft);}
+.proof-item:first-child{border-top:none;}
+.proof-item .pnum{
+  flex-shrink:0;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--brand-900);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;
+}
+.proof-item .ptext{font-size:.9rem;padding-top:.15rem;}
+
+.prompt-box{
+  background:var(--surface-soft);border:1.5px dashed color-mix(in srgb, var(--brand-700) 45%, var(--border));
+  border-radius:11px;padding:1rem 1.1rem;margin-top:1rem;
+}
+.prompt-box .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-700);font-weight:700;display:block;margin-bottom:.4rem;}
+
+.answer-box{
+  background:var(--result-soft);border:1px solid color-mix(in srgb, var(--result) 35%, transparent);
+  border-radius:11px;padding:.9rem 1.1rem;margin-top:.9rem;
+}
+.answer-box .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--result-ink);font-weight:700;display:block;margin-bottom:.4rem;}
+
+.sub-ex{border-top:1px solid var(--border-soft);padding-top:1rem;margin-top:1rem;}
+.sub-ex:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+.sub-lbl{font-size:.78rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;}
+
+.term-list{margin:1rem 0 0;padding:0;list-style:none;}
+.term-item{display:flex;gap:.9rem;padding:.6rem 0;border-top:1px solid var(--border-soft);}
+.term-item:first-child{border-top:none;}
+.term-item .tk{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--brand-700);flex-shrink:0;min-width:2.4rem;}
+.term-item .td{font-size:.88rem;color:var(--ink-soft);}
+
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.9rem;margin-top:1rem;}
+.app-tile{border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;background:var(--surface-soft);text-align:center;}
+.app-tile .icon{width:26px;height:26px;margin:0 auto .5rem;color:var(--brand-700);}
+.app-tile h4{font-size:.9rem;margin-bottom:.25rem;}
+.app-tile p{font-size:.8rem;color:var(--ink-soft);margin:0;}
+
+.roadmap-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.1rem;}
+.roadmap-step{
+  flex:1;min-width:150px;border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;
+  background:var(--surface-soft);position:relative;
+}
+.roadmap-step .k{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);font-weight:700;}
+.roadmap-step h4{font-size:.92rem;margin:.25rem 0;}
+.roadmap-step p{font-size:.79rem;color:var(--ink-soft);margin:0;}
+.roadmap-arrow{align-self:center;color:var(--ink-faint);font-size:1.2rem;padding:0 .1rem;}
+
+.next-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem;}
+.next-card{border:1px solid var(--border);border-radius:11px;padding:1rem 1.1rem;background:var(--surface-soft);}
+.next-card .tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);font-weight:700;}
+.next-card h4{font-size:1rem;margin:.3rem 0 .35rem;}
+.next-card p{font-size:.85rem;color:var(--ink-soft);margin:0;}
+
+.source-tag{
+  background:var(--brand-900);color:#e7e5ff;border-radius:11px;padding:.9rem 1.1rem;margin-top:1.6rem;
+  font-size:.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem;
+}
+.source-tag b{color:#fff;}
+
+.badge{
+  display:inline-flex;align-items:center;gap:.3rem;background:var(--brand-900);color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;padding:.2rem .55rem;border-radius:20px;
+  margin-bottom:.6rem;
+}
+.badge.is-accent{background:var(--accent-ink);}
+.badge.is-result{background:var(--result-ink);}
+
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:880px){
+  .shell{display:block;}
+  .sidebar{
+    position:fixed;top:0;left:0;height:100vh;z-index:40;width:82%;max-width:300px;
+    transform:translateX(-100%);transition:transform .28s ease;box-shadow:0 0 40px rgba(0,0,0,.35);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(10,10,20,.5);z-index:35;
+  }
+  .sidebar-overlay.show{display:block;}
+  .mobile-topbar{
+    display:flex;align-items:center;gap:.8rem;position:sticky;top:0;z-index:20;
+    background:var(--surface);border-bottom:1px solid var(--border);padding:.85rem 1.1rem;
+  }
+  .mobile-topbar h1{font-size:1rem;flex:1;}
+  .hamburger{
+    width:38px;height:38px;flex-shrink:0;border-radius:9px;border:1px solid var(--border);
+    background:var(--surface-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .hamburger span, .hamburger span::before, .hamburger span::after{
+    content:"";display:block;width:18px;height:2px;background:var(--ink);position:relative;
+  }
+  .hamburger span::before{position:absolute;top:-6px;}
+  .hamburger span::after{position:absolute;top:6px;}
+  main{padding:1.4rem 1.1rem 4rem;}
+  .view-head h2{font-size:1.5rem;}
+  .card{padding:1.2rem 1.1rem;}
+  .view{scroll-margin-top:14px;}
+  .roadmap-row{flex-direction:column;}
+}
+</style>
+
+<body>
+</head><body><div class="shell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="tag">Pertemuan 12</span>
+      <h1>Matriks &amp; Determinan</h1>
+      <p>Operasi Dasar &amp; Notasi</p>
+    </div>
+    <nav class="nav-group">
+      <button class="nav-btn active" data-target="ringkasan"><span class="num">00</span> Ringkasan</button>
+      <div class="nav-label">Materi Inti</div>
+      <button class="nav-btn" data-target="notasi-ordo"><span class="num">01</span> Notasi &amp; Ordo Matriks</button>
+      <button class="nav-btn" data-target="jumlah-kurang"><span class="num">02</span> Penjumlahan &amp; Pengurangan</button>
+      <button class="nav-btn" data-target="perkalian"><span class="num">03</span> Perkalian Matriks</button>
+      <div class="nav-label">Latihan</div>
+      <button class="nav-btn" data-target="latihan"><span class="num">04</span> Latihan Mandiri</button>
+      <div class="nav-label">Penutup</div>
+      <button class="nav-btn" data-target="ringkasan-akhir"><span class="num">05</span> Ringkasan &amp; Referensi</button>
+    </nav>
+    <div class="sidebar-foot">P12: Matriks &amp; Determinan · 10 slide</div>
+  </aside>
+
+  <main>
+    <div class="mobile-topbar">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Buka menu"><span></span></button>
+      <h1 class="mono" style="font-family:'Fraunces',serif;">Matriks &amp; Determinan</h1>
+    </div>
+
+    <!-- ============ RINGKASAN ============ -->
+    <section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Pengantar · Pertemuan 12</span>
+        <h2>Mengapa Matriks &amp; Determinan?</h2>
+        <p class="lede">Matriks dan determinan umumnya dipakai untuk menyelesaikan persamaan linear secara simultan — fondasi bagi Pertemuan 13 &amp; 14.</p>
+      </div>
+
+      <div class="card">
+        <h3>Dari Sistem Persamaan ke Notasi Matriks</h3>
+        <p class="card-sub">Motivasi utama mempelajari matriks &amp; determinan</p>
+        <div class="tujuan-box">
+          <span class="lbl">Tujuan Belajar</span>
+          Mahasiswa memahami motivasi utama mempelajari matriks: sebagai alat untuk merepresentasikan dan menyelesaikan sistem persamaan linear secara ringkas.
+        </div>
+        <div class="diskusi-box">
+          <span class="lbl">Diskusi Kelas</span>
+          Sebelum mengenal matriks, sistem persamaan linear diselesaikan dengan substitusi/eliminasi persamaan demi persamaan. Keterbatasan apa dari pendekatan itu yang membuat representasi matriks menjadi diperlukan?
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Empat Operasi Dasar yang Akan Dipelajari</h3>
+        <p class="card-sub">Alur pembahasan Pertemuan 12</p>
+        <div class="roadmap-row">
+          <div class="roadmap-step"><span class="k">01</span><h4>Notasi &amp; Ordo</h4><p>Mengekstrak matriks dari SPL &amp; menentukan ukuran m × n.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">02</span><h4>Penjumlahan &amp; Pengurangan</h4><p>Elemen yang bersesuaian dijumlah/dikurangkan.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">03</span><h4>Perkalian Skalar</h4><p>Setiap elemen dikalikan dengan bilangan k.</p></div>
+          <span class="roadmap-arrow">→</span>
+          <div class="roadmap-step"><span class="k">04</span><h4>Perkalian Matriks</h4><p>Baris dikali kolom, bukan elemen bersesuaian.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Peta Jalan: P12 → P13 → P14</h3>
+        <div class="next-grid">
+          <div class="next-card"><span class="tag">P12 (Sekarang)</span><h4>Notasi, Ordo &amp; Operasi Dasar</h4><p>Penjumlahan, pengurangan, perkalian skalar &amp; matriks.</p></div>
+          <div class="next-card"><span class="tag">P13</span><h4>Determinan &amp; Invers</h4><p>Matriks identitas, determinan, dan invers matriks (2×2 dan 3×3).</p></div>
+          <div class="next-card"><span class="tag">P14</span><h4>Penerapan pada SPL</h4><p>Menerapkan invers matriks untuk menyelesaikan sistem persamaan linear.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 01 NOTASI & ORDO ============ -->
+    <section class="view" id="view-notasi-ordo">
+      <div class="view-head">
+        <span class="eyebrow">01 · Notasi Matriks</span>
+        <h2>Notasi Matriks dari Koefisien SPL</h2>
+        <p class="lede">Mengekstrak matriks koefisien dari sebuah sistem persamaan linear, untuk 2 maupun 3 variabel.</p>
+      </div>
+
+      <div class="card">
+        <h3>(A) Notasi Matriks</h3>
+        <p class="card-sub">Dari Sistem Persamaan Linear ke Matriks Koefisien</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Mengekstrak matriks koefisien dari sebuah sistem persamaan linear, untuk 2 maupun 3 variabel.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Matriks koefisien pada kedua contoh TIDAK menyertakan konstanta di ruas kanan. Informasi apa yang hilang jika kita hanya mencatat matriks koefisien tanpa vektor konstanta tersebut?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">SPL 2 Variabel</div>
+          <div class="mono" style="font-size:.95rem;line-height:1.9;">x + 2y = 3<br>4x − 5y = 6</div>
+          <div class="matrix-row">
+            <span class="mat-op">↦</span>
+            <div class="matrix is-accent">
+              <span class="bracket left"></span>
+              <div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));">
+                <span>1</span><span>2</span>
+                <span>4</span><span>−5</span>
+              </div>
+              <span class="bracket right"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">SPL 3 Variabel</div>
+          <div class="mono" style="font-size:.95rem;line-height:1.9;">1.3p − 2.0q + r = 7<br>3.7p + 4.8q − 7r = 3<br>4.1p + 3.8q + 12r = −6</div>
+          <div class="matrix-row">
+            <span class="mat-op">↦</span>
+            <div class="matrix is-accent">
+              <span class="bracket left"></span>
+              <div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(2.2em,auto));">
+                <span>1.3</span><span>−2.0</span><span>1</span>
+                <span>3.7</span><span>4.8</span><span>−7</span>
+                <span>4.1</span><span>3.8</span><span>12</span>
+              </div>
+              <span class="bracket right"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>(B) Ordo Matriks</h3>
+        <p class="card-sub">Ordo (Ukuran) Matriks: m × n</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menentukan ordo suatu matriks dan menjelaskan makna m (baris) dan n (kolom).</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Sebuah matriks berordo m×n memiliki tepat m×n elemen. Jika sebuah matriks diketahui memiliki 12 elemen, sebutkan SEMUA kemungkinan ordo (m,n) yang valid.</div>
+
+        <div class="term-list">
+          <div class="term-item"><span class="tk">m</span><span class="td">menyatakan jumlah <b>BARIS</b> pada matriks tersebut.</span></div>
+          <div class="term-item"><span class="tk">n</span><span class="td">menyatakan jumlah <b>KOLOM</b> pada matriks tersebut.</span></div>
+        </div>
+
+        <div class="sub-ex" style="margin-top:1.1rem;">
+          <div class="sub-lbl">Contoh — Matriks Ordo 2 × 3</div>
+          <div class="matrix-row">
+            <div class="matrix">
+              <span class="bracket left"></span>
+              <div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));">
+                <span>2</span><span>3</span><span>6</span>
+                <span>4</span><span>5</span><span>7</span>
+              </div>
+              <span class="bracket right"></span>
+            </div>
+            <span class="mat-op">→ 2 baris × 3 kolom</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 PENJUMLAHAN & PENGURANGAN ============ -->
+    <section class="view" id="view-jumlah-kurang">
+      <div class="view-head">
+        <span class="eyebrow">02 · Operasi Matriks</span>
+        <h2>Penjumlahan &amp; Pengurangan Matriks</h2>
+        <p class="lede">Menjumlahkan/mengurangkan dua matriks berordo sama dilakukan pada elemen yang bersesuaian.</p>
+      </div>
+
+      <div class="card">
+        <h3>1.1 Penjumlahan Matriks</h3>
+        <p class="card-sub">Menjumlahkan Elemen yang Bersesuaian</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menjumlahkan dua matriks berordo sama dengan menjumlahkan elemen pada posisi yang bersesuaian.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Penjumlahan matriks hanya terdefinisi jika kedua matriks berordo SAMA PERSIS. Mengapa syarat ini masuk akal secara konseptual, bukan sekadar aturan sembarang?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">(A) Matriks 2×2</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>2</span><span>−1</span><span>−7</span><span>4</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">+</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−3</span><span>0</span><span>7</span><span>−4</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="answer-box"><span class="lbl">Hasil</span>
+            <div class="matrix-row">
+              <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−1</span><span>−1</span><span>0</span><span>0</span></div><span class="bracket right"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">(B) Matriks 3×3</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>3</span><span>1</span><span>−4</span><span>4</span><span>3</span><span>1</span><span>1</span><span>4</span><span>−3</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">+</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>2</span><span>7</span><span>−5</span><span>−2</span><span>1</span><span>0</span><span>6</span><span>3</span><span>4</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="answer-box"><span class="lbl">Hasil</span>
+            <div class="matrix-row">
+              <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>5</span><span>8</span><span>−9</span><span>2</span><span>4</span><span>1</span><span>7</span><span>7</span><span>1</span></div><span class="bracket right"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>1.2 Pengurangan Matriks</h3>
+        <p class="card-sub">Mengurangkan Elemen yang Bersesuaian</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Mengurangkan dua matriks berordo sama dengan mengurangkan elemen pada posisi yang bersesuaian.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>A−B dapat ditulis ulang sebagai A+(−1)B. Bagaimana hubungan ini menyederhanakan cara Anda mengingat aturan pengurangan matriks tanpa menghafalnya terpisah dari penjumlahan?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">(A) Matriks 2×2</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>2</span><span>−1</span><span>−7</span><span>4</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">−</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−3</span><span>0</span><span>7</span><span>−4</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="answer-box"><span class="lbl">Hasil</span>
+            <div class="matrix-row">
+              <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>5</span><span>−1</span><span>−14</span><span>8</span></div><span class="bracket right"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">(B) Matriks 3×3</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>3</span><span>1</span><span>−4</span><span>4</span><span>3</span><span>1</span><span>1</span><span>4</span><span>−3</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">−</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>2</span><span>7</span><span>−5</span><span>−2</span><span>1</span><span>0</span><span>6</span><span>3</span><span>4</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="answer-box"><span class="lbl">Hasil</span>
+            <div class="matrix-row">
+              <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>1</span><span>−6</span><span>1</span><span>6</span><span>2</span><span>1</span><span>−5</span><span>1</span><span>−7</span></div><span class="bracket right"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 PERKALIAN MATRIKS ============ -->
+    <section class="view" id="view-perkalian">
+      <div class="view-head">
+        <span class="eyebrow">03 · Operasi Matriks</span>
+        <h2>Perkalian Skalar &amp; Perkalian Matriks</h2>
+        <p class="lede">Perkalian skalar mengalikan setiap elemen dengan bilangan k; perkalian matriks mengalikan baris dengan kolom — konsep yang sama sekali berbeda.</p>
+      </div>
+
+      <div class="card">
+        <h3>1.3.1 Perkalian Skalar</h3>
+        <p class="card-sub">Perkalian Skalar &amp; Kombinasi Linear</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Mengalikan matriks dengan skalar dan menggabungkan beberapa hasil kali skalar lewat penjumlahan/pengurangan.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Operasi 2A−3B+4C menggabungkan perkalian skalar dan penjumlahan/pengurangan matriks sekaligus. Urutan operasi mana yang HARUS dilakukan lebih dulu, dan mengapa?</div>
+
+        <div class="matrix-row" style="margin-top:1rem;">
+          <span class="mat-label">A =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−3</span><span>0</span><span>7</span><span>−4</span></div><span class="bracket right"></span></div>
+          <span class="mat-label" style="margin-left:.6rem;">B =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>2</span><span>−1</span><span>−7</span><span>4</span></div><span class="bracket right"></span></div>
+          <span class="mat-label" style="margin-left:.6rem;">C =</span>
+          <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>1</span><span>0</span><span>−2</span><span>−4</span></div><span class="bracket right"></span></div>
+        </div>
+
+        <ol class="proof-list">
+          <li class="proof-item"><span class="pnum">1</span><span class="ptext">Hitung tiap suku secara terpisah (perkalian skalar).</span></li>
+          <li class="proof-item"><span class="pnum">2</span><span class="ptext">Jumlahkan/kurangkan hasilnya.</span></li>
+        </ol>
+
+        <div class="sub-ex" style="margin-top:.8rem;">
+          <div class="matrix-row">
+            <span class="mat-op">2A =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−6</span><span>0</span><span>14</span><span>−8</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="matrix-row">
+            <span class="mat-op">3B =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>6</span><span>−3</span><span>−21</span><span>12</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="matrix-row">
+            <span class="mat-op">4C =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>4</span><span>0</span><span>−8</span><span>−16</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+
+        <div class="answer-box">
+          <span class="lbl">Hasil Akhir — 2A − 3B + 4C</span>
+          <div class="matrix-row">
+            <div class="matrix is-result"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>−8</span><span>3</span><span>27</span><span>−36</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>1.3.2 Perkalian Matriks dengan Matriks</h3>
+        <p class="card-sub">Konsep Perkalian Matriks: Baris × Kolom</p>
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menjelaskan bahwa perkalian matriks BUKAN perkalian elemen bersesuaian, melainkan hasil kali-jumlah baris dengan kolom.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Berbeda dari penjumlahan, perkalian matriks tidak mengalikan elemen yang bersesuaian. Berdasarkan pola rumus di samping, syarat ordo apa yang harus dipenuhi agar dua matriks bisa dikalikan?</div>
+
+        <div class="formula-box">
+          <span class="cap">Aturan Umum</span>
+          <div class="matrix-row center">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>a</span><span>b</span><span>c</span><span>d</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">×</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>e</span><span>f</span><span>g</span><span>h</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">=</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(4.6em,auto));font-size:.85rem;"><span>ae + bg</span><span>af + bh</span><span>ce + dg</span><span>cf + dh</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+
+        <div class="formula-box is-accent">
+          <span class="cap">Contoh Ilustratif</span>
+          <div class="matrix-row center">
+            <div class="matrix is-accent"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>1</span><span>2</span><span>3</span><span>4</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">×</span>
+            <div class="matrix is-accent"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.4em,auto));"><span>5</span><span>6</span><span>7</span><span>8</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">=</span>
+            <div class="matrix is-accent"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.8em,auto));"><span>19</span><span>22</span><span>43</span><span>50</span></div><span class="bracket right"></span></div>
+          </div>
+        </div>
+
+        <div class="term-list">
+          <div class="term-item"><span class="tk">Syarat</span><span class="td">Jumlah kolom matriks pertama harus sama dengan jumlah baris matriks kedua — A<sub>m×n</sub> × B<sub>n×p</sub> menghasilkan matriks berordo m×p.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 LATIHAN MANDIRI ============ -->
+    <section class="view" id="view-latihan">
+      <div class="view-head">
+        <span class="eyebrow">04 · Latihan Mandiri</span>
+        <h2>Soal Latihan: Perkalian Matriks</h2>
+        <p class="lede">Menerapkan aturan baris×kolom untuk menghitung hasil kali matriks pada tiga soal dengan ordo berbeda-beda.</p>
+      </div>
+
+      <div class="card">
+        <div class="tujuan-box"><span class="lbl">Tujuan Belajar</span>Menerapkan aturan baris×kolom untuk menghitung hasil kali matriks pada tiga soal dengan ordo berbeda-beda.</div>
+        <div class="diskusi-box"><span class="lbl">Diskusi Kelas</span>Sebelum mengalikan, periksa ordo setiap matriks pada ketiga soal. Matriks hasil kali akan berordo berapa untuk masing-masing soal?</div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Soal 1</div>
+          <div class="matrix-row">
+            <span class="mat-label">A =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.6em,auto));"><span>2</span><span>3</span><span>1</span><span>−4</span></div><span class="bracket right"></span></div>
+            <span class="mat-label" style="margin-left:.6rem;">B =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.8em,auto));"><span>−5</span><span>7</span><span>−3</span><span>4</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="prompt-box"><span class="lbl">Tugas Anda</span>Carilah A × B ?</div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Soal 2</div>
+          <div class="matrix-row">
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>3</span><span>4</span><span>0</span><span>−2</span><span>6</span><span>−3</span><span>7</span><span>−4</span><span>1</span></div><span class="bracket right"></span></div>
+            <span class="mat-op">×</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(1,minmax(1.6em,auto));"><span>2</span><span>5</span><span>−1</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="prompt-box"><span class="lbl">Tugas Anda</span>Perkalikanlah kedua matriks di atas.</div>
+        </div>
+
+        <div class="sub-ex">
+          <div class="sub-lbl">Soal 3</div>
+          <div class="matrix-row">
+            <span class="mat-label">A =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(3,minmax(1.6em,auto));"><span>3</span><span>4</span><span>0</span><span>−2</span><span>6</span><span>−3</span><span>7</span><span>−4</span><span>1</span></div><span class="bracket right"></span></div>
+            <span class="mat-label" style="margin-left:.6rem;">B =</span>
+            <div class="matrix"><span class="bracket left"></span><div class="matrix-grid" style="grid-template-columns:repeat(2,minmax(1.8em,auto));"><span>2</span><span>−5</span><span>5</span><span>−6</span><span>−1</span><span>−7</span></div><span class="bracket right"></span></div>
+          </div>
+          <div class="prompt-box"><span class="lbl">Tugas Anda</span>Carilah A × B ?</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RINGKASAN & REFERENSI ============ -->
+    <section class="view" id="view-ringkasan-akhir">
+      <div class="view-head">
+        <span class="eyebrow">Penutup</span>
+        <h2>Empat Operasi, Satu Fondasi</h2>
+        <p class="lede">Notasi dan operasi dasar matriks yang baru dipelajari di sini adalah bahasa yang akan terus dipakai sepanjang unit Matriks &amp; Determinan.</p>
+      </div>
+
+      <div class="card">
+        <h3>Rangkuman Operasi</h3>
+        <div class="concept-grid">
+          <div class="concept-tile is-result">
+            <div class="op-icon">±</div>
+            <h4>A ± B</h4>
+            <p>Elemen yang bersesuaian dijumlahkan/dikurangkan. Hanya berlaku untuk matriks berordo sama.</p>
+          </div>
+          <div class="concept-tile is-accent">
+            <div class="op-icon">k·A</div>
+            <h4>k · A</h4>
+            <p>Setiap elemen dikalikan skalar k. Dasar untuk kombinasi linear seperti 2A−3B+4C.</p>
+          </div>
+          <div class="concept-tile">
+            <div class="op-icon">×</div>
+            <h4>A × B</h4>
+            <p>Baris dikali kolom (bukan elemen bersesuaian). Butuh kolom(A) = baris(B).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Penerapan Nyata Matriks &amp; Determinan</h3>
+        <div class="app-grid">
+          <div class="app-tile">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <h4>Grafika Komputer</h4>
+            <p>Transformasi objek 2D/3D — translasi, rotasi, skala — direpresentasikan sebagai perkalian matriks.</p>
+          </div>
+          <div class="app-tile">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V9M10 19V5M16 19v-7M4 19h16"/></svg>
+            <h4>Model Ekonomi</h4>
+            <p>Model input-output Leontief memakai matriks untuk memetakan keterkaitan antar sektor produksi.</p>
+          </div>
+          <div class="app-tile">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M8 7l4 9M16 7l-4 9M8.4 6h7.2"/></svg>
+            <h4>Jaringan &amp; Sirkuit</h4>
+            <p>Matriks adjacency &amp; hukum Kirchhoff pada rangkaian listrik diselesaikan lewat operasi matriks.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Ke Mana Selanjutnya?</h3>
+        <div class="next-grid">
+          <div class="next-card"><span class="tag">Pertemuan 13</span><h4>Matriks Identitas, Determinan &amp; Invers</h4><p>Determinan (2×2 dan 3×3 lewat minor &amp; kofaktor), serta invers matriks.</p></div>
+          <div class="next-card"><span class="tag">Pertemuan 14</span><h4>Penerapan pada SPL</h4><p>Memakai invers matriks untuk menyelesaikan sistem persamaan linear 2 dan 3 variabel.</p></div>
+        </div>
+        <div class="source-tag">
+          <span>Sumber: <b>P12_MATRIKS_DETERMINAN</b> — Pertemuan 12</span>
+          <span>10 slide · Notasi, Ordo &amp; Operasi Dasar Matriks</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+(function(){
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const views = document.querySelectorAll('.view');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function showView(target, opts){
+    opts = opts || {};
+    views.forEach(v => v.classList.toggle('active', v.id === 'view-' + target));
+    navButtons.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+    if(!opts.skipScroll){ window.scrollTo({top:0, behavior:'smooth'}); }
+  }
+
+  function openSidebar(){
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+  function closeSidebar(){
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+
+  hamburgerBtn && hamburgerBtn.addEventListener('click', openSidebar);
+  overlay && overlay.addEventListener('click', closeSidebar);
+
+  showView('ringkasan', {skipScroll:true});
+})();
+</script>
+
+</body></html>

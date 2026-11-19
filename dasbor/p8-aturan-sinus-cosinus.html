@@ -1,0 +1,1100 @@
+<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dasbor Aturan Sinus &amp; Cosinus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  color-scheme: light;
+  --brand-900:#0f2224;
+  --brand-800:#193d40;
+  --brand-700:#3d737a;
+  --brand-600:#63969d;
+  --brand-100:#e6f2f3;
+
+  --paper:#f7fafa;
+  --surface:#ffffff;
+  --surface-2:#eef4f5;
+  --ink:#142425;
+  --ink-soft:#54696b;
+  --ink-faint:#8a9c9d;
+  --line:#d8e5e6;
+
+  --accent:#c22670;
+  --accent-ink:#7a3d5d;
+  --accent-soft:#fbe4ef;
+
+  --result:#9c7a00;
+  --result-ink:#6b5400;
+  --result-soft:#fdf1cf;
+
+  --given:#102022;
+  --given-soft:#e6f2f3;
+
+  --shadow: 0 1px 2px rgba(15,34,36,.08), 0 12px 28px -12px rgba(15,34,36,.24);
+
+  --sidebar-bg1:#0a1f21;
+  --sidebar-bg2:#193d40;
+  --sidebar-ink:#eef9fa;
+  --sidebar-ink-soft:#a7c8cb;
+  --sidebar-line:rgba(255,255,255,.12);
+  --sidebar-active-bg:rgba(217,177,0,.2);
+  --sidebar-active-line:#d1a900;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0b1617;
+    --surface:#122224;
+    --surface-2:#172c2e;
+    --ink:#e9f4f4;
+    --ink-soft:#a7c1c2;
+    --ink-faint:#6d8b8c;
+    --line:#243f41;
+    --brand-100:#172c2e;
+    --brand-700:#5fb9c4;
+    --brand-600:#82d3dc;
+
+    --accent:#ff5da3;
+    --accent-ink:#ffbcdd;
+    --accent-soft:#3a1a2a;
+
+    --result:#e8c400;
+    --result-ink:#ffe27a;
+    --result-soft:#3a3006;
+
+    --given:#dff0f1;
+    --given-soft:#17302f;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 14px 32px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0b1617;
+  --surface:#122224;
+  --surface-2:#172c2e;
+  --ink:#e9f4f4;
+  --ink-soft:#a7c1c2;
+  --ink-faint:#6d8b8c;
+  --line:#243f41;
+  --brand-100:#172c2e;
+  --brand-700:#5fb9c4;
+  --brand-600:#82d3dc;
+
+  --accent:#ff5da3;
+  --accent-ink:#ffbcdd;
+  --accent-soft:#3a1a2a;
+
+  --result:#e8c400;
+  --result-ink:#ffe27a;
+  --result-soft:#3a3006;
+
+  --given:#dff0f1;
+  --given-soft:#17302f;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.45), 0 14px 32px -14px rgba(0,0,0,.7);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Fraunces", Georgia, serif;
+  margin:0;
+  text-wrap:balance;
+  color:var(--ink);
+}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+.mathy, .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric:tabular-nums;}
+
+.frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 .2em; line-height:1.15; font-size:.94em; position:relative; top:.05em;}
+.frac .num{padding:0 .18em .06em; border-bottom:1.4px solid currentColor;}
+.frac .den{padding:.06em .18em 0;}
+sup, sub{line-height:0;}
+
+/* ============ LAYOUT SHELL ============ */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:278px; flex:0 0 278px;
+  background:linear-gradient(175deg, var(--sidebar-bg1), var(--sidebar-bg2) 78%);
+  color:var(--sidebar-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--sidebar-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px;}
+
+.brand{padding:24px 22px 16px; border-bottom:1px solid var(--sidebar-line);}
+.brand-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:rgba(217,177,0,.22); color:var(--sidebar-active-line);
+  margin-bottom:12px;
+}
+.brand-mark svg{width:21px; height:21px; stroke:var(--sidebar-active-line); fill:none;}
+.brand h1{font-size:1.18rem; font-weight:700; color:#fff; line-height:1.2;}
+.brand .sub{margin-top:6px; font-size:.76rem; color:var(--sidebar-ink-soft); line-height:1.4;}
+.brand .sub b{color:var(--sidebar-ink); font-weight:600;}
+
+nav.navlist{padding:10px 12px 22px; flex:1;}
+.nav-group-label{
+  font-size:.64rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sidebar-ink-soft); opacity:.75;
+  padding:14px 12px 5px;
+}
+.nav-group-label:first-child{padding-top:5px;}
+.nav-btn{
+  width:100%; display:flex; align-items:center; gap:10px;
+  padding:8px 12px; margin:1px 0; border:none; background:transparent;
+  border-radius:9px; color:var(--sidebar-ink-soft); text-align:left;
+  font-size:.83rem; font-weight:500; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-btn svg{width:16px; height:16px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7;}
+.nav-btn:hover{background:rgba(255,255,255,.07); color:#fff;}
+.nav-btn.active{
+  background:var(--sidebar-active-bg); color:#fff; font-weight:600;
+  border-left:3px solid var(--sidebar-active-line);
+}
+
+.sidebar-foot{padding:14px 22px 20px; border-top:1px solid var(--sidebar-line); font-size:.7rem; color:var(--sidebar-ink-soft); line-height:1.5;}
+
+main{flex:1; min-width:0;}
+.view{display:none; padding:44px 48px 80px; max-width:980px;}
+.view.active{display:block;}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:100px; margin-bottom:14px;
+}
+.view-head h2{font-size:clamp(1.4rem,1.2rem + 1vw,1.95rem); font-weight:700;}
+.view-head .lede{margin-top:10px; font-size:1rem; color:var(--ink-soft); max-width:62ch; line-height:1.55;}
+
+.objective{
+  margin-top:18px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px;
+}
+.objective svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--brand-600); fill:none; stroke-width:1.8;}
+.objective .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-600); display:block; margin-bottom:3px;}
+.objective p{font-size:.92rem; color:var(--ink); line-height:1.5;}
+
+/* ============ TOPBAR MOBILE ============ */
+.mobile-topbar{display:none;}
+.hamburger-btn{
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+  width:38px; height:38px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.25); border-radius:8px; cursor:pointer; padding:0; flex:none;
+}
+.hamburger-btn span{display:block; width:17px; height:1.6px; background:#fff; border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px;}
+.stat-tile{padding:18px 18px 16px;}
+.stat-tile .num{font-family:"Fraunces",serif; font-weight:700; font-size:1.9rem; color:var(--brand-700); line-height:1;}
+.stat-tile .lbl{margin-top:6px; font-size:.8rem; color:var(--ink-soft);}
+
+.nav-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.nav-card{
+  padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(15,34,36,.07),0 18px 30px -14px rgba(15,34,36,.3);}
+.nav-card .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--brand-100); color:var(--brand-700);
+}
+.nav-card .icon-wrap svg{width:19px; height:19px; stroke:var(--brand-700); fill:none; stroke-width:1.7;}
+.nav-card h3{font-size:.98rem; font-weight:600;}
+.nav-card p{font-size:.84rem; color:var(--ink-soft); line-height:1.45;}
+.nav-card .tag{font-size:.7rem; font-weight:700; color:var(--brand-600); letter-spacing:.03em;}
+
+.section-block{margin-top:34px;}
+.section-block > h3.block-title{font-size:1.1rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+.section-block > h3.block-title .n{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px;
+  background:var(--brand-900); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+
+/* discussion callout */
+.discuss{
+  margin-top:16px; display:flex; gap:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+}
+.discuss + .discuss{margin-top:12px;}
+.discuss svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--accent-ink); fill:none; stroke-width:1.8;}
+.discuss .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px;}
+.discuss p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* example card (worked numeric problems) */
+.example-card{padding:22px 24px; margin-top:16px;}
+.example-head{display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+.example-badge{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px;
+  border-radius:10px; background:var(--brand-900); color:#fff; font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.85rem;
+}
+.example-head h4{font-size:1.02rem; font-weight:700; color:var(--ink);}
+.example-head .sub{font-size:.8rem; color:var(--ink-soft); margin-top:1px;}
+
+/* geometry diagram */
+.diagram-wrap{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:18px 14px; margin-bottom:16px; display:flex; justify-content:center;
+}
+.diagram-wrap svg{width:100%; max-width:420px; height:auto; overflow:visible;}
+.diagram-wrap svg text{font-family:"JetBrains Mono", ui-monospace, monospace;}
+.diag-line{stroke:var(--brand-700); stroke-width:2.2; fill:none;}
+.diag-line-soft{stroke:var(--ink-faint); stroke-width:1.4; fill:none; stroke-dasharray:4 3;}
+.diag-point{fill:var(--brand-900);}
+.diag-label{fill:var(--ink); font-size:13px; font-weight:600;}
+.diag-given{fill:var(--given); font-size:12.5px; font-weight:600;}
+.diag-unknown{fill:var(--accent-ink); font-size:12.5px; font-weight:700;}
+.diag-result{fill:var(--result-ink); font-size:12.5px; font-weight:700;}
+.diag-arc{stroke:var(--ink-faint); stroke-width:1.4; fill:none;}
+
+.problem-line{
+  font-size:1.1rem; color:var(--given); background:var(--given-soft); border-radius:10px; padding:14px 16px;
+  margin-bottom:14px; overflow-x:auto;
+}
+.steps{margin-bottom:16px;}
+.step-line{
+  font-size:1.02rem; color:var(--ink); padding:5px 0; overflow-x:auto; white-space:nowrap;
+}
+.step-line:not(:first-child){padding-left:1.35em; color:var(--ink-soft);}
+.step-line .tag{color:var(--ink-faint); font-size:.82rem; margin-left:.6em;}
+
+.answer-box{
+  display:flex; align-items:center; gap:12px; background:var(--accent-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.answer-box svg{width:18px; height:18px; flex:none; stroke:var(--accent-ink); fill:none; stroke-width:2.2;}
+.answer-box .val{font-size:1.05rem; font-weight:600; color:var(--accent-ink); font-family:"JetBrains Mono",monospace;}
+.answer-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); opacity:.9; display:block; margin-bottom:2px;}
+.answer-box .val + .val{margin-left:18px;}
+.answer-multi{display:flex; flex-wrap:wrap; gap:8px 22px;}
+
+/* result box (gold) for verified / branch-derived numeric outcomes */
+.result-box{
+  display:flex; align-items:center; gap:12px; background:var(--result-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--result) 40%, transparent);
+}
+.result-box svg{width:18px; height:18px; flex:none; stroke:var(--result-ink); fill:none; stroke-width:2.2;}
+.result-box .val{font-size:1.05rem; font-weight:600; color:var(--result-ink); font-family:"JetBrains Mono",monospace;}
+.result-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--result-ink); opacity:.9; display:block; margin-bottom:2px;}
+.result-box .val + .val{margin-left:18px;}
+
+/* open-ended practice prompt (Latihan Mandiri, no worked solution) */
+.prompt-box{
+  display:flex; align-items:flex-start; gap:12px; background:var(--brand-100); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--brand-700) 25%, transparent);
+}
+.prompt-box svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--brand-700); fill:none; stroke-width:2;}
+.prompt-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-700); opacity:.9; display:block; margin-bottom:3px;}
+.prompt-box p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* sub-example divider inside one card (multiple mini worked cases) */
+.sub-ex{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);}
+.sub-ex:first-child{margin-top:0; padding-top:0; border-top:none;}
+.sub-ex .sub-lbl{font-size:.72rem; font-weight:700; color:var(--brand-600); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+
+/* concept grid: definitional relations / formula reference tiles */
+.concept-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-top:16px;}
+.concept-tile{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center;}
+.concept-tile .mini-svg{width:100%; max-width:130px; height:auto; margin:2px auto 10px; display:block;}
+.concept-tile .tt{font-size:.86rem; font-weight:700; color:var(--ink); margin-bottom:8px;}
+.concept-tile .eq{font-family:"JetBrains Mono",monospace; font-size:.98rem; color:var(--result-ink); margin-bottom:4px; overflow-x:auto;}
+.concept-tile p.note{font-size:.78rem; color:var(--ink-soft); line-height:1.4; margin-top:4px;}
+
+/* proof / property list */
+.proof-list{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+.proof-item{display:flex; gap:14px; align-items:center; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+.proof-item .pnum{
+  display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:100px;
+  background:var(--brand-900); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace; flex:none;
+}
+.proof-item .body{flex:1; min-width:0;}
+.proof-item .eq{font-family:"JetBrains Mono",monospace; font-size:1rem; color:var(--result-ink); font-weight:600; overflow-x:auto;}
+.proof-item p{font-size:.86rem; color:var(--ink-soft); margin-top:3px; line-height:1.45;}
+
+/* formula card (reference formulas, no plugged-in numbers) */
+.formula-box{
+  background:var(--result-soft); border:1px solid color-mix(in srgb, var(--result) 45%, transparent);
+  border-radius:12px; padding:16px 18px; margin-bottom:14px; text-align:center;
+}
+.formula-box .eq{font-family:"JetBrains Mono",monospace; font-size:1.15rem; color:var(--result-ink); overflow-x:auto;}
+.formula-box .eq + .eq{margin-top:10px;}
+.formula-box .cond{font-size:.82rem; color:var(--ink-soft); margin-top:8px; font-family:"Source Sans 3",sans-serif;}
+
+/* condition callout (kapan boleh dipakai) */
+.cond-box{
+  background:var(--brand-100); border:1px solid color-mix(in srgb, var(--brand-700) 30%, transparent);
+  border-radius:12px; padding:15px 18px; margin-bottom:14px;
+}
+.cond-box .lbl{font-size:.72rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--brand-700); display:block; margin-bottom:6px;}
+.cond-box p{font-size:.9rem; color:var(--ink); line-height:1.6; white-space:pre-line;}
+
+/* definitions list (terms) */
+.term-list{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px;}
+.term-item{background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:11px 14px;}
+.term-item b{color:var(--brand-700); font-weight:700;}
+.term-item span{font-size:.85rem; color:var(--ink-soft);}
+
+.summary-list{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.summary-item{display:flex; gap:13px; padding:15px 17px; align-items:flex-start;}
+.summary-item .dot{width:8px; height:8px; border-radius:100px; background:var(--accent); flex:none; margin-top:7px;}
+.summary-item h4{font-size:.94rem; font-weight:700; margin-bottom:3px;}
+.summary-item p{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+
+.source-tag{
+  margin-top:26px; display:flex; align-items:center; gap:10px; padding:16px 18px; border-radius:12px;
+  background:var(--brand-900); color:#fff;
+}
+.source-tag svg{width:20px; height:20px; flex:none; stroke:var(--sidebar-active-line); fill:none; stroke-width:1.7;}
+.source-tag .t1{font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sidebar-ink-soft); display:block; margin-bottom:2px;}
+.source-tag .t2{font-size:.95rem; font-weight:600;}
+
+.flow-strip{
+  margin-top:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line);
+  font-family:"JetBrains Mono",monospace; font-size:.85rem; color:var(--ink-soft); overflow-x:auto;
+}
+.flow-strip .arrow{color:var(--accent-ink); font-weight:700;}
+
+.peta-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px;}
+.peta-tile{padding:16px 14px; text-align:left; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+.peta-tile:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(15,34,36,.07),0 18px 30px -14px rgba(15,34,36,.3);}
+.peta-tile .code{font-family:"JetBrains Mono",monospace; font-size:.72rem; font-weight:700; color:var(--accent-ink); background:var(--accent-soft); padding:2px 8px; border-radius:100px; display:inline-block; margin-bottom:8px;}
+.peta-tile h4{font-size:.86rem; font-weight:700; margin-bottom:5px; line-height:1.3;}
+.peta-tile p{font-size:.75rem; color:var(--ink-soft); line-height:1.4;}
+
+.app-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:16px;}
+.app-tile{padding:18px; }
+.app-tile .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--brand-100); color:var(--brand-700); margin-bottom:12px;
+}
+.app-tile .icon-wrap svg{width:19px; height:19px; stroke:var(--brand-700); fill:none; stroke-width:1.7;}
+.app-tile h4{font-size:.94rem; font-weight:700; margin-bottom:6px;}
+.app-tile p{font-size:.85rem; color:var(--ink-soft); line-height:1.5;}
+
+/* ============ MOBILE ============ */
+@media (max-width:880px){
+  .shell{display:block;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:14px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(120deg, var(--sidebar-bg1), var(--sidebar-bg2));
+    padding:13px 16px; border-bottom:1px solid var(--sidebar-line);
+  }
+  .mobile-topbar .t{color:#fff; font-weight:700; font-size:.95rem; font-family:"Fraunces",serif;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; width:82%; max-width:300px;
+    transform:translateX(-100%); transition:transform .28s ease;
+    box-shadow:2px 0 28px rgba(0,0,0,.35);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{position:fixed; inset:0; background:rgba(4,12,13,.55); z-index:55;}
+  .sidebar-overlay.show{display:block;}
+  main{width:100%; min-width:0;}
+  .view{padding:26px 18px 60px; scroll-margin-top:78px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-cards{grid-template-columns:1fr;}
+  .peta-grid{grid-template-columns:repeat(2,1fr);}
+  .term-list{grid-template-columns:1fr;}
+  .app-grid{grid-template-columns:1fr;}
+}
+@media (max-width:520px){
+  .problem-line, .step-line{font-size:.92rem;}
+  .peta-grid{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .nav-card, .peta-tile{transition:none;}
+}
+</style>
+
+</head><body><div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="t">Sinus &amp; Cosinus</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 13 5 20 19" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h1>Sinus &amp; Cosinus</h1>
+      <div class="sub">Segitiga Sembarang<br><b>15 slide</b> &middot; P9</div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-group-label">Mulai di sini</div>
+      <button class="nav-btn" data-target="ringkasan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        Ringkasan
+      </button>
+
+      <div class="nav-group-label">Materi pokok</div>
+      <button class="nav-btn" data-target="konsep">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 13 5 20 19" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        01 Konsep Dasar
+      </button>
+      <button class="nav-btn" data-target="contoh">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/></svg>
+        02 Contoh Soal
+      </button>
+      <button class="nav-btn" data-target="latihan">
+        <svg viewBox="0 0 24 24"><path d="M4 20 6 14 16 4l4 4-10 10-6 2Z" stroke-linejoin="round"/><path d="M13 7l4 4"/></svg>
+        03 Latihan Mandiri
+      </button>
+
+      <div class="nav-group-label">Penutup</div>
+      <button class="nav-btn" data-target="ringkasan-akhir">
+        <svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg>
+        Ringkasan &amp; Referensi
+      </button>
+    </nav>
+    <div class="sidebar-foot">Dasbor referensi kuliah &middot; 15 slide dipetakan ke 4 bagian</div>
+  </aside>
+
+  <main id="mainArea">
+
+<!-- ===================== RINGKASAN ===================== -->
+<section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Trigonometri &middot; P9</span>
+        <h2>Aturan Sinus &amp; Cosinus</h2>
+        <p class="lede">Perbandingan trigonometri biasa (sin, cos, tan) dan Teorema Pythagoras hanya berlaku pada segitiga siku-siku. Dasbor ini memetakan Aturan Sinus, Aturan Cosinus, dan tiga cara menghitung luas segitiga &mdash; termasuk kasus ambigu yang unik pada Aturan Sinus &mdash; untuk menyelesaikan segitiga BUKAN siku-siku (segitiga sembarang).</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Prinsip utama</span>&ldquo;Menyelesaikan sebuah segitiga&rdquo; berarti menemukan semua sisi dan sudut yang belum diketahui. Pilih Aturan Sinus bila tersedia 1 sisi + 2 sudut, atau 2 sisi + 1 sudut (bukan apit); pilih Aturan Cosinus bila tersedia 2 sisi + sudut apitnya, atau 3 sisi saja.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-tile"><div class="num">3</div><div class="lbl">Sub-topik (01&ndash;03)</div></div>
+        <div class="card stat-tile"><div class="num">8</div><div class="lbl">Kartu materi</div></div>
+        <div class="card stat-tile"><div class="num">13</div><div class="lbl">Diskusi kelas</div></div>
+        <div class="card stat-tile"><div class="num">15</div><div class="lbl">Slide sumber</div></div>
+      </div>
+
+      <div class="flow-strip">
+        <span>siku-siku sahaja?</span><span class="arrow">&rarr;</span>
+        <span>1 sisi+2 sudut atau 2 sisi+1 sudut &rArr; Sinus</span><span class="arrow">&rarr;</span>
+        <span>2 sisi+sudut apit atau 3 sisi &rArr; Cosinus</span><span class="arrow">&rarr;</span>
+        <span>Luas = &frac12;ab sin C</span>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Peta materi</h3>
+        <div class="peta-grid">
+          <button class="card peta-tile" data-goto="konsep">
+            <span class="code">01</span>
+            <h4>Konsep Dasar</h4>
+            <p>Kapan segitiga sembarang, Aturan Sinus, Aturan Cosinus, dan tiga cara menghitung luas.</p>
+          </button>
+          <button class="card peta-tile" data-goto="contoh">
+            <span class="code">02</span>
+            <h4>Contoh Soal</h4>
+            <p>Tiga soal terapan: 1 sisi+2 sudut, kasus ambigu, dan segitiga dari tiga sisi (SSS).</p>
+          </button>
+          <button class="card peta-tile" data-goto="latihan">
+            <span class="code">03</span>
+            <h4>Latihan Mandiri</h4>
+            <p>Empat soal segitiga ABC &amp; DEF untuk diselesaikan sendiri dengan Aturan Sinus.</p>
+          </button>
+          <button class="card peta-tile" data-goto="ringkasan-akhir">
+            <span class="code">&#8226;</span>
+            <h4>Ringkasan &amp; Referensi</h4>
+            <p>Gagasan inti dan penerapan dunia nyata: survei, navigasi, rekayasa struktur.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Jelajahi materi</h3>
+        <div class="nav-cards">
+          <button class="card nav-card" data-goto="konsep">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 19h16M4 19 13 5 20 19" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Konsep Dasar</h3>
+            <p>Mengapa segitiga sembarang butuh aturan baru, lalu Aturan Sinus, Aturan Cosinus, dan rumus luas.</p>
+            <span class="tag">Kartu 1&ndash;4 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="contoh">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/></svg></div>
+            <h3>Contoh Soal</h3>
+            <p>Soal 21, Soal 22 (kasus ambigu &mdash; dua solusi valid), dan Soal 24 (SSS + verifikasi ganda luas).</p>
+            <span class="tag">Kartu 5&ndash;7 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="latihan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 20 6 14 16 4l4 4-10 10-6 2Z" stroke-linejoin="round"/><path d="M13 7l4 4"/></svg></div>
+            <h3>Latihan Mandiri</h3>
+            <p>Empat soal (notasi ABC dan DEF) untuk diselesaikan dan dihitung luasnya sendiri.</p>
+            <span class="tag">Kartu 8 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="ringkasan-akhir">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg></div>
+            <h3>Ringkasan &amp; Referensi</h3>
+            <p>Gagasan inti, dan tiga bidang penerapan: survei tanah, navigasi, rekayasa struktur.</p>
+            <span class="tag">Penutup &rarr;</span>
+          </button>
+        </div>
+      </div>
+</section>
+
+<!-- ===================== KONSEP DASAR ===================== -->
+<section class="view" id="view-konsep">
+  <div class="view-head">
+    <span class="eyebrow">01 &middot; Konsep Dasar</span>
+    <h2>Konsep Dasar</h2>
+    <p class="lede">Mengapa segitiga sembarang butuh aturan tersendiri, lalu tiga alat utama untuk menyelesaikannya: Aturan Sinus, Aturan Cosinus, dan rumus luas segitiga.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">1</span>Mengapa Perlu Aturan Sinus &amp; Cosinus?</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menjelaskan arti menyelesaikan segitiga dan memilih metode yang sesuai untuk segitiga siku-siku atau segitiga sembarang.</p>
+    </div>
+    <div class="card example-card">
+      <div class="term-list">
+        <div class="term-item"><b>Segitiga siku-siku</b><br><span>Perbandingan trigonometri (sin, cos, tan) dan Teorema Pythagoras DAPAT digunakan untuk menyelesaikannya.</span></div>
+        <div class="term-item"><b>Bukan segitiga siku-siku</b><br><span>Perbandingan trigonometri dan Pythagoras TIDAK berlaku. Sebagai gantinya, gunakan Aturan Sinus dan Cosinus.</span></div>
+      </div>
+      <div class="formula-box" style="margin-top:14px;">
+        <div class="eq" style="font-family:'Fraunces',serif; font-style:italic; font-size:1rem; color:var(--ink);">&ldquo;Menyelesaikan sebuah segitiga berarti menemukan sisi dan sudut yang tidak diketahui.&rdquo;</div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Perbandingan trigonometri dasar (sin=depan/miring, dst.) hanya terdefinisi dengan jelas pada segitiga siku-siku karena adanya sisi miring. Mengapa definisi ini tidak langsung bisa diterapkan pada segitiga sembarang?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">2</span>Aturan Sinus (Sine Rule)</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menuliskan Aturan Sinus dan mengenali dua kondisi kapan aturan ini dapat digunakan.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 130">
+          <path d="M30 110 170 110 100 20Z" class="diag-line" fill="none"/>
+          <text x="94" y="14" class="diag-label">A</text>
+          <text x="12" y="124" class="diag-label">B</text>
+          <text x="178" y="124" class="diag-label">C</text>
+          <text x="94" y="128" class="diag-given">a</text>
+          <text x="146" y="62" class="diag-given">b</text>
+          <text x="44" y="62" class="diag-given">c</text>
+        </svg>
+      </div>
+      <div class="formula-box">
+        <div class="eq"><span class="frac"><span class="num">a</span><span class="den">sin A</span></span> = <span class="frac"><span class="num">b</span><span class="den">sin B</span></span> = <span class="frac"><span class="num">c</span><span class="den">sin C</span></span></div>
+      </div>
+      <div class="cond-box">
+        <span class="lbl">Aturan sinus hanya boleh dipakai bila:</span>
+        <p>(i) 1 sisi dan sembarang 2 sudut diketahui di awal, atau
+(ii) 2 sisi dan 1 sudut (bukan sudut apit) diketahui di awal.</p>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Aturan sinus membutuhkan minimal SATU pasangan sisi-sudut yang berhadapan dan diketahui keduanya. Mengapa syarat ini penting &mdash; apa yang terjadi jika kita hanya tahu tiga sudut saja (tanpa sisi)?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">3</span>Aturan Cosinus (Cosine Rule)</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menuliskan tiga bentuk Aturan Cosinus dan mengenali dua kondisi kapan aturan ini digunakan.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 130">
+          <path d="M30 110 170 110 100 20Z" class="diag-line" fill="none"/>
+          <text x="94" y="14" class="diag-label">A</text>
+          <text x="12" y="124" class="diag-label">B</text>
+          <text x="178" y="124" class="diag-label">C</text>
+          <text x="94" y="128" class="diag-given">a</text>
+          <text x="146" y="62" class="diag-given">b</text>
+          <text x="44" y="62" class="diag-given">c</text>
+        </svg>
+      </div>
+      <div class="formula-box">
+        <div class="eq">a&sup2; = b&sup2; + c&sup2; &minus; 2bc cos A</div>
+        <div class="eq">atau&nbsp; b&sup2; = a&sup2; + c&sup2; &minus; 2ac cos B</div>
+        <div class="eq">atau&nbsp; c&sup2; = a&sup2; + b&sup2; &minus; 2ab cos C</div>
+      </div>
+      <div class="cond-box">
+        <span class="lbl">Aturan cosinus hanya boleh dipakai bila:</span>
+        <p>(i) 2 sisi dan sudut apitnya diketahui di awal, atau
+(ii) 3 sisi diketahui di awal (tanpa sudut apapun).</p>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Jika sudut A=90&deg;, buktikan bahwa a&sup2;=b&sup2;+c&sup2;&minus;2bc cos A tereduksi menjadi Teorema Pythagoras biasa. Apa yang ini katakan tentang hubungan Aturan Cosinus dengan Pythagoras?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">4</span>Tiga Cara Menghitung Luas Segitiga</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Memilih rumus luas segitiga yang paling sesuai berdasarkan informasi yang tersedia (tinggi, dua sisi+sudut apit, atau tiga sisi).</p>
+    </div>
+    <div class="card example-card">
+      <div class="proof-list">
+        <div class="proof-item">
+          <span class="pnum">i</span>
+          <div class="body"><div class="eq">Luas = &frac12; &times; alas &times; tinggi</div><p>Bila tinggi segitiga terhadap salah satu alas diketahui.</p></div>
+        </div>
+        <div class="proof-item">
+          <span class="pnum">ii</span>
+          <div class="body"><div class="eq">Luas = &frac12;ab sin C = &frac12;ac sin B = &frac12;bc sin A</div><p>Bila dua sisi dan sudut apitnya diketahui.</p></div>
+        </div>
+        <div class="proof-item">
+          <span class="pnum">iii</span>
+          <div class="body"><div class="eq">Luas = &radic;s(s&minus;a)(s&minus;b)(s&minus;c),&nbsp; s = (a+b+c)/2</div><p>Rumus Heron &mdash; satu-satunya yang tidak memerlukan informasi sudut sama sekali.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Rumus (iii) &mdash; rumus Heron &mdash; adalah satu-satunya yang TIDAK memerlukan informasi sudut sama sekali. Kapan situasi ini terjadi (informasi apa saja yang tersedia)?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTOH SOAL ===================== -->
+<section class="view" id="view-contoh">
+  <div class="view-head">
+    <span class="eyebrow">02 &middot; Contoh Soal</span>
+    <h2>Contoh Soal</h2>
+    <p class="lede">Tiga penerapan Aturan Sinus &amp; Cosinus dengan angka nyata &mdash; dari kondisi paling sederhana (1 sisi + 2 sudut), kasus ambigu yang unik pada Aturan Sinus, hingga segitiga yang hanya diketahui tiga sisinya (SSS).</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">5</span>Segitiga dengan 1 Sisi + 2 Sudut</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mengidentifikasi bahwa soal ini memenuhi syarat Aturan Sinus kondisi (i): 1 sisi dan 2 sudut diketahui, lalu menyelesaikan seluruh segitiga.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">21</span>
+        <div><h4>Segitiga XYZ</h4><div class="sub">&ang;X=51&deg;,&nbsp; &ang;Y=67&deg;,&nbsp; YZ (x) = 15.2 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M30 118 170 118 92 20Z" class="diag-line" fill="none"/>
+          <path d="M92 34 84 48 97 51" class="diag-arc"/>
+          <path d="M30 118 30 102 46 109" class="diag-arc"/>
+          <text x="84" y="14" class="diag-label">X</text>
+          <text x="12" y="132" class="diag-label">Y</text>
+          <text x="178" y="132" class="diag-label">Z</text>
+          <text x="66" y="46" class="diag-given" font-size="11">51&deg;</text>
+          <text x="38" y="100" class="diag-given" font-size="11">67&deg;</text>
+          <text x="82" y="136" class="diag-given">x = 15.2 cm</text>
+          <text x="140" y="66" class="diag-unknown">y</text>
+          <text x="48" y="66" class="diag-unknown">z</text>
+        </svg>
+      </div>
+      <div class="problem-line">Pada segitiga XYZ, &ang;X=51&deg;, &ang;Y=67&deg;, dan YZ (x) = 15.2 cm. Selesaikan segitiga tersebut dan carilah luasnya.</div>
+      <div class="steps">
+        <div class="step-line">Z = 180&deg; &minus; 51&deg; &minus; 67&deg; = 62&deg;</div>
+        <div class="step-line"><span class="frac"><span class="num">15.2</span><span class="den">sin 51&deg;</span></span> = <span class="frac"><span class="num">y</span><span class="den">sin 67&deg;</span></span> = <span class="frac"><span class="num">z</span><span class="den">sin 62&deg;</span></span></div>
+        <div class="step-line">y = XZ = (15.2 sin 67&deg;) / sin 51&deg; = 18.00 cm</div>
+        <div class="step-line">z = XY = (15.2 sin 62&deg;) / sin 51&deg; = 17.27 cm</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">&ang;Z</span><span class="val">62&deg;</span></div>
+          <div><span class="lbl">XZ (y)</span><span class="val">18.00 cm</span></div>
+          <div><span class="lbl">XY (z)</span><span class="val">17.27 cm</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Sudut Z belum diketahui secara langsung dari soal. Bagaimana Anda menemukannya sebelum menerapkan Aturan Sinus?</p></div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Sisi-sisi XZ dan XY sudah ditemukan (18.00 cm dan 17.27 cm). Gunakan salah satu rumus luas segitiga dari materi sebelumnya untuk menghitung luas segitiga XYZ ini sebagai latihan tambahan.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">6</span>Ketika Ada Dua Solusi yang Valid</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mengenali dan menangani &lsquo;kasus ambigu&rsquo; yang muncul saat menerapkan Aturan Sinus pada kondisi 2 sisi + 1 sudut bukan apit.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">22</span>
+        <div><h4>Segitiga PQR &mdash; kasus ambigu</h4><div class="sub">QR (p) = 36.5 mm,&nbsp; PR (q) = 29.6 mm,&nbsp; &ang;Q = 36&deg;</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M30 118 170 118 96 24Z" class="diag-line" fill="none"/>
+          <path d="M30 118 30 102 46 109" class="diag-arc"/>
+          <text x="88" y="18" class="diag-label">P</text>
+          <text x="12" y="132" class="diag-label">Q</text>
+          <text x="178" y="132" class="diag-label">R</text>
+          <text x="38" y="100" class="diag-given" font-size="11">36&deg;</text>
+          <text x="82" y="136" class="diag-given">p = 36.5 mm</text>
+          <text x="140" y="68" class="diag-given">q = 29.6 mm</text>
+          <text x="50" y="68" class="diag-unknown">r</text>
+        </svg>
+      </div>
+      <div class="problem-line">Selesaikan segitiga PQR: QR = 36.5 mm, PR = 29.6 mm, &ang;Q = 36&deg;.</div>
+      <div class="steps">
+        <div class="step-line"><span class="frac"><span class="num">29.6</span><span class="den">sin 36&deg;</span></span> = <span class="frac"><span class="num">36.5</span><span class="den">sin P</span></span></div>
+        <div class="step-line">sin P = (36.5 sin 36&deg;) / 29.6 = 0.7248</div>
+        <div class="step-line">P = sin&#8315;&sup1;(0.7248) = 46.45&deg; <span class="tag">atau</span> 133.55&deg;</div>
+      </div>
+      <div class="result-box">
+        <svg viewBox="0 0 24 24"><path d="M12 9v4M12 16.5h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Dua kemungkinan &ang;R</span><span class="val">P=46.45&deg; &rArr; R=97.55&deg;</span></div>
+          <div><span class="val">P=133.55&deg; &rArr; R=10.45&deg;</span></div>
+        </div>
+      </div>
+      <div class="sub-ex" style="margin-top:18px;">
+        <div class="sub-lbl">Kasus 1 &mdash; P=46.45&deg;, Q=36&deg;, R=97.55&deg; (tumpul)</div>
+        <div class="diagram-wrap" style="padding:14px;">
+          <svg viewBox="0 0 160 100" style="max-width:220px;">
+            <path d="M18 82 138 70 46 14Z" class="diag-line" fill="none"/>
+            <text x="30" y="8" class="diag-label" font-size="11">P</text>
+            <text x="4" y="96" class="diag-label" font-size="11">Q</text>
+            <text x="142" y="84" class="diag-label" font-size="11">R</text>
+          </svg>
+        </div>
+        <div class="steps">
+          <div class="step-line"><span class="frac"><span class="num">r</span><span class="den">sin 97.55&deg;</span></span> = <span class="frac"><span class="num">29.6</span><span class="den">sin 36&deg;</span></span> &rarr; r = 49.92 mm</div>
+          <div class="step-line">Luas = &frac12;pq sin R = &frac12;(36.5)(29.6) sin 97.55&deg; = 535.5 mm&sup2;</div>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">Kasus 2 &mdash; P=133.55&deg;, Q=36&deg;, R=10.45&deg; (lancip, sangat kecil)</div>
+        <div class="diagram-wrap" style="padding:14px;">
+          <svg viewBox="0 0 160 100" style="max-width:220px;">
+            <path d="M18 84 60 16 142 88Z" class="diag-line" fill="none"/>
+            <text x="46" y="10" class="diag-label" font-size="11">P</text>
+            <text x="4" y="96" class="diag-label" font-size="11">Q</text>
+            <text x="146" y="96" class="diag-label" font-size="11">R</text>
+          </svg>
+        </div>
+        <div class="steps">
+          <div class="step-line"><span class="frac"><span class="num">r</span><span class="den">sin 10.45&deg;</span></span> = <span class="frac"><span class="num">29.6</span><span class="den">sin 36&deg;</span></span> &rarr; r = 9.134 mm</div>
+          <div class="step-line">Luas = &frac12;pq sin R = &frac12;(36.5)(29.6) sin 10.45&deg; = 97.98 mm&sup2;</div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Fungsi sin menghasilkan nilai positif yang sama untuk sudut P dan (180&deg;&minus;P). Mengapa hal ini secara matematis menjadi akar penyebab munculnya kasus ambigu pada Aturan Sinus (namun TIDAK pernah terjadi pada Aturan Cosinus)?</p></div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Luas Kasus 1 (535.5 mm&sup2;) dan Kasus 2 (97.98 mm&sup2;) sangat berbeda meski berasal dari data awal yang sama persis. Apa pelajaran praktis dari perbedaan besar ini bagi seseorang yang mengukur segitiga di lapangan (misalnya survei tanah)?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">7</span>Segitiga dari Tiga Sisi Saja (SSS)</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menerapkan Aturan Cosinus untuk mencari sudut terbesar terlebih dahulu, menentukan jenis segitiga, lalu memverifikasi luas dengan dua metode berbeda.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">24</span>
+        <div><h4>Segitiga ABC</h4><div class="sub">a=9.0 cm,&nbsp; b=7.5 cm,&nbsp; c=6.5 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 130">
+          <path d="M30 110 170 110 100 20Z" class="diag-line" fill="none"/>
+          <text x="94" y="14" class="diag-label">A</text>
+          <text x="12" y="124" class="diag-label">B</text>
+          <text x="178" y="124" class="diag-label">C</text>
+          <text x="86" y="128" class="diag-given">a = 9.0 cm</text>
+          <text x="128" y="62" class="diag-given" font-size="11">b = 7.5 cm</text>
+          <text x="18" y="62" class="diag-given" font-size="11">c = 6.5 cm</text>
+        </svg>
+      </div>
+      <div class="problem-line">Segitiga ABC: a=9.0 cm, b=7.5 cm, c=6.5 cm. Tentukan ketiga sudutnya dan luasnya.</div>
+      <div class="sub-ex">
+        <div class="sub-lbl">Langkah 1 &mdash; sudut terbesar (A, di hadapan sisi terpanjang a)</div>
+        <div class="steps">
+          <div class="step-line">cos A = <span class="frac"><span class="num">b&sup2;+c&sup2;&minus;a&sup2;</span><span class="den">2bc</span></span> = <span class="frac"><span class="num">7.5&sup2;+6.5&sup2;&minus;9.0&sup2;</span><span class="den">2(7.5)(6.5)</span></span> = 0.1795</div>
+          <div class="step-line">A = cos&#8315;&sup1;(0.1795) = 79.67&deg;</div>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">Langkah 2 &mdash; sisa sudut lewat Aturan Sinus</div>
+        <div class="steps">
+          <div class="step-line"><span class="frac"><span class="num">9.0</span><span class="den">sin 79.67&deg;</span></span> = <span class="frac"><span class="num">7.5</span><span class="den">sin B</span></span> &rarr; sin B = 0.8198 &rarr; B = 55.08&deg;</div>
+          <div class="step-line">C = 180&deg; &minus; 79.67&deg; &minus; 55.08&deg; = 45.27&deg;</div>
+        </div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">&ang;A</span><span class="val">79.67&deg;</span></div>
+          <div><span class="lbl">&ang;B</span><span class="val">55.08&deg;</span></div>
+          <div><span class="lbl">&ang;C</span><span class="val">45.27&deg;</span></div>
+        </div>
+      </div>
+      <div class="cond-box" style="margin-top:14px;">
+        <span class="lbl">Akut atau tumpul?</span>
+        <p>cos A bernilai positif (0.1795) &rarr; segitiga ini akut. Bila cos A negatif, sudut A pasti tumpul &mdash; tanpa perlu menghitung nilai sudutnya secara eksplisit.</p>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">Verifikasi luas &mdash; dua metode, satu jawaban</div>
+        <div class="steps">
+          <div class="step-line">Metode 1 (Heron): s = (9.0+7.5+6.5)/2 = 11.5 cm</div>
+          <div class="step-line">Luas = &radic;11.5(2.5)(4.0)(5.0) = 23.98 cm&sup2;</div>
+          <div class="step-line">Metode 2: Luas = &frac12;ab sin C = &frac12;(9.0)(7.5) sin 45.27&deg; = 23.98 cm&sup2;</div>
+        </div>
+        <div class="result-box">
+          <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><span class="lbl">Kedua metode cocok</span><span class="val">Luas = 23.98 cm&sup2;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Strategi di sini adalah mencari SUDUT TERBESAR (berhadapan dengan sisi terpanjang) terlebih dahulu. Mengapa memulai dari sudut terbesar &mdash; bukan sembarang sudut &mdash; adalah strategi yang lebih aman?</p></div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Kedua metode menghasilkan angka yang PERSIS sama (23.98 cm&sup2;). Jadikan kebiasaan: kapan sebaiknya Anda selalu memverifikasi jawaban dengan metode kedua yang berbeda, dan kapan hal ini terlalu memakan waktu?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LATIHAN MANDIRI ===================== -->
+<section class="view" id="view-latihan">
+  <div class="view-head">
+    <span class="eyebrow">03 &middot; Latihan Mandiri</span>
+    <h2>Latihan: Aturan Sinus &amp; Luas</h2>
+    <p class="lede">Terapkan Aturan Sinus dan rumus luas secara mandiri pada empat soal dengan konteks segitiga berbeda &mdash; dua bernotasi ABC, dua bernotasi DEF.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">8</span>Empat Soal Latihan</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Menerapkan Aturan Sinus dan rumus luas secara mandiri pada empat soal dengan konteks segitiga berbeda.</p>
+    </div>
+    <div class="card example-card">
+      <div class="sub-ex">
+        <div class="sub-lbl">1 &middot; Segitiga ABC</div>
+        <div class="diagram-wrap" style="padding:14px;">
+          <svg viewBox="0 0 200 120" style="max-width:280px;">
+            <path d="M30 100 170 100 96 18Z" class="diag-line" fill="none"/>
+            <path d="M96 32 88 44 100 48" class="diag-arc"/>
+            <path d="M30 100 30 86 44 92" class="diag-arc"/>
+            <text x="88" y="12" class="diag-label" font-size="11">A</text>
+            <text x="12" y="114" class="diag-label" font-size="11">B</text>
+            <text x="176" y="114" class="diag-label" font-size="11">C</text>
+            <text x="58" y="40" class="diag-given" font-size="10">29&deg;</text>
+            <text x="40" y="84" class="diag-given" font-size="10">68&deg;</text>
+            <text x="140" y="56" class="diag-given" font-size="10">b=27 mm</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga ABC dengan &ang;A=29&deg;, &ang;B=68&deg;, b=27 mm. Gunakan Aturan Sinus untuk menyelesaikan segitiga ABC dan cari luasnya.</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">2 &middot; Segitiga ABC</div>
+        <div class="diagram-wrap" style="padding:14px;">
+          <svg viewBox="0 0 200 120" style="max-width:280px;">
+            <path d="M30 100 170 100 66 14Z" class="diag-line" fill="none"/>
+            <path d="M30 100 30 86 44 92" class="diag-arc"/>
+            <path d="M170 100 158 100 158 88" class="diag-arc"/>
+            <text x="58" y="10" class="diag-label" font-size="11">A</text>
+            <text x="12" y="114" class="diag-label" font-size="11">B</text>
+            <text x="176" y="114" class="diag-label" font-size="11">C</text>
+            <text x="40" y="84" class="diag-given" font-size="10">71.43&deg;</text>
+            <text x="128" y="86" class="diag-given" font-size="10">56.53&deg;</text>
+            <text x="98" y="44" class="diag-given" font-size="10">b=8.60 cm</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga ABC dengan &ang;B=71.43&deg;, &ang;C=56.53&deg;, b=8.60 cm. Gunakan Aturan Sinus untuk menyelesaikan segitiga ABC dan cari luasnya.</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">3 &middot; Segitiga DEF</div>
+        <div class="diagram-wrap" style="padding:14px;">
+          <svg viewBox="0 0 200 120" style="max-width:280px;">
+            <path d="M30 100 170 100 100 18Z" class="diag-line" fill="none"/>
+            <path d="M170 100 158 100 158 88" class="diag-arc"/>
+            <text x="94" y="12" class="diag-label" font-size="11">D</text>
+            <text x="12" y="114" class="diag-label" font-size="11">E</text>
+            <text x="176" y="114" class="diag-label" font-size="11">F</text>
+            <text x="86" y="114" class="diag-given" font-size="10">d=17 cm</text>
+            <text x="128" y="86" class="diag-given" font-size="10">26&deg;</text>
+            <text x="48" y="58" class="diag-given" font-size="10">f=22 cm</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga DEF dengan d=17 cm, f=22 cm, &ang;F=26&deg;. Gunakan Aturan Sinus untuk menyelesaikan segitiga DEF dan cari luasnya. (Perhatikan: kondisi ini berpotensi menghasilkan kasus ambigu.)</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">4 &middot; Segitiga DEF</div>
+        <div class="diagram-wrap" style="padding:14px;">
+          <svg viewBox="0 0 200 120" style="max-width:280px;">
+            <path d="M28 100 172 100 122 20Z" class="diag-line" fill="none"/>
+            <path d="M108 32 115 40 131 35" class="diag-arc"/>
+            <text x="116" y="14" class="diag-label" font-size="11">D</text>
+            <text x="10" y="114" class="diag-label" font-size="11">E</text>
+            <text x="178" y="114" class="diag-label" font-size="11">F</text>
+            <text x="88" y="60" class="diag-given" font-size="10">104.37&deg;</text>
+            <text x="150" y="66" class="diag-given" font-size="10">e=25.4 mm</text>
+            <text x="86" y="114" class="diag-given" font-size="10">d=32.6 mm</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Segitiga DEF dengan d=32.6 mm, e=25.4 mm, &ang;D=104.37&deg;. Gunakan Aturan Sinus untuk menyelesaikan segitiga DEF dan cari luasnya.</p>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Soal 1&ndash;2 memakai notasi segitiga ABC, sedangkan soal 3&ndash;4 memakai notasi DEF. Tuliskan Aturan Sinus untuk masing-masing notasi sebelum mulai menghitung &mdash; apakah strukturnya tetap sama?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RINGKASAN AKHIR ===================== -->
+<section class="view" id="view-ringkasan-akhir">
+  <div class="view-head">
+    <span class="eyebrow">Penutup</span>
+    <h2>Memilih Alat yang Tepat</h2>
+    <p class="lede">Kunci menyelesaikan segitiga sembarang adalah mengenali informasi apa yang tersedia, lalu memilih Aturan Sinus atau Cosinus yang sesuai.</p>
+  </div>
+
+  <div class="summary-list">
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Dua alat untuk segitiga sembarang</h4><p>Perbandingan trigonometri biasa dan Pythagoras hanya berlaku pada segitiga siku-siku; segitiga sembarang butuh Aturan Sinus dan Aturan Cosinus.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Syarat pemakaian yang berbeda</h4><p>Aturan Sinus: 1 sisi+2 sudut, atau 2 sisi+1 sudut bukan apit. Aturan Cosinus: 2 sisi+sudut apit, atau 3 sisi saja.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Kasus ambigu hanya pada Aturan Sinus</h4><p>Kondisi 2 sisi+1 sudut bukan apit pada Aturan Sinus dapat menghasilkan DUA segitiga valid, karena sin P = sin(180&deg;&minus;P).</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Tiga rumus luas, satu pilihan</h4><p>Pilih rumus luas berdasarkan data yang tersedia: alas&times;tinggi, dua sisi+sudut apit, atau rumus Heron untuk tiga sisi saja.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Mulai dari sudut/data terbesar</h4><p>Pada soal SSS, mencari sudut terbesar lebih dulu (lewat Aturan Cosinus) adalah strategi paling aman sebelum melanjutkan dengan Aturan Sinus.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title">Penerapan Dunia Nyata</h3>
+    <div class="app-grid">
+      <div class="card app-tile">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+        <h4>Survei &amp; Pemetaan Tanah</h4>
+        <p>Triangulasi mengukur jarak yang tak terjangkau langsung dengan mengukur sudut dan satu sisi acuan, lalu menerapkan Aturan Sinus.</p>
+      </div>
+      <div class="card app-tile">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2Z" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+        <h4>Navigasi</h4>
+        <p>Menentukan posisi kapal/pesawat dari dua titik acuan (bearing) memakai segitiga sembarang yang diselesaikan dengan Aturan Sinus/Cosinus.</p>
+      </div>
+      <div class="card app-tile">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 21h18M4 21V9l4-3 4 3v12M12 21V6l4-3 4 3v15" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+        <h4>Rekayasa Struktur</h4>
+        <p>Analisis rangka batang (truss) dengan elemen tidak tegak lurus memerlukan Aturan Cosinus untuk menghitung gaya pada tiap batang.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="source-tag">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <div><span class="t1">Sumber materi</span><span class="t2">P9: Aturan Sinus &amp; Cosinus &mdash; Menyelesaikan Segitiga Sembarang</span></div>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function showView(target, opts){
+    opts = opts || {};
+    document.querySelectorAll('main > section.view').forEach(s=>s.classList.remove('active'));
+    const el = document.getElementById('view-'+target);
+    if(el){ el.classList.add('active'); if(!opts.skipScroll){ el.scrollIntoView({block:'start'}); } }
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target === target);
+    });
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> showView(el.dataset.goto));
+  });
+
+  showView('ringkasan', {skipScroll:true});
+</script>
+</body></html>

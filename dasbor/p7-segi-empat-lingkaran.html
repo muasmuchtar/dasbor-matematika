@@ -1,0 +1,1560 @@
+<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dasbor Segi Empat &amp; Lingkaran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  color-scheme: light;
+  --brand-900:#0a0a0a;
+  --brand-800:#161616;
+  --brand-700:#272727;
+  --brand-600:#454138;
+  --brand-100:#efeadb;
+
+  --paper:#f8f8f8;
+  --surface:#ffffff;
+  --surface-2:#f1eee3;
+  --ink:#141414;
+  --ink-soft:#5c584c;
+  --ink-faint:#928d7d;
+  --line:#e6e1d0;
+
+  --accent:#e8d068;
+  --accent-ink:#7a6420;
+  --accent-soft:#faf3d9;
+
+  --result:#b8952e;
+  --result-ink:#6b5518;
+  --result-soft:#fbf6e3;
+
+  --given:#3a3628;
+  --given-soft:#eeece2;
+
+  --shadow: 0 1px 2px rgba(20,20,15,.06), 0 12px 28px -12px rgba(20,20,15,.22);
+
+  --sidebar-bg1:#0a0a0a;
+  --sidebar-bg2:#201c12;
+  --sidebar-ink:#f7f3e6;
+  --sidebar-ink-soft:#b7b098;
+  --sidebar-line:rgba(255,255,255,.1);
+  --sidebar-active-bg:rgba(232,208,104,.16);
+  --sidebar-active-line:#e8d068;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0b0b0a;
+    --surface:#161513;
+    --surface-2:#1f1c15;
+    --ink:#f1eee3;
+    --ink-soft:#b7b098;
+    --ink-faint:#867f6a;
+    --line:#2e2a1f;
+    --brand-100:#242015;
+    --brand-700:#d9d3bf;
+    --brand-600:#c3bca3;
+
+    --accent:#e8d068;
+    --accent-ink:#f5e9b8;
+    --accent-soft:#332c14;
+
+    --result:#f0da7e;
+    --result-ink:#f5e9b8;
+    --result-soft:#332c14;
+
+    --given:#d8d3c2;
+    --given-soft:#221f17;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 32px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0b0b0a;
+  --surface:#161513;
+  --surface-2:#1f1c15;
+  --ink:#f1eee3;
+  --ink-soft:#b7b098;
+  --ink-faint:#867f6a;
+  --line:#2e2a1f;
+  --brand-100:#242015;
+  --brand-700:#d9d3bf;
+  --brand-600:#c3bca3;
+
+  --accent:#e8d068;
+  --accent-ink:#f5e9b8;
+  --accent-soft:#332c14;
+
+  --result:#f0da7e;
+  --result-ink:#f5e9b8;
+  --result-soft:#332c14;
+
+  --given:#d8d3c2;
+  --given-soft:#221f17;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 32px -14px rgba(0,0,0,.7);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Fraunces", Georgia, serif;
+  margin:0;
+  text-wrap:balance;
+  color:var(--ink);
+}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+.mathy, .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric:tabular-nums;}
+
+.frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 .2em; line-height:1.15; font-size:.94em; position:relative; top:.05em;}
+.frac .num{padding:0 .18em .06em; border-bottom:1.4px solid currentColor;}
+.frac .den{padding:.06em .18em 0;}
+sup, sub{line-height:0;}
+
+/* ============ LAYOUT SHELL ============ */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:278px; flex:0 0 278px;
+  background:linear-gradient(175deg, var(--sidebar-bg1), var(--sidebar-bg2) 78%);
+  color:var(--sidebar-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--sidebar-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px;}
+
+.brand{padding:24px 22px 16px; border-bottom:1px solid var(--sidebar-line);}
+.brand-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:rgba(232,208,104,.16); color:var(--accent);
+  margin-bottom:12px;
+}
+.brand-mark svg{width:21px; height:21px; stroke:var(--accent); fill:none;}
+.brand h1{font-size:1.18rem; font-weight:700; color:#fff; line-height:1.2;}
+.brand .sub{margin-top:6px; font-size:.76rem; color:var(--sidebar-ink-soft); line-height:1.4;}
+.brand .sub b{color:var(--sidebar-ink); font-weight:600;}
+
+nav.navlist{padding:10px 12px 22px; flex:1;}
+.nav-group-label{
+  font-size:.64rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sidebar-ink-soft); opacity:.75;
+  padding:14px 12px 5px;
+}
+.nav-group-label:first-child{padding-top:5px;}
+.nav-btn{
+  width:100%; display:flex; align-items:center; gap:10px;
+  padding:8px 12px; margin:1px 0; border:none; background:transparent;
+  border-radius:9px; color:var(--sidebar-ink-soft); text-align:left;
+  font-size:.83rem; font-weight:500; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-btn svg{width:16px; height:16px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7;}
+.nav-btn:hover{background:rgba(255,255,255,.07); color:#fff;}
+.nav-btn.active{
+  background:var(--sidebar-active-bg); color:#fff; font-weight:600;
+  border-left:3px solid var(--sidebar-active-line);
+}
+
+.sidebar-foot{padding:14px 22px 20px; border-top:1px solid var(--sidebar-line); font-size:.7rem; color:var(--sidebar-ink-soft); line-height:1.5;}
+
+main{flex:1; min-width:0;}
+.view{display:none; padding:44px 48px 80px; max-width:980px;}
+.view.active{display:block;}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:100px; margin-bottom:14px;
+}
+.view-head h2{font-size:clamp(1.4rem,1.2rem + 1vw,1.95rem); font-weight:700;}
+.view-head .lede{margin-top:10px; font-size:1rem; color:var(--ink-soft); max-width:62ch; line-height:1.55;}
+
+.objective{
+  margin-top:18px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px;
+}
+.objective svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--brand-600); fill:none; stroke-width:1.8;}
+.objective .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-600); display:block; margin-bottom:3px;}
+.objective p{font-size:.92rem; color:var(--ink); line-height:1.5;}
+
+/* ============ TOPBAR MOBILE ============ */
+.mobile-topbar{display:none;}
+.hamburger-btn{
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+  width:38px; height:38px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.25); border-radius:8px; cursor:pointer; padding:0; flex:none;
+}
+.hamburger-btn span{display:block; width:17px; height:1.6px; background:#fff; border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px;}
+.stat-tile{padding:18px 18px 16px;}
+.stat-tile .num{font-family:"Fraunces",serif; font-weight:700; font-size:1.9rem; color:var(--brand-700); line-height:1;}
+.stat-tile .lbl{margin-top:6px; font-size:.8rem; color:var(--ink-soft);}
+
+.nav-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.nav-card{
+  padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(20,20,15,.06),0 18px 30px -14px rgba(20,20,15,.28);}
+.nav-card .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--brand-100); color:var(--brand-700);
+}
+.nav-card .icon-wrap svg{width:19px; height:19px; stroke:var(--brand-700); fill:none; stroke-width:1.7;}
+.nav-card h3{font-size:.98rem; font-weight:600;}
+.nav-card p{font-size:.84rem; color:var(--ink-soft); line-height:1.45;}
+.nav-card .tag{font-size:.7rem; font-weight:700; color:var(--brand-600); letter-spacing:.03em;}
+
+.section-block{margin-top:34px;}
+.section-block > h3.block-title{font-size:1.1rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+.section-block > h3.block-title .n{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px;
+  background:var(--brand-900); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+
+/* discussion callout */
+.discuss{
+  margin-top:16px; display:flex; gap:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+.discuss svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--accent-ink); fill:none; stroke-width:1.8;}
+.discuss .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px;}
+.discuss p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* example card (worked numeric problems) */
+.example-card{padding:22px 24px; margin-top:16px;}
+.example-head{display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+.example-badge{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px;
+  border-radius:10px; background:var(--brand-900); color:#fff; font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.85rem;
+}
+.example-head h4{font-size:1.02rem; font-weight:700; color:var(--ink);}
+.example-head .sub{font-size:.8rem; color:var(--ink-soft); margin-top:1px;}
+
+/* geometry diagram */
+.diagram-wrap{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:18px 14px; margin-bottom:16px; display:flex; justify-content:center;
+}
+.diagram-wrap svg{width:100%; max-width:420px; height:auto; overflow:visible;}
+.diagram-wrap svg text{font-family:"JetBrains Mono", ui-monospace, monospace;}
+.diag-line{stroke:var(--brand-700); stroke-width:2.2; fill:none;}
+.diag-line-soft{stroke:var(--ink-faint); stroke-width:1.4; fill:none; stroke-dasharray:4 3;}
+.diag-point{fill:var(--brand-900);}
+.diag-label{fill:var(--ink); font-size:13px; font-weight:600;}
+.diag-given{fill:var(--given); font-size:12.5px; font-weight:600;}
+.diag-unknown{fill:var(--accent-ink); font-size:12.5px; font-weight:700;}
+.diag-result{fill:var(--result-ink); font-size:12.5px; font-weight:700;}
+.diag-arc{stroke:var(--ink-faint); stroke-width:1.4; fill:none;}
+.diag-arc-strong{stroke:var(--result); stroke-width:3; fill:none;}
+
+.problem-line{
+  font-size:1.1rem; color:var(--given); background:var(--given-soft); border-radius:10px; padding:14px 16px;
+  margin-bottom:14px; overflow-x:auto;
+}
+.steps{margin-bottom:16px;}
+.step-line{
+  font-size:1.02rem; color:var(--ink); padding:5px 0; overflow-x:auto; white-space:nowrap;
+}
+.step-line:not(:first-child){padding-left:1.35em; color:var(--ink-soft);}
+.step-line .tag{color:var(--ink-faint); font-size:.82rem; margin-left:.6em;}
+
+.answer-box{
+  display:flex; align-items:center; gap:12px; background:var(--result-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--result) 40%, transparent);
+}
+.answer-box svg{width:18px; height:18px; flex:none; stroke:var(--result-ink); fill:none; stroke-width:2.2;}
+.answer-box .val{font-size:1.05rem; font-weight:600; color:var(--result-ink); font-family:"JetBrains Mono",monospace;}
+.answer-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--result-ink); opacity:.9; display:block; margin-bottom:2px;}
+.answer-box .val + .val{margin-left:18px;}
+.answer-multi{display:flex; flex-wrap:wrap; gap:8px 22px;}
+
+/* open-ended practice prompt (Latihan Mandiri, no worked solution) */
+.prompt-box{
+  display:flex; align-items:flex-start; gap:12px; background:var(--brand-100); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--brand-700) 25%, transparent);
+}
+.prompt-box svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--brand-700); fill:none; stroke-width:2;}
+.prompt-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-700); opacity:.9; display:block; margin-bottom:3px;}
+.prompt-box p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* sub-example divider inside one card (multiple mini worked cases) */
+.sub-ex{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);}
+.sub-ex:first-child{margin-top:0; padding-top:0; border-top:none;}
+.sub-ex .sub-lbl{font-size:.72rem; font-weight:700; color:var(--brand-600); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+
+/* concept grid: definitional relations, no numeric solving */
+.concept-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-top:16px;}
+.concept-tile{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center;}
+.concept-tile .mini-svg{width:100%; max-width:130px; height:auto; margin:2px auto 10px; display:block;}
+.concept-tile .tt{font-size:.86rem; font-weight:700; color:var(--ink); margin-bottom:8px;}
+.concept-tile .eq{font-family:"JetBrains Mono",monospace; font-size:.98rem; color:var(--result-ink); margin-bottom:4px; overflow-x:auto;}
+.concept-tile p.note{font-size:.78rem; color:var(--ink-soft); line-height:1.4; margin-top:4px;}
+
+/* proof / property list */
+.proof-list{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+.proof-item{display:flex; gap:14px; align-items:center; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+.proof-item .pnum{
+  display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:100px;
+  background:var(--brand-900); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace; flex:none;
+}
+.proof-item .body{flex:1; min-width:0;}
+.proof-item .eq{font-family:"JetBrains Mono",monospace; font-size:1rem; color:var(--result-ink); font-weight:600; overflow-x:auto;}
+.proof-item p{font-size:.86rem; color:var(--ink-soft); margin-top:3px; line-height:1.45;}
+
+/* formula card (reference formulas, no plugged-in numbers) */
+.formula-box{
+  background:var(--result-soft); border:1px solid color-mix(in srgb, var(--result) 40%, transparent);
+  border-radius:12px; padding:16px 18px; margin-bottom:14px; text-align:center;
+}
+.formula-box .eq{font-family:"JetBrains Mono",monospace; font-size:1.15rem; color:var(--result-ink); overflow-x:auto;}
+.formula-box .eq + .eq{margin-top:10px;}
+
+/* definitions list (terms) */
+.term-list{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px;}
+.term-item{background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:11px 14px;}
+.term-item b{color:var(--brand-700); font-weight:700;}
+.term-item span{font-size:.85rem; color:var(--ink-soft);}
+
+.summary-list{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.summary-item{display:flex; gap:13px; padding:15px 17px; align-items:flex-start;}
+.summary-item .dot{width:8px; height:8px; border-radius:100px; background:var(--accent); flex:none; margin-top:7px;}
+.summary-item h4{font-size:.94rem; font-weight:700; margin-bottom:3px;}
+.summary-item p{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+
+.source-tag{
+  margin-top:26px; display:flex; align-items:center; gap:10px; padding:16px 18px; border-radius:12px;
+  background:var(--brand-900); color:#fff;
+}
+.source-tag svg{width:20px; height:20px; flex:none; stroke:var(--accent); fill:none; stroke-width:1.7;}
+.source-tag .t1{font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sidebar-ink-soft); display:block; margin-bottom:2px;}
+.source-tag .t2{font-size:.95rem; font-weight:600;}
+
+.flow-strip{
+  margin-top:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line);
+  font-family:"JetBrains Mono",monospace; font-size:.85rem; color:var(--ink-soft); overflow-x:auto;
+}
+.flow-strip .arrow{color:var(--accent-ink); font-weight:700;}
+
+.peta-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px;}
+.peta-tile{padding:16px 14px; text-align:left; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;}
+.peta-tile:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(20,20,15,.06),0 18px 30px -14px rgba(20,20,15,.28);}
+.peta-tile .code{font-family:"JetBrains Mono",monospace; font-size:.72rem; font-weight:700; color:var(--accent-ink); background:var(--accent-soft); padding:2px 8px; border-radius:100px; display:inline-block; margin-bottom:8px;}
+.peta-tile h4{font-size:.86rem; font-weight:700; margin-bottom:5px; line-height:1.3;}
+.peta-tile p{font-size:.75rem; color:var(--ink-soft); line-height:1.4;}
+
+/* ============ MOBILE ============ */
+@media (max-width:880px){
+  .shell{display:block;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:14px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(120deg, var(--sidebar-bg1), var(--sidebar-bg2));
+    padding:13px 16px; border-bottom:1px solid var(--sidebar-line);
+  }
+  .mobile-topbar .t{color:#fff; font-weight:700; font-size:.95rem; font-family:"Fraunces",serif;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; width:82%; max-width:300px;
+    transform:translateX(-100%); transition:transform .28s ease;
+    box-shadow:2px 0 28px rgba(0,0,0,.45);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{position:fixed; inset:0; background:rgba(4,4,3,.6); z-index:55;}
+  .sidebar-overlay.show{display:block;}
+  main{width:100%; min-width:0;}
+  .view{padding:26px 18px 60px; scroll-margin-top:78px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-cards{grid-template-columns:1fr;}
+  .peta-grid{grid-template-columns:repeat(2,1fr);}
+  .term-list{grid-template-columns:1fr;}
+}
+@media (max-width:520px){
+  .problem-line, .step-line{font-size:.92rem;}
+  .peta-grid{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .nav-card, .peta-tile{transition:none;}
+}
+</style>
+
+</head><body><div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="t">Segi Empat &amp; Lingkaran</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="10" height="10" rx="1" stroke-width="1.6"/><circle cx="17.5" cy="17.5" r="4.5" stroke-width="1.6"/></svg>
+      </div>
+      <h1>Segi Empat &amp; Lingkaran</h1>
+      <div class="sub">Geometri &middot; Bab 7<br><b>24 slide</b> &middot; sumber Bill Cox</div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-group-label">Mulai di sini</div>
+      <button class="nav-btn" data-target="ringkasan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        Ringkasan
+      </button>
+
+      <div class="nav-group-label">Materi pokok</div>
+      <button class="nav-btn" data-target="pengantar">
+        <svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4-8 4-8-4Z" stroke-linejoin="round"/><path d="M4 16l8 4 8-4M4 12l8 4 8-4" stroke-linejoin="round"/></svg>
+        01 Lima Jenis Segi Empat
+      </button>
+      <button class="nav-btn" data-target="sifat">
+        <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.4" stroke-width="1.7"/><path d="M4 12h16M12 5v14" stroke-width="1.4"/></svg>
+        02 Sifat Segi Empat
+      </button>
+      <button class="nav-btn" data-target="luas">
+        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><circle cx="16.5" cy="16.5" r="4" /><path d="M4 20 20 4" stroke-linecap="round"/></svg>
+        03 Rumus Luas
+      </button>
+      <button class="nav-btn" data-target="contoh">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/></svg>
+        04 Contoh Perhitungan
+      </button>
+      <button class="nav-btn" data-target="busur">
+        <svg viewBox="0 0 24 24"><path d="M4 16A10 10 0 0 1 20 16" stroke-linecap="round"/><circle cx="4" cy="16" r="1.3"/><circle cx="20" cy="16" r="1.3"/></svg>
+        05 Busur Lingkaran
+      </button>
+      <button class="nav-btn" data-target="juring">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke-width="1.6"/><path d="M12 12 12 3.5A8.5 8.5 0 0 1 19 16Z" stroke-linejoin="round"/></svg>
+        06 Juring Lingkaran
+      </button>
+      <button class="nav-btn" data-target="latihan">
+        <svg viewBox="0 0 24 24"><path d="M4 20 6 14 16 4l4 4-10 10-6 2Z" stroke-linejoin="round"/><path d="M13 7l4 4" /></svg>
+        07 Latihan Mandiri
+      </button>
+
+      <div class="nav-group-label">Penutup</div>
+      <button class="nav-btn" data-target="ringkasan-akhir">
+        <svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg>
+        Ringkasan &amp; Referensi
+      </button>
+    </nav>
+    <div class="sidebar-foot">Dasbor referensi kuliah &middot; 24 slide dipetakan ke 8 bagian</div>
+  </aside>
+
+  <main id="mainArea">
+
+<section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Geometri &middot; Bab 7</span>
+        <h2>Segi Empat &amp; Lingkaran</h2>
+        <p class="lede">Referensi kerja satu pertemuan penuh: sifat lima jenis segi empat, rumus luas delapan bangun datar, contoh perhitungan luas &amp; keliling, hingga panjang busur dan luas juring lingkaran &mdash; 21 kartu materi dipetakan dari 24 slide perkuliahan.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Prinsip utama</span>Hampir semua rumus di bab ini adalah bentuk alas &times; tinggi tegak lurus (untuk bangun bersisi lurus) atau pecahan dari 360&deg; (untuk busur dan juring lingkaran) &mdash; dua pola perbandingan yang berulang di seluruh materi.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-tile"><div class="num">7</div><div class="lbl">Sub-topik (01&ndash;07)</div></div>
+        <div class="card stat-tile"><div class="num">21</div><div class="lbl">Kartu materi</div></div>
+        <div class="card stat-tile"><div class="num">17</div><div class="lbl">Diskusi kelas</div></div>
+        <div class="card stat-tile"><div class="num">24</div><div class="lbl">Slide sumber</div></div>
+      </div>
+
+      <div class="flow-strip">
+        <span>L = a &times; t</span><span class="arrow">&rarr;</span>
+        <span>L = &frac12; &times; a &times; t</span><span class="arrow">&rarr;</span>
+        <span>busur = (&theta;/360&deg;) &times; K</span><span class="arrow">&rarr;</span>
+        <span>juring = (&theta;/360&deg;) &times; L<sub>lingkaran</sub></span>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Peta materi</h3>
+        <div class="peta-grid">
+          <button class="card peta-tile" data-goto="pengantar">
+            <span class="code">01</span>
+            <h4>Lima Jenis Segi Empat</h4>
+            <p>Mengenal persegi panjang, bujur sangkar, jajaran genjang, belah ketupat, dan trapesium.</p>
+          </button>
+          <button class="card peta-tile" data-goto="sifat">
+            <span class="code">02</span>
+            <h4>Sifat Segi Empat</h4>
+            <p>Sudut, sisi, dan diagonal masing-masing dari lima jenis segi empat.</p>
+          </button>
+          <button class="card peta-tile" data-goto="luas">
+            <span class="code">03</span>
+            <h4>Rumus Luas</h4>
+            <p>Delapan rumus luas: bangun bersisi lurus hingga turunan lingkaran.</p>
+          </button>
+          <button class="card peta-tile" data-goto="contoh">
+            <span class="code">04</span>
+            <h4>Contoh Perhitungan</h4>
+            <p>Tujuh contoh luas &amp; keliling dengan angka nyata.</p>
+          </button>
+          <button class="card peta-tile" data-goto="busur">
+            <span class="code">05</span>
+            <h4>Busur Lingkaran</h4>
+            <p>Definisi busur, rumus panjang busur, dan dua contoh perhitungan.</p>
+          </button>
+          <button class="card peta-tile" data-goto="juring">
+            <span class="code">06</span>
+            <h4>Juring Lingkaran</h4>
+            <p>Rumus luas juring dan satu contoh perhitungan.</p>
+          </button>
+          <button class="card peta-tile" data-goto="latihan">
+            <span class="code">07</span>
+            <h4>Latihan Mandiri</h4>
+            <p>Tiga soal komposit untuk dikerjakan sendiri.</p>
+          </button>
+          <button class="card peta-tile" data-goto="ringkasan-akhir">
+            <span class="code">&#8226;</span>
+            <h4>Ringkasan &amp; Referensi</h4>
+            <p>Lima gagasan inti dan rujukan sumber untuk pendalaman.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Jelajahi materi</h3>
+        <div class="nav-cards">
+          <button class="card nav-card" data-goto="pengantar">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 8 12 4l8 4-8 4-8-4Z" stroke-linejoin="round"/><path d="M4 16l8 4 8-4M4 12l8 4 8-4" stroke-linejoin="round"/></svg></div>
+            <h3>Lima Jenis Segi Empat</h3>
+            <p>Sekilas lima bangun segi empat dasar sebelum mempelajari sifatnya masing-masing.</p>
+            <span class="tag">Kartu 1 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="sifat">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.4" stroke-width="1.7"/><path d="M4 12h16M12 5v14" stroke-width="1.4"/></svg></div>
+            <h3>Sifat Segi Empat</h3>
+            <p>Sudut, sisi, dan sifat diagonal pada persegi panjang, bujur sangkar, jajaran genjang, belah ketupat, dan trapesium.</p>
+            <span class="tag">Kartu 2&ndash;6 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="luas">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><circle cx="16.5" cy="16.5" r="4"/><path d="M4 20 20 4" stroke-linecap="round"/></svg></div>
+            <h3>Rumus Luas</h3>
+            <p>Delapan rumus luas bangun bersisi lurus dan turunan lingkaran, tersusun sebagai referensi cepat.</p>
+            <span class="tag">Kartu 7&ndash;8 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="contoh">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/></svg></div>
+            <h3>Contoh Perhitungan</h3>
+            <p>Tujuh contoh angka nyata: persegi, persegi panjang, segitiga, trapesium, jajar genjang, lingkaran, belah ketupat &amp; layang-layang.</p>
+            <span class="tag">Kartu 9&ndash;15 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="busur">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 16A10 10 0 0 1 20 16" stroke-linecap="round"/><circle cx="4" cy="16" r="1.3"/><circle cx="20" cy="16" r="1.3"/></svg></div>
+            <h3>Busur Lingkaran</h3>
+            <p>Perbedaan busur dan tali busur, rumus panjang busur, dan dua contoh soal.</p>
+            <span class="tag">Kartu 16&ndash;18 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="juring">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke-width="1.6"/><path d="M12 12 12 3.5A8.5 8.5 0 0 1 19 16Z" stroke-linejoin="round"/></svg></div>
+            <h3>Juring Lingkaran</h3>
+            <p>Rumus luas juring sebagai perbandingan sudut pusat, disertai satu contoh perhitungan.</p>
+            <span class="tag">Kartu 19&ndash;20 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="latihan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 20 6 14 16 4l4 4-10 10-6 2Z" stroke-linejoin="round"/><path d="M13 7l4 4"/></svg></div>
+            <h3>Latihan Mandiri</h3>
+            <p>Tiga soal komposit: bangun &quot;I&quot;, bangun bingkai, dan garis singgung lingkaran.</p>
+            <span class="tag">Kartu 21 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="ringkasan-akhir">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg></div>
+            <h3>Ringkasan &amp; Referensi</h3>
+            <p>Rangkuman lima poin utama dan rujukan sumber untuk belajar lebih lanjut.</p>
+            <span class="tag">Penutup &rarr;</span>
+          </button>
+        </div>
+      </div>
+</section>
+
+<!-- ===================== 01 PENGANTAR ===================== -->
+<section class="view" id="view-pengantar">
+  <div class="view-head">
+    <span class="eyebrow">01 &middot; Pengantar</span>
+    <h2>Lima Jenis Segi Empat</h2>
+    <p class="lede">Sebelum mempelajari sifat masing-masing secara rinci, kenali dulu kelima tipe segi empat dasar dan ciri singkatnya.</p>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menyebutkan dan membedakan kelima tipe segi empat dasar sebelum mempelajari sifat masing-masing secara rinci.</p>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">1</span>Lima segi empat dasar</h3>
+    <div class="card example-card">
+      <div class="concept-grid">
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><rect x="15" y="18" width="90" height="54" class="diag-line" fill="none"/></svg>
+          <div class="tt">Persegi Panjang</div>
+          <p class="note">Sudut siku-siku; sisi berhadapan sejajar &amp; sama panjang.</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><rect x="30" y="15" width="60" height="60" class="diag-line" fill="none"/></svg>
+          <div class="tt">Bujur Sangkar</div>
+          <p class="note">Seperti persegi panjang, namun keempat sisinya sama panjang.</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M28 72 48 18 108 18 88 72Z" class="diag-line" fill="none"/></svg>
+          <div class="tt">Jajaran Genjang</div>
+          <p class="note">Sisi berhadapan sejajar &amp; sama panjang; sudut berhadapan sama besar.</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M60 12 96 45 60 78 24 45Z" class="diag-line" fill="none"/></svg>
+          <div class="tt">Belah Ketupat</div>
+          <p class="note">Seperti jajaran genjang, namun keempat sisinya sama panjang.</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M38 18 82 18 102 72 18 72Z" class="diag-line" fill="none"/></svg>
+          <div class="tt">Trapesium</div>
+          <p class="note">Hanya sepasang sisi yang sejajar.</p>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Layang-layang tidak termasuk dalam kelima tipe ini. Sifat apa yang dimiliki layang-layang namun tidak dimiliki trapesium, dan sebaliknya?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 02 SIFAT SEGI EMPAT ===================== -->
+<section class="view" id="view-sifat">
+  <div class="view-head">
+    <span class="eyebrow">02 &middot; Sifat Segi Empat</span>
+    <h2>Sifat Segi Empat</h2>
+    <p class="lede">Setiap jenis segi empat punya ciri sudut, sisi, dan diagonal yang berbeda &mdash; mulai dari yang paling umum (trapesium) hingga yang paling khusus (bujur sangkar).</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">2</span>Sifat Empat Persegi Panjang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menyebutkan sifat sudut, sisi, dan diagonal pada empat persegi panjang (rectangle).</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <rect x="30" y="30" width="140" height="80" class="diag-line" fill="none"/>
+          <line x1="30" y1="30" x2="170" y2="110" class="diag-line-soft"/>
+          <line x1="170" y1="30" x2="30" y2="110" class="diag-line-soft"/>
+          <text x="18" y="26" class="diag-label">A</text>
+          <text x="176" y="26" class="diag-label">B</text>
+          <text x="176" y="120" class="diag-label">C</text>
+          <text x="18" y="120" class="diag-label">D</text>
+        </svg>
+      </div>
+      <div class="proof-list">
+        <div class="proof-item"><span class="pnum">1</span><div class="body"><p>Keempat sudutnya adalah sudut siku-siku (90&deg;).</p></div></div>
+        <div class="proof-item"><span class="pnum">2</span><div class="body"><p>Sisi-sisi yang berhadapan sejajar dan sama panjang.</p></div></div>
+        <div class="proof-item"><span class="pnum">3</span><div class="body"><p>Diagonal-diagonal AC dan BD sama panjang dan saling membagi dua sama panjang.</p></div></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Jika hanya diketahui bahwa keempat sudut sebuah segi empat siku-siku, apakah itu sudah cukup untuk memastikan bangun tersebut persegi panjang? Sisi apa yang masih perlu diperiksa?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">3</span>Sifat Bujur Sangkar</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menjelaskan mengapa bujur sangkar adalah kasus khusus dari empat persegi panjang.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <rect x="55" y="20" width="90" height="90" class="diag-line" fill="none"/>
+          <line x1="55" y1="20" x2="145" y2="110" class="diag-line-soft"/>
+          <line x1="145" y1="20" x2="55" y2="110" class="diag-line-soft"/>
+          <text x="43" y="17" class="diag-label">P</text>
+          <text x="151" y="17" class="diag-label">Q</text>
+          <text x="151" y="122" class="diag-label">R</text>
+          <text x="43" y="122" class="diag-label">S</text>
+        </svg>
+      </div>
+      <div class="proof-list">
+        <div class="proof-item"><span class="pnum">1</span><div class="body"><p>Keempat sudutnya adalah sudut siku-siku.</p></div></div>
+        <div class="proof-item"><span class="pnum">2</span><div class="body"><p>Sisi-sisi yang berhadapan saling sejajar.</p></div></div>
+        <div class="proof-item"><span class="pnum">3</span><div class="body"><p>Semua sisinya sama panjang.</p></div></div>
+        <div class="proof-item"><span class="pnum">4</span><div class="body"><p>Diagonal PR dan QS sama panjang, saling membagi dua sama panjang, dan saling berpotongan tegak lurus.</p></div></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Bujur sangkar memenuhi semua sifat persegi panjang DAN semua sifat belah ketupat sekaligus. Jelaskan mengapa hal ini masuk akal dari sisi jumlah sisi yang sama panjang.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">4</span>Sifat Jajaran Genjang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat membedakan sifat diagonal jajaran genjang dari sifat diagonal persegi panjang.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M60 30 170 30 140 110 30 110Z" class="diag-line" fill="none"/>
+          <line x1="60" y1="30" x2="140" y2="110" class="diag-line-soft"/>
+          <line x1="170" y1="30" x2="30" y2="110" class="diag-line-soft"/>
+          <text x="52" y="22" class="diag-label">W</text>
+          <text x="176" y="22" class="diag-label">X</text>
+          <text x="146" y="124" class="diag-label">Y</text>
+          <text x="16" y="124" class="diag-label">Z</text>
+        </svg>
+      </div>
+      <div class="proof-list">
+        <div class="proof-item"><span class="pnum">1</span><div class="body"><p>Sudut-sudut yang berhadapan memiliki besar yang sama.</p></div></div>
+        <div class="proof-item"><span class="pnum">2</span><div class="body"><p>Sisi-sisi yang berhadapan saling sejajar dan sama panjang.</p></div></div>
+        <div class="proof-item"><span class="pnum">3</span><div class="body"><p>Diagonal-diagonal WY dan XZ saling membagi dua sama panjang.</p></div></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Pada persegi panjang, diagonal sama panjang. Pada jajaran genjang umum, diagonal WY dan XZ TIDAK sama panjang. Mengapa keduanya tetap saling membagi dua sama panjang?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">5</span>Sifat Belah Ketupat</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menjelaskan peran diagonal belah ketupat sebagai pembagi sudut (angle bisector).</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M100 15 155 70 100 125 45 70Z" class="diag-line" fill="none"/>
+          <line x1="100" y1="15" x2="100" y2="125" class="diag-line-soft"/>
+          <line x1="45" y1="70" x2="155" y2="70" class="diag-line-soft"/>
+          <text x="94" y="10" class="diag-label">A</text>
+          <text x="161" y="74" class="diag-label">B</text>
+          <text x="94" y="138" class="diag-label">C</text>
+          <text x="26" y="74" class="diag-label">D</text>
+          <text x="90" y="34" class="diag-given">&alpha;</text>
+          <text x="90" y="58" class="diag-given">&alpha;</text>
+        </svg>
+      </div>
+      <div class="proof-list">
+        <div class="proof-item"><span class="pnum">1</span><div class="body"><p>Sudut-sudut yang berhadapan memiliki besar yang sama.</p></div></div>
+        <div class="proof-item"><span class="pnum">2</span><div class="body"><p>Sudut-sudut yang berhadapan terbagi dua sama besar oleh diagonal (garis bagi sudut).</p></div></div>
+        <div class="proof-item"><span class="pnum">3</span><div class="body"><p>Sisi yang berhadapan saling sejajar; keempat sisinya sama panjang.</p></div></div>
+        <div class="proof-item"><span class="pnum">4</span><div class="body"><p>Diagonal-diagonal saling membagi dua sama panjang dan berpotongan tegak lurus.</p></div></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Belah ketupat adalah jajaran genjang dengan sisi sama panjang. Gunakan sifat ini untuk membuktikan mengapa diagonalnya pasti saling tegak lurus &mdash; pikirkan segitiga sama kaki yang terbentuk oleh satu diagonal.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">6</span>Sifat Trapesium</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat mengidentifikasi trapesium sebagai segi empat dengan hanya sepasang sisi sejajar.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M65 30 135 30 165 110 35 110Z" class="diag-line" fill="none"/>
+          <text x="58" y="22" class="diag-label">E</text>
+          <text x="140" y="22" class="diag-label">F</text>
+          <text x="170" y="124" class="diag-label">G</text>
+          <text x="20" y="124" class="diag-label">H</text>
+        </svg>
+      </div>
+      <div class="proof-list">
+        <div class="proof-item"><span class="pnum">1</span><div class="body"><p>Hanya ada sepasang sisi yang sejajar (pada diagram: EF &parallel; HG).</p></div></div>
+        <div class="proof-item"><span class="pnum">2</span><div class="body"><p>Sisi EH dan FG (kaki trapesium) umumnya tidak sejajar dan tidak sama panjang.</p></div></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Dari kelima tipe segi empat yang telah dipelajari, trapesium adalah satu-satunya yang TIDAK punya sisi berhadapan sejajar pada kedua pasangnya. Urutkan kelima bangun dari yang paling &lsquo;umum&rsquo; (sifat paling sedikit) ke yang paling &lsquo;khusus&rsquo; (sifat paling banyak).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 03 RUMUS LUAS ===================== -->
+<section class="view" id="view-luas">
+  <div class="view-head">
+    <span class="eyebrow">03 &middot; Rumus Luas</span>
+    <h2>Rumus Luas</h2>
+    <p class="lede">Delapan rumus luas yang paling sering dipakai &mdash; empat untuk bangun bersisi lurus, dan empat lagi diturunkan dari lingkaran.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">7</span>Bujursangkar, Persegi Panjang, Jajar Genjang, Segitiga</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menuliskan rumus luas untuk empat bangun datar bersisi lurus yang paling umum.</p>
+    </div>
+    <div class="card example-card">
+      <div class="concept-grid">
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><rect x="35" y="20" width="50" height="50" class="diag-line" fill="none"/></svg>
+          <div class="tt">Bujursangkar</div>
+          <div class="eq">L = s&sup2;</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><rect x="18" y="26" width="84" height="38" class="diag-line" fill="none"/></svg>
+          <div class="tt">Persegi Panjang</div>
+          <div class="eq">L = p &times; l</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M28 65 44 22 100 22 84 65Z" class="diag-line" fill="none"/></svg>
+          <div class="tt">Jajar Genjang</div>
+          <div class="eq">L = a &times; t</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M60 18 96 66 24 66Z" class="diag-line" fill="none"/></svg>
+          <div class="tt">Segitiga</div>
+          <div class="eq">L = &frac12; &times; a &times; t</div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Rumus luas jajaran genjang (a&times;t) dan segitiga (&frac12;&times;a&times;t) berbeda hanya oleh faktor &frac12;. Gambarkan bagaimana sebuah segitiga bisa dianggap &lsquo;setengah&rsquo; dari jajaran genjang untuk menjelaskan hubungan ini.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">8</span>Trapesium, Lingkaran, Setengah Lingkaran, Sektor</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menuliskan rumus luas untuk trapesium dan tiga bentuk turunan lingkaran.</p>
+    </div>
+    <div class="card example-card">
+      <div class="concept-grid">
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M40 22 80 22 100 65 20 65Z" class="diag-line" fill="none"/></svg>
+          <div class="tt">Trapesium</div>
+          <div class="eq">L = &frac12;(a+b) &times; t</div>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><circle cx="60" cy="45" r="27" class="diag-line" fill="none"/></svg>
+          <div class="tt">Lingkaran</div>
+          <div class="eq">L = &pi;r&sup2;</div>
+          <p class="note">atau &pi;d&sup2;/4</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M33 55A27 27 0 0 1 87 55Z" class="diag-line" fill="none"/><line x1="33" y1="55" x2="87" y2="55" class="diag-line"/></svg>
+          <div class="tt">Setengah Lingkaran</div>
+          <div class="eq">L = &frac12;&pi;r&sup2;</div>
+          <p class="note">atau &pi;d&sup2;/8</p>
+        </div>
+        <div class="concept-tile">
+          <svg class="mini-svg" viewBox="0 0 120 90"><path d="M60 45 60 15A30 30 0 0 1 84 60Z" class="diag-line" fill="none"/><circle cx="60" cy="45" r="30" class="diag-line-soft" fill="none"/></svg>
+          <div class="tt">Sektor Lingkaran</div>
+          <div class="eq">L = (&theta;&deg;/360&deg;)(&pi;r&sup2;)</div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Rumus luas sektor L=(&theta;/360&deg;)&times;&pi;r&sup2; akan menjadi luas lingkaran penuh jika &theta;=360&deg;, dan luas setengah lingkaran jika &theta;=180&deg;. Tunjukkan secara aljabar bahwa kedua kasus khusus ini konsisten dengan rumus masing-masing.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 04 CONTOH PERHITUNGAN ===================== -->
+<section class="view" id="view-contoh">
+  <div class="view-head">
+    <span class="eyebrow">04 &middot; Contoh Perhitungan</span>
+    <h2>Contoh Perhitungan</h2>
+    <p class="lede">Tujuh contoh soal dengan angka nyata &mdash; menerapkan rumus luas dan keliling pada persegi, persegi panjang, segitiga, trapesium, jajar genjang, lingkaran, belah ketupat, dan layang-layang.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">9</span>Luas dan Keliling Persegi</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas dan keliling persegi dari panjang satu sisinya.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">9</span>
+        <div><h4>Persegi dengan sisi 2 cm</h4><div class="sub">s = 2 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <rect x="65" y="25" width="70" height="70" class="diag-line" fill="none"/>
+          <text x="100" y="18" text-anchor="middle" class="diag-given">2 cm</text>
+          <text x="146" y="64" class="diag-given">2 cm</text>
+        </svg>
+      </div>
+      <div class="problem-line">s = 2 cm</div>
+      <div class="steps">
+        <div class="step-line">L = s&sup2; = 2 &times; 2 = 4</div>
+        <div class="step-line">K = 4 &times; s = 4 &times; 2 = 8</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Luas</span><span class="val">L = 4 cm&sup2;</span></div>
+          <div><span class="lbl">Keliling</span><span class="val">K = 8 cm</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Jika sisi persegi diperbesar dua kali lipat, apa yang terjadi pada luasnya? Bandingkan dengan apa yang terjadi pada kelilingnya &mdash; mengapa laju perubahannya berbeda?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">10</span>Luas dan Keliling Persegi Panjang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas dan keliling persegi panjang dari panjang dan lebarnya.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">10</span>
+        <div><h4>Persegi panjang 6 m &times; 3 m</h4><div class="sub">p = 6 m,&nbsp; l = 3 m</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <rect x="30" y="40" width="140" height="55" class="diag-line" fill="none"/>
+          <text x="100" y="32" text-anchor="middle" class="diag-given">6 m</text>
+          <text x="176" y="72" class="diag-given">3 m</text>
+        </svg>
+      </div>
+      <div class="problem-line">p = 6 m,&nbsp; l = 3 m</div>
+      <div class="steps">
+        <div class="step-line">L = p &times; l = 6 &times; 3 = 18</div>
+        <div class="step-line">K = 2p + 2l = 2(6) + 2(3) = 18</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Luas</span><span class="val">L = 18 m&sup2;</span></div>
+          <div><span class="lbl">Keliling</span><span class="val">K = 18 m</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Sebuah persegi panjang punya keliling 18 m yang sama dengan contoh ini, tetapi bentuknya berbeda (misalnya p=8, l=1). Apakah luasnya juga akan sama? Apa yang bisa disimpulkan tentang hubungan keliling dan luas?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">11</span>Luas dan Keliling Segitiga</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas dan keliling segitiga sama kaki dari alas, tinggi, dan panjang sisi miringnya.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">11</span>
+        <div><h4>Segitiga sama kaki 6&ndash;5&ndash;5 m</h4><div class="sub">a = 6 m,&nbsp; t = 4 m,&nbsp; sisi = 5 m</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M35 105 165 105 100 25Z" class="diag-line" fill="none"/>
+          <line x1="100" y1="105" x2="100" y2="25" class="diag-line-soft"/>
+          <text x="100" y="122" text-anchor="middle" class="diag-given">6 m</text>
+          <text x="60" y="68" class="diag-given">5 m</text>
+          <text x="140" y="68" class="diag-given">5 m</text>
+          <text x="108" y="65" class="diag-result">4 m</text>
+        </svg>
+      </div>
+      <div class="problem-line">a = 6 m,&nbsp; t = 4 m,&nbsp; sisi = 5 m</div>
+      <div class="steps">
+        <div class="step-line">L = &frac12; &times; a &times; t = &frac12; &times; 6 &times; 4 = 12</div>
+        <div class="step-line">K = 6 + 5 + 5 = 16</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Luas</span><span class="val">L = 12 m&sup2;</span></div>
+          <div><span class="lbl">Keliling</span><span class="val">K = 16 m</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Tinggi segitiga (garis putus-putus pada diagram) harus tegak lurus terhadap alas. Jika yang diketahui hanya ketiga sisi (6, 5, 5) tanpa tinggi, bagaimana cara mencari tinggi tersebut?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">12</span>Luas dan Keliling Trapesium</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas dan keliling trapesium dari kedua sisi sejajar, tinggi, dan kedua kakinya.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">12</span>
+        <div><h4>Trapesium siku-siku 6&ndash;9&ndash;4&ndash;5 km</h4><div class="sub">a = 6 km,&nbsp; b = 9 km,&nbsp; t = 4 km,&nbsp; kaki = 5 km</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M50 30 130 30 165 100 35 100Z" class="diag-line" fill="none"/>
+          <line x1="50" y1="30" x2="35" y2="100" class="diag-line-soft"/>
+          <text x="90" y="22" text-anchor="middle" class="diag-given">6 km</text>
+          <text x="100" y="122" text-anchor="middle" class="diag-given">9 km</text>
+          <text x="20" y="68" class="diag-result">4 km</text>
+          <text x="152" y="68" class="diag-given">5 km</text>
+        </svg>
+      </div>
+      <div class="problem-line">a = 6 km,&nbsp; b = 9 km,&nbsp; t = 4 km,&nbsp; kaki = 5 km</div>
+      <div class="steps">
+        <div class="step-line">L = &frac12;(a+b) &times; t = &frac12;(6+9) &times; 4 = 30</div>
+        <div class="step-line">K = 9 + 5 + 6 + 4 = 24</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Luas</span><span class="val">L = 30 km&sup2;</span></div>
+          <div><span class="lbl">Keliling</span><span class="val">K = 24 km</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Rumus luas trapesium L=&frac12;(a+b)&times;t bisa dipandang sebagai rata-rata dua sisi sejajar dikalikan tinggi. Jelaskan mengapa &lsquo;rata-rata&rsquo; ini masuk akal secara geometris.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">13</span>Luas dan Keliling Jajar Genjang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas dan keliling jajar genjang, membedakan tinggi tegak lurus dari panjang sisi miring.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">13</span>
+        <div><h4>Jajar genjang 10&ndash;5&ndash;7 dm</h4><div class="sub">a = 10 dm,&nbsp; t = 5 dm,&nbsp; sisi miring = 7 dm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <path d="M55 30 175 30 145 100 25 100Z" class="diag-line" fill="none"/>
+          <line x1="55" y1="30" x2="55" y2="100" class="diag-line-soft"/>
+          <text x="85" y="122" text-anchor="middle" class="diag-given">10 dm</text>
+          <text x="38" y="68" class="diag-result">5 dm</text>
+          <text x="168" y="68" class="diag-given">7 dm</text>
+        </svg>
+      </div>
+      <div class="problem-line">a = 10 dm,&nbsp; t = 5 dm,&nbsp; sisi miring = 7 dm</div>
+      <div class="steps">
+        <div class="step-line">L = a &times; t = 10 &times; 5 = 50</div>
+        <div class="step-line">K = 2(10 + 7) = 34</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Luas</span><span class="val">L = 50 dm&sup2;</span></div>
+          <div><span class="lbl">Keliling</span><span class="val">K = 34 dm</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Pada diagram, sisi miring 7 dm BUKAN tinggi. Tinggi sebenarnya 5 dm (garis putus-putus tegak lurus). Mengapa menggunakan 7 dm sebagai &lsquo;t&rsquo; dalam rumus L=a&times;t akan menghasilkan jawaban yang salah?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">14</span>Luas dan Keliling Lingkaran</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas dan keliling lingkaran menggunakan pendekatan &pi; &asymp; 22/7.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">14</span>
+        <div><h4>Lingkaran dengan r = 14 m</h4><div class="sub">r = 14 m</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="70" r="45" class="diag-line" fill="none"/>
+          <line x1="100" y1="70" x2="145" y2="70" class="diag-line-soft"/>
+          <circle cx="100" cy="70" r="2.4" class="diag-point"/>
+          <text x="115" y="64" class="diag-given">14 m</text>
+        </svg>
+      </div>
+      <div class="problem-line">r = 14 m</div>
+      <div class="steps">
+        <div class="step-line">L = &pi;r&sup2; = 22/7 &times; 14 &times; 14 = 616</div>
+        <div class="step-line">K = 2&pi;r = 2 &times; 22/7 &times; 14 = 88</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="answer-multi">
+          <div><span class="lbl">Luas</span><span class="val">L = 616 m&sup2;</span></div>
+          <div><span class="lbl">Keliling</span><span class="val">K = 88 m</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Mengapa &pi; &asymp; 22/7 dipilih untuk contoh ini alih-alih &pi; &asymp; 3.14? Petunjuk: perhatikan angka jari-jari r=14.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">15</span>Belah Ketupat dan Layang-Layang</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas belah ketupat dan layang-layang menggunakan rumus diagonal yang sama.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">15</span>
+        <div><h4>Belah ketupat &amp; layang-layang</h4><div class="sub">L = &frac12; &times; d&#8321; &times; d&#8322;</div></div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">Belah Ketupat</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <path d="M100 20 138 60 100 100 62 60Z" class="diag-line" fill="none"/>
+            <line x1="100" y1="20" x2="100" y2="100" class="diag-line-soft"/>
+            <line x1="62" y1="60" x2="138" y2="60" class="diag-line-soft"/>
+            <text x="106" y="57" class="diag-given">8 mm</text>
+            <text x="76" y="72" class="diag-given">6 mm</text>
+          </svg>
+        </div>
+        <div class="problem-line">d&#8321; = 8 mm,&nbsp; d&#8322; = 6 mm</div>
+        <div class="steps">
+          <div class="step-line">L = &frac12; &times; 8 &times; 6 = 24 mm&sup2;</div>
+          <div class="step-line">K = 4 &times; 5 = 20 mm</div>
+        </div>
+        <div class="answer-box">
+          <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="answer-multi">
+            <div><span class="lbl">Luas</span><span class="val">L = 24 mm&sup2;</span></div>
+            <div><span class="lbl">Keliling</span><span class="val">K = 20 mm</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">Layang-Layang</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <path d="M100 12 150 55 100 108 50 55Z" class="diag-line" fill="none"/>
+            <line x1="100" y1="12" x2="100" y2="108" class="diag-line-soft"/>
+            <line x1="50" y1="55" x2="150" y2="55" class="diag-line-soft"/>
+            <text x="106" y="52" class="diag-given">48 m</text>
+            <text x="80" y="68" class="diag-given">24 m</text>
+          </svg>
+        </div>
+        <div class="problem-line">d&#8321; = 48 m,&nbsp; d&#8322; = 24 m</div>
+        <div class="steps">
+          <div class="step-line">L = &frac12; &times; 24 &times; 48 = 576 m&sup2;</div>
+          <div class="step-line">K = 2(37 + 5) = 84 m</div>
+        </div>
+        <div class="answer-box">
+          <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="answer-multi">
+            <div><span class="lbl">Luas</span><span class="val">L = 576 m&sup2;</span></div>
+            <div><span class="lbl">Keliling</span><span class="val">K = 84 m</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Belah ketupat dan layang-layang memakai rumus luas yang identik (&frac12;&times;d&#8321;&times;d&#8322;), tetapi rumus kelilingnya berbeda bentuk (4&times;s vs 2(s&#8321;+s&#8322;)). Jelaskan mengapa perbedaan ini muncul dari jumlah pasangan sisi yang sama panjang.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 05 BUSUR LINGKARAN ===================== -->
+<section class="view" id="view-busur">
+  <div class="view-head">
+    <span class="eyebrow">05 &middot; Busur Lingkaran</span>
+    <h2>Busur Lingkaran</h2>
+    <p class="lede">Busur adalah garis lengkung yang menghubungkan dua titik pada lingkaran &mdash; berbeda dari tali busur (chord) yang berupa garis lurus.</p>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat mendefinisikan busur lingkaran dan membedakannya dari tali busur (chord).</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="70" r="50" class="diag-line-soft" fill="none"/>
+          <path d="M64 32A50 50 0 0 1 148 46" class="diag-arc-strong"/>
+          <line x1="64" y1="32" x2="148" y2="46" class="diag-line-soft"/>
+          <circle cx="100" cy="70" r="2.2" class="diag-point"/>
+          <circle cx="64" cy="32" r="2.6" class="diag-point"/>
+          <circle cx="148" cy="46" r="2.6" class="diag-point"/>
+          <text x="50" y="26" class="diag-label">A</text>
+          <text x="154" y="42" class="diag-label">B</text>
+          <text x="104" y="86" class="diag-label">O</text>
+        </svg>
+      </div>
+      <div class="term-list">
+        <div class="term-item"><b>Busur</b><span>Garis lengkung yang terletak pada sisi lengkung lingkaran.</span></div>
+        <div class="term-item"><b>Tali busur</b><span>Menghubungkan dua titik sembarang di lingkaran (busur AB pada diagram, ditandai warna emas).</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Busur AB adalah garis LENGKUNG, sedangkan tali busur AB adalah garis LURUS yang menghubungkan titik A dan B yang sama. Untuk sudut pusat yang sama, mana yang panjangnya lebih besar &mdash; busur atau tali busurnya? Mengapa?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">16</span>Hubungan Sudut Pusat dan Panjang Busur</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menuliskan dan menjelaskan rumus panjang busur berdasarkan perbandingan sudut pusat terhadap 360&deg;.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="80" r="48" class="diag-line-soft" fill="none"/>
+          <path d="M58 47A48 48 0 0 1 142 47" class="diag-arc-strong"/>
+          <line x1="100" y1="80" x2="58" y2="47" class="diag-line"/>
+          <line x1="100" y1="80" x2="142" y2="47" class="diag-line"/>
+          <circle cx="100" cy="80" r="2.2" class="diag-point"/>
+          <text x="44" y="42" class="diag-label">A</text>
+          <text x="148" y="42" class="diag-label">B</text>
+          <text x="104" y="96" class="diag-label">O</text>
+          <text x="90" y="66" class="diag-given" font-size="11">80&deg;</text>
+        </svg>
+      </div>
+      <div class="formula-box">
+        <div class="eq">AB&#772; = (&ang;AOB / 360&deg;) &times; K</div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Rumus ini berbentuk perbandingan senilai: sudut pusat berbanding 360&deg; sama dengan busur berbanding keliling. Tuliskan versi rumus yang setara untuk mencari &ang;AOB jika panjang busur AB dan keliling K sudah diketahui.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">17</span>Contoh: Menghitung Panjang Busur AB</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menerapkan rumus panjang busur pada kasus sudut pusat siku-siku (90&deg;).</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">17</span>
+        <div><h4>Busur AB, &ang;AOB = 90&deg;</h4><div class="sub">K = 44 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="85" r="48" class="diag-line-soft" fill="none"/>
+          <path d="M52 85A48 48 0 0 1 100 37" class="diag-arc-strong"/>
+          <line x1="100" y1="85" x2="52" y2="85" class="diag-line"/>
+          <line x1="100" y1="85" x2="100" y2="37" class="diag-line"/>
+          <circle cx="100" cy="85" r="2.2" class="diag-point"/>
+          <text x="38" y="90" class="diag-label">A</text>
+          <text x="104" y="30" class="diag-label">B</text>
+          <text x="104" y="101" class="diag-label">O</text>
+          <text x="80" y="76" class="diag-given" font-size="11">90&deg;</text>
+        </svg>
+      </div>
+      <div class="problem-line">&ang;AOB = 90&deg;,&nbsp; K = 44 cm</div>
+      <div class="steps">
+        <div class="step-line">AB&#772; = (&ang;AOB / 360&deg;) &times; K</div>
+        <div class="step-line">= (90&deg; / 360&deg;) &times; 44 = &frac14; &times; 44</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">AB&#772; = 11 cm</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Karena &ang;AOB=90&deg; tepat seperempat dari 360&deg;, busur AB otomatis seperempat keliling. Untuk sudut pusat berapa derajat busurnya akan tepat SEPERTIGA keliling?</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">18</span>Contoh: Menghitung Panjang Busur CD</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menerapkan rumus panjang busur pada kasus di mana keliling belum diketahui langsung, hanya jari-jari.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">18</span>
+        <div><h4>Busur CD, &ang;COD = 120&deg;</h4><div class="sub">r = 21 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="85" r="48" class="diag-line-soft" fill="none"/>
+          <path d="M58 51A48 48 0 0 1 142 51" class="diag-arc-strong"/>
+          <line x1="100" y1="85" x2="58" y2="51" class="diag-line"/>
+          <line x1="100" y1="85" x2="142" y2="51" class="diag-line"/>
+          <circle cx="100" cy="85" r="2.2" class="diag-point"/>
+          <text x="44" y="46" class="diag-label">C</text>
+          <text x="148" y="46" class="diag-label">D</text>
+          <text x="104" y="101" class="diag-label">O</text>
+          <text x="90" y="72" class="diag-given" font-size="11">120&deg;</text>
+        </svg>
+      </div>
+      <div class="problem-line">&ang;COD = 120&deg;,&nbsp; r = 21 cm</div>
+      <div class="steps">
+        <div class="step-line">CD&#772; = (&ang;COD / 360&deg;) &times; 2&pi;r</div>
+        <div class="step-line">= (120&deg; / 360&deg;) &times; 2 &times; 22/7 &times; 21 = &frac13; &times; 132</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">CD&#772; = 44 cm</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Pada contoh ini, keliling dihitung dulu dari r=21 cm sebagai langkah antara sebelum mencari busur. Susun ulang langkah-langkahnya menjadi satu rumus tunggal yang langsung menghubungkan busur CD dengan r tanpa menghitung K secara terpisah.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 06 JURING LINGKARAN ===================== -->
+<section class="view" id="view-juring">
+  <div class="view-head">
+    <span class="eyebrow">06 &middot; Juring Lingkaran</span>
+    <h2>Juring Lingkaran</h2>
+    <p class="lede">Luas juring mengikuti pola perbandingan yang sama dengan panjang busur: sebuah pecahan dari sudut pusat terhadap 360&deg;, hanya saja dikalikan dengan luas lingkaran penuh, bukan keliling.</p>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">19</span>Rumus Luas Juring Lingkaran</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menuliskan rumus luas juring sebagai perbandingan sudut pusat terhadap luas lingkaran penuh.</p>
+    </div>
+    <div class="card example-card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="80" r="48" class="diag-line-soft" fill="none"/>
+          <path d="M100 32A48 48 0 0 1 143 100Z" class="diag-line" fill="var(--result-soft)"/>
+          <path d="M100 32A48 48 0 0 1 143 100" class="diag-arc-strong"/>
+          <circle cx="100" cy="80" r="2.2" class="diag-point"/>
+          <text x="94" y="26" class="diag-label">A</text>
+          <text x="148" y="104" class="diag-label">B</text>
+          <text x="104" y="96" class="diag-label">O</text>
+          <text x="112" y="60" class="diag-given" font-size="11">100&deg;</text>
+        </svg>
+      </div>
+      <div class="formula-box">
+        <div class="eq">L<sub>AOB</sub> = (&ang;AOB / 360&deg;) &times; L<sub>lingkaran</sub></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Rumus luas juring L=(&ang;AOB/360&deg;)&times;L<sub>lingkaran</sub> memiliki struktur perbandingan yang identik dengan rumus panjang busur pada materi sebelumnya. Jelaskan mengapa kedua besaran ini (busur dan luas juring) sama-sama sebanding lurus dengan sudut pusat.</p></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">20</span>Contoh: Menghitung Luas Juring JOK</h3>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menghitung luas juring dari sudut pusat dan jari-jari yang diketahui.</p>
+    </div>
+    <div class="card example-card">
+      <div class="example-head">
+        <span class="example-badge">20</span>
+        <div><h4>Juring JOK, &ang;JOK = 120&deg;</h4><div class="sub">r = 42 cm</div></div>
+      </div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 200 140">
+          <circle cx="100" cy="85" r="48" class="diag-line-soft" fill="none"/>
+          <path d="M58 51A48 48 0 0 1 142 51Z" class="diag-line" fill="var(--result-soft)"/>
+          <path d="M58 51A48 48 0 0 1 142 51" class="diag-arc-strong"/>
+          <circle cx="100" cy="85" r="2.2" class="diag-point"/>
+          <text x="44" y="46" class="diag-label">J</text>
+          <text x="148" y="46" class="diag-label">K</text>
+          <text x="104" y="101" class="diag-label">O</text>
+          <text x="90" y="72" class="diag-given" font-size="11">120&deg;</text>
+        </svg>
+      </div>
+      <div class="problem-line">&ang;JOK = 120&deg;,&nbsp; r = 42 cm</div>
+      <div class="steps">
+        <div class="step-line">L<sub>JOK</sub> = (&ang;JOK / 360&deg;) &times; &pi;r&sup2;</div>
+        <div class="step-line">= (120&deg; / 360&deg;) &times; 22/7 &times; 42 &times; 42 = &frac13; &times; 5544</div>
+      </div>
+      <div class="answer-box">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Hasil</span><span class="val">L<sub>JOK</sub> = 1.848 cm&sup2;</span></div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Luas juring JOK di sini adalah sepertiga luas lingkaran penuh (karena 120&deg; adalah sepertiga 360&deg;). Berapa luas lingkaran penuh dengan r=42 cm ini, dan apakah hasilnya konsisten dengan tiga kali luas juring JOK?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 07 LATIHAN MANDIRI ===================== -->
+<section class="view" id="view-latihan">
+  <div class="view-head">
+    <span class="eyebrow">07 &middot; Latihan Mandiri</span>
+    <h2>Latihan: Luas Gabungan dan Garis Singgung</h2>
+    <p class="lede">Tiga soal latihan mandiri &mdash; dikerjakan sendiri tanpa jawaban terpandu &mdash; untuk melatih penguraian bangun komposit dan penerapan Teorema Pythagoras pada garis singgung lingkaran.</p>
+    <div class="objective">
+      <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+      <p><span class="lbl">Target pembelajaran</span>Mahasiswa dapat menguraikan bangun komposit menjadi bangun-bangun dasar dan menerapkan Teorema Pythagoras pada garis singgung lingkaran.</p>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <h3 class="block-title"><span class="n">21</span>Tiga Soal Latihan Mandiri</h3>
+    <div class="card example-card">
+      <div class="sub-ex">
+        <div class="sub-lbl">1. Bangun &ldquo;I&rdquo;</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <path d="M55 20 145 20 145 45 122 45 122 75 145 75 145 100 55 100 55 75 78 75 78 45 55 45Z" class="diag-line" fill="none"/>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Uraikan bangun &ldquo;I&rdquo; ini menjadi beberapa persegi panjang dasar, lalu hitung luas totalnya dengan menjumlahkan (atau menyusun ulang) potongan-potongan tersebut.</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">2. Bangun Bingkai</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <rect x="35" y="18" width="130" height="84" class="diag-line" fill="none"/>
+            <rect x="60" y="38" width="80" height="44" class="diag-line-soft" fill="none"/>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Bingkai ini adalah persegi panjang besar dikurangi persegi panjang kecil di tengahnya. Terapkan strategi &lsquo;luas besar dikurangi luas yang dikeluarkan&rsquo; untuk mencari luas bingkai.</p>
+        </div>
+      </div>
+      <div class="sub-ex">
+        <div class="sub-lbl">3. Garis Singgung</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 200 120">
+            <circle cx="70" cy="60" r="38" class="diag-line-soft" fill="none"/>
+            <circle cx="70" cy="60" r="2.2" class="diag-point"/>
+            <line x1="70" y1="60" x2="108" y2="60" class="diag-line"/>
+            <line x1="108" y1="60" x2="150" y2="24" class="diag-line"/>
+            <line x1="70" y1="60" x2="150" y2="24" class="diag-line-soft"/>
+            <path d="M108 60 100 60 100 52" class="diag-line-soft" stroke-dasharray="0"/>
+            <text x="76" y="52" class="diag-label">O</text>
+            <text x="108" y="76" class="diag-label">A</text>
+            <text x="154" y="20" class="diag-label">B</text>
+          </svg>
+        </div>
+        <div class="prompt-box">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.45.9 1.05.9 1.7V16h5.4v-.5c0-.65.3-1.25.9-1.7A6 6 0 0 0 12 3Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p><span class="lbl">Tugas Anda</span>Garis AB menyinggung lingkaran di titik A, sehingga OA &perp; AB (sudut siku-siku di A). Gunakan Teorema Pythagoras pada segitiga OAB untuk menghubungkan panjang OA (jari-jari), AB (garis singgung), dan OB.</p>
+        </div>
+      </div>
+    </div>
+    <div class="discuss">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="lbl">Diskusi kelas</span><p>Untuk soal bangun berbentuk I dan bangun bingkai, strategi umumnya adalah &lsquo;luas besar dikurangi luas yang dikeluarkan&rsquo; ATAU &lsquo;jumlah beberapa luas kecil&rsquo;. Kapan masing-masing strategi lebih efisien dipakai?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RINGKASAN AKHIR ===================== -->
+<section class="view" id="view-ringkasan-akhir">
+  <div class="view-head">
+    <span class="eyebrow">Penutup</span>
+    <h2>Ringkasan &amp; Referensi</h2>
+    <p class="lede">Lima gagasan inti dari materi segi empat dan lingkaran, dan rujukan sumber untuk pendalaman lebih lanjut.</p>
+  </div>
+
+  <div class="summary-list">
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Lima jenis segi empat</h4><p>Lima jenis segi empat dibedakan lewat sifat sisi, sudut, dan diagonalnya &mdash; dari trapesium (paling longgar) hingga bujur sangkar (paling khusus).</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Rumus luas bersisi lurus</h4><p>Rumus luas bangun bersisi lurus (persegi, persegi panjang, jajar genjang, segitiga, trapesium) semuanya diturunkan dari alas &times; tinggi tegak lurus.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Belah ketupat &amp; layang-layang</h4><p>Belah ketupat dan layang-layang berbagi rumus luas yang sama (&frac12;&times;d&#8321;&times;d&#8322;) karena diagonalnya saling tegak lurus.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Busur &amp; juring lingkaran</h4><p>Panjang busur dan luas juring lingkaran keduanya sebanding lurus dengan sudut pusat, dinyatakan sebagai pecahan dari 360&deg;.</p></div>
+    </div>
+    <div class="card summary-item">
+      <span class="dot"></span>
+      <div><h4>Soal gabungan (komposit)</h4><p>Soal gabungan (komposit) diselesaikan dengan menguraikan bangun menjadi bentuk-bentuk dasar yang sudah dikuasai.</p></div>
+    </div>
+  </div>
+
+  <div class="source-tag">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <div><span class="t1">Sumber materi</span><span class="t2">Bill Cox &mdash; Higher Engineering Mathematics</span></div>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function showView(target, opts){
+    opts = opts || {};
+    document.querySelectorAll('main > section.view').forEach(s=>s.classList.remove('active'));
+    const el = document.getElementById('view-'+target);
+    if(el){ el.classList.add('active'); if(!opts.skipScroll){ el.scrollIntoView({block:'start'}); } }
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target === target);
+    });
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> showView(el.dataset.goto));
+  });
+
+  showView('ringkasan', {skipScroll:true});
+</script>
+</body></html>
