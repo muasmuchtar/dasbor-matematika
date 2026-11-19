@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dasbor Aljabar Teknik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  color-scheme: light;
+  --navy-950:#0f1f4d;
+  --navy-900:#142b66;
+  --navy-800:#1a3579;
+  --navy-700:#1d3b8b;
+  --navy-600:#2f52ab;
+  --navy-500:#4a6bc4;
+  --navy-100:#e1e9ef;
+
+  --paper:#f8fafc;
+  --surface:#ffffff;
+  --surface-2:#eef2f7;
+  --ink:#16233f;
+  --ink-soft:#54607a;
+  --ink-faint:#8792a8;
+  --line:#dbe3ee;
+
+  --accent:#f49e0c;
+  --accent-ink:#7a4c02;
+  --accent-soft:#fdf1da;
+
+  --result:#0d7a5f;
+  --result-soft:#e2f5ee;
+
+  --given:#2f52ab;
+  --given-soft:#e7ecfa;
+
+  --shadow: 0 1px 2px rgba(20,43,102,.06), 0 12px 28px -12px rgba(20,43,102,.22);
+
+  /* fixed brand rail (deliberately constant across themes) */
+  --sidebar-bg1:#0f1f4d;
+  --sidebar-bg2:#1a3579;
+  --sidebar-ink:#eef2fb;
+  --sidebar-ink-soft:#a9b7dd;
+  --sidebar-line:rgba(255,255,255,.12);
+  --sidebar-active-bg:rgba(244,158,12,.16);
+  --sidebar-active-line:#f49e0c;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0a1330;
+    --surface:#111b3d;
+    --surface-2:#16224a;
+    --ink:#e8ecf8;
+    --ink-soft:#aab4d6;
+    --ink-faint:#7883ab;
+    --line:#243063;
+    --navy-100:#1b2757;
+
+    --accent:#ffb545;
+    --accent-ink:#ffdca3;
+    --accent-soft:#3a2a10;
+
+    --result:#3ddba3;
+    --result-soft:#0f3630;
+
+    --given:#9db8ff;
+    --given-soft:#182451;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0a1330;
+  --surface:#111b3d;
+  --surface-2:#16224a;
+  --ink:#e8ecf8;
+  --ink-soft:#aab4d6;
+  --ink-faint:#7883ab;
+  --line:#243063;
+  --navy-100:#1b2757;
+
+  --accent:#ffb545;
+  --accent-ink:#ffdca3;
+  --accent-soft:#3a2a10;
+
+  --result:#3ddba3;
+  --result-soft:#0f3630;
+
+  --given:#9db8ff;
+  --given-soft:#182451;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -14px rgba(0,0,0,.6);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Fraunces", Georgia, serif;
+  margin:0;
+  text-wrap:balance;
+  color:var(--ink);
+}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+.mathy, .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric:tabular-nums;}
+
+/* stacked fraction */
+.frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 .2em; line-height:1.15; font-size:.94em; position:relative; top:.05em;}
+.frac .num{padding:0 .18em .06em; border-bottom:1.4px solid currentColor;}
+.frac .den{padding:.06em .18em 0;}
+sup, sub{line-height:0;}
+
+/* ============ LAYOUT SHELL ============ */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:278px; flex:0 0 278px;
+  background:linear-gradient(175deg, var(--sidebar-bg1), var(--sidebar-bg2) 78%);
+  color:var(--sidebar-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--sidebar-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px;}
+
+.brand{padding:26px 22px 18px; border-bottom:1px solid var(--sidebar-line);}
+.brand-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:rgba(244,158,12,.18); color:var(--accent-ink, var(--accent));
+  margin-bottom:14px;
+}
+.brand-mark svg{width:21px; height:21px; stroke:var(--accent); fill:none;}
+.brand h1{font-size:1.28rem; font-weight:700; color:#fff; line-height:1.2;}
+.brand .sub{margin-top:6px; font-size:.78rem; color:var(--sidebar-ink-soft); line-height:1.4;}
+.brand .sub b{color:var(--sidebar-ink); font-weight:600;}
+
+nav.navlist{padding:14px 12px 26px; flex:1;}
+.nav-group-label{
+  font-size:.66rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sidebar-ink-soft); opacity:.75;
+  padding:16px 12px 6px;
+}
+.nav-group-label:first-child{padding-top:6px;}
+.nav-btn{
+  width:100%; display:flex; align-items:center; gap:11px;
+  padding:9px 12px; margin:2px 0; border:none; background:transparent;
+  border-radius:9px; color:var(--sidebar-ink-soft); text-align:left;
+  font-size:.87rem; font-weight:500; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-btn svg{width:17px; height:17px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7;}
+.nav-btn:hover{background:rgba(255,255,255,.07); color:#fff;}
+.nav-btn.active{
+  background:var(--sidebar-active-bg); color:#fff; font-weight:600;
+  border-left:3px solid var(--sidebar-active-line);
+}
+
+.sidebar-foot{padding:16px 22px 22px; border-top:1px solid var(--sidebar-line); font-size:.72rem; color:var(--sidebar-ink-soft); line-height:1.5;}
+
+main{flex:1; min-width:0;}
+.view{display:none; padding:44px 48px 80px; max-width:980px;}
+.view.active{display:block;}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:100px; margin-bottom:14px;
+}
+.view-head h2{font-size:clamp(1.5rem,1.25rem + 1.1vw,2.05rem); font-weight:700;}
+.view-head .lede{margin-top:10px; font-size:1rem; color:var(--ink-soft); max-width:60ch; line-height:1.55;}
+
+.objective{
+  margin-top:18px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px;
+}
+.objective svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--navy-600); fill:none; stroke-width:1.8;}
+.objective .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy-600); display:block; margin-bottom:3px;}
+.objective p{font-size:.92rem; color:var(--ink); line-height:1.5;}
+
+/* ============ TOPBAR MOBILE ============ */
+.mobile-topbar{display:none;}
+.hamburger-btn{
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+  width:38px; height:38px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.25); border-radius:8px; cursor:pointer; padding:0; flex:none;
+}
+.hamburger-btn span{display:block; width:17px; height:1.6px; background:#fff; border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px;}
+.stat-tile{padding:18px 18px 16px;}
+.stat-tile .num{font-family:"Fraunces",serif; font-weight:700; font-size:1.9rem; color:var(--navy-700); line-height:1;}
+.stat-tile .lbl{margin-top:6px; font-size:.8rem; color:var(--ink-soft);}
+
+.nav-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.nav-card{
+  padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(20,43,102,.06),0 18px 30px -14px rgba(20,43,102,.28);}
+.nav-card .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--navy-100); color:var(--navy-700);
+}
+.nav-card .icon-wrap svg{width:19px; height:19px; stroke:var(--navy-700); fill:none; stroke-width:1.7;}
+.nav-card h3{font-size:1rem; font-weight:600;}
+.nav-card p{font-size:.85rem; color:var(--ink-soft); line-height:1.45;}
+.nav-card .tag{font-size:.7rem; font-weight:700; color:var(--navy-600); letter-spacing:.03em;}
+
+.section-block{margin-top:34px;}
+.section-block > h3.block-title{font-size:1.15rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+.section-block > h3.block-title .n{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px;
+  background:var(--navy-700); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+
+/* glossary */
+.table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:14px;}
+table.glossary{border-collapse:collapse; width:100%; min-width:520px; background:var(--surface);}
+table.glossary th{
+  text-align:left; font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-soft); background:var(--surface-2); padding:12px 18px; border-bottom:1px solid var(--line);
+}
+table.glossary td{padding:12px 18px; border-bottom:1px solid var(--line); font-size:.92rem;}
+table.glossary tr:last-child td{border-bottom:none;}
+table.glossary td.en{font-family:"JetBrains Mono",monospace; font-weight:600; color:var(--navy-700); font-size:.83rem; letter-spacing:.01em;}
+table.glossary td.id{color:var(--ink);}
+
+/* law cards */
+.law-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:16px;}
+.law-card{padding:18px;}
+.law-card .idx{
+  display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:6px;
+  background:var(--navy-100); color:var(--navy-700); font-size:.72rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+  margin-bottom:12px;
+}
+.law-card .formula{font-size:1.15rem; color:var(--ink); text-align:center; padding:10px 0; }
+.law-card p{font-size:.82rem; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+/* discussion callout */
+.discuss{
+  margin-top:16px; display:flex; gap:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.discuss svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--accent-ink); fill:none; stroke-width:1.8;}
+.discuss .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px;}
+.discuss p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* example card */
+.example-card{padding:22px 24px; margin-top:16px;}
+.example-head{display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+.example-badge{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px;
+  border-radius:10px; background:var(--navy-700); color:#fff; font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.85rem;
+}
+.example-head h4{font-size:1.02rem; font-weight:700; color:var(--ink);}
+.example-head .sub{font-size:.8rem; color:var(--ink-soft); margin-top:1px;}
+
+.given-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+.chip{
+  font-family:"JetBrains Mono",monospace; font-size:.82rem; font-weight:500;
+  padding:5px 11px; border-radius:100px; background:var(--given-soft); color:var(--given); border:1px solid color-mix(in srgb, var(--given) 25%, transparent);
+}
+
+.problem-line{
+  font-size:1.15rem; color:var(--given); background:var(--given-soft); border-radius:10px; padding:14px 16px;
+  margin-bottom:14px; overflow-x:auto;
+}
+.steps{margin-bottom:16px;}
+.step-line{
+  font-size:1.02rem; color:var(--ink); padding:5px 0; overflow-x:auto; white-space:nowrap;
+}
+.step-line:not(:first-child){padding-left:1.35em; color:var(--ink-soft);}
+.step-line .eq{color:var(--ink-faint); margin:0 .3em;}
+
+.answer-box{
+  display:flex; align-items:center; gap:12px; background:var(--result-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--result) 30%, transparent);
+}
+.answer-box svg{width:18px; height:18px; flex:none; stroke:var(--result); fill:none; stroke-width:2.2;}
+.answer-box .val{font-size:1.08rem; font-weight:600; color:var(--result); font-family:"JetBrains Mono",monospace;}
+.answer-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--result); opacity:.8; display:block; margin-bottom:2px;}
+
+/* factor parts */
+.factor-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px;}
+.factor-part{background:var(--surface-2); border-radius:10px; padding:14px; text-align:center;}
+.factor-part .lbl{font-size:.72rem; font-weight:700; color:var(--ink-faint); margin-bottom:8px;}
+.factor-part .q{font-family:"JetBrains Mono",monospace; color:var(--given); font-size:1rem;}
+.factor-part .arrow{color:var(--ink-faint); margin:6px 0; font-size:.85rem;}
+.factor-part .a{font-family:"JetBrains Mono",monospace; color:var(--result); font-weight:600; font-size:1rem;}
+
+/* latihan grid */
+.latihan-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.latihan-card{padding:16px 18px;}
+.latihan-card .num{
+  display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:100px;
+  background:var(--navy-700); color:#fff; font-size:.74rem; font-weight:700; font-family:"JetBrains Mono",monospace; margin-bottom:10px;
+}
+.latihan-card .expr{font-family:"JetBrains Mono",monospace; font-size:1.05rem; color:var(--ink); margin-bottom:8px; overflow-x:auto;}
+.latihan-card .cond{font-size:.8rem; color:var(--given); font-family:"JetBrains Mono",monospace;}
+
+/* summary list */
+.summary-list{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.summary-item{display:flex; gap:13px; padding:15px 17px; align-items:flex-start;}
+.summary-item .dot{
+  width:8px; height:8px; border-radius:100px; background:var(--accent); flex:none; margin-top:7px;
+}
+.summary-item h4{font-size:.94rem; font-weight:700; margin-bottom:3px;}
+.summary-item p{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+
+.source-tag{
+  margin-top:26px; display:flex; align-items:center; gap:10px; padding:16px 18px; border-radius:12px;
+  background:var(--navy-900); color:#fff;
+}
+.source-tag svg{width:20px; height:20px; flex:none; stroke:var(--accent); fill:none; stroke-width:1.7;}
+.source-tag .t1{font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sidebar-ink-soft); display:block; margin-bottom:2px;}
+.source-tag .t2{font-size:.95rem; font-weight:600;}
+
+/* ============ MOBILE ============ */
+@media (max-width:880px){
+  .shell{display:block;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:14px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(120deg, var(--sidebar-bg1), var(--sidebar-bg2));
+    padding:13px 16px; border-bottom:1px solid var(--sidebar-line);
+  }
+  .mobile-topbar .t{color:#fff; font-weight:700; font-size:.98rem; font-family:"Fraunces",serif;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; width:82%; max-width:300px;
+    transform:translateX(-100%); transition:transform .28s ease;
+    box-shadow:2px 0 28px rgba(0,0,0,.35);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{position:fixed; inset:0; background:rgba(6,10,26,.55); z-index:55;}
+  .sidebar-overlay.show{display:block;}
+  main{width:100%; min-width:0;}
+  .view{padding:26px 18px 60px; scroll-margin-top:78px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-cards{grid-template-columns:1fr;}
+  .law-grid{grid-template-columns:1fr;}
+  .factor-grid{grid-template-columns:1fr;}
+  .latihan-grid{grid-template-columns:1fr;}
+}
+@media (max-width:520px){
+  .problem-line, .step-line{font-size:.92rem;}
+}
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .nav-card{transition:none;}
+}
+</style>
+
+
+</head>
+<body>
+<div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="t">Aljabar Teknik</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M6 4h5l-3 7h4l-6 9 1-7H4l2-9z" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </div>
+      <h1>Aljabar Teknik</h1>
+      <div class="sub">Hukum Indeks &amp; Operasi Dasar<br><b>Matematika Teknik</b> · sumber Bird</div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-group-label">Mulai di sini</div>
+      <button class="nav-btn" data-target="ringkasan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        Ringkasan
+      </button>
+
+      <div class="nav-group-label">Materi pokok</div>
+      <button class="nav-btn" data-target="istilah">
+        <svg viewBox="0 0 24 24"><path d="M4 4.5C4 4 4.6 3.7 5 3.8c2 .4 4 1.3 5.5 2.7v13c-1.5-1.4-3.5-2.3-5.5-2.7-.4-.1-1-.4-1-1z"/><path d="M20 4.5c0-.5-.6-.8-1-.7-2 .4-4 1.3-5.5 2.7v13c1.5-1.4 3.5-2.3 5.5-2.7.4-.1 1-.4 1-1z"/></svg>
+        Istilah Penting
+      </button>
+      <button class="nav-btn" data-target="hukum-indeks">
+        <svg viewBox="0 0 24 24"><path d="M6 18 14 6" stroke-linecap="round"/><circle cx="17" cy="7" r="2.6"/><circle cx="6" cy="18" r="1.6"/></svg>
+        Enam Hukum Indeks
+      </button>
+      <button class="nav-btn" data-target="substitusi">
+        <svg viewBox="0 0 24 24"><path d="M7 7h6M7 7l3-3M7 7l3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 17H11M17 17l-3-3M17 17l-3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Substitusi Nilai
+      </button>
+      <button class="nav-btn" data-target="perkalian">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+        Perkalian Suku Banyak
+      </button>
+      <button class="nav-btn" data-target="tanda-kurung">
+        <svg viewBox="0 0 24 24"><path d="M9 4c-2 1.5-2.5 3.5-2.5 8s.5 6.5 2.5 8" stroke-linecap="round"/><path d="M15 4c2 1.5 2.5 3.5 2.5 8s-.5 6.5-2.5 8" stroke-linecap="round"/></svg>
+        Tanda Kurung
+      </button>
+      <button class="nav-btn" data-target="faktorisasi">
+        <svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="16" r="3.2"/><path d="M10.3 10.3 13.7 13.7" stroke-linecap="round"/></svg>
+        Faktorisasi
+      </button>
+      <button class="nav-btn" data-target="bodmas">
+        <svg viewBox="0 0 24 24"><path d="M4 6h5M4 12h9M4 18h5" stroke-linecap="round"/><circle cx="18" cy="12" r="2.6"/></svg>
+        Urutan Operasi (BODMAS)
+      </button>
+
+      <div class="nav-group-label">Praktik &amp; Penutup</div>
+      <button class="nav-btn" data-target="latihan">
+        <svg viewBox="0 0 24 24"><path d="M4 20 5 15.5 15.5 5l3.5 3.5L8.5 19z"/><path d="M13.5 6.5l3.5 3.5"/></svg>
+        Latihan Mandiri
+      </button>
+      <button class="nav-btn" data-target="ringkasan-akhir">
+        <svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg>
+        Ringkasan &amp; Referensi
+      </button>
+    </nav>
+    <div class="sidebar-foot">Dasbor referensi kuliah &middot; 15 slide dipetakan ke 10 bagian</div>
+  </aside>
+
+  <main id="mainArea">
+<section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Matematika Teknik &middot; Aljabar</span>
+        <h2>Hukum Indeks &amp; Operasi Dasar</h2>
+        <p class="lede">Referensi kerja untuk satu pertemuan aljabar: enam hukum indeks, sepuluh contoh soal terurai langkah demi langkah, dan delapan latihan mandiri &mdash; dipetakan dari 15 slide perkuliahan.</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-tile"><div class="num">6</div><div class="lbl">Hukum indeks</div></div>
+        <div class="card stat-tile"><div class="num">10</div><div class="lbl">Contoh soal terurai</div></div>
+        <div class="card stat-tile"><div class="num">8</div><div class="lbl">Latihan mandiri</div></div>
+        <div class="card stat-tile"><div class="num">10</div><div class="lbl">Istilah kunci Inggris&ndash;Indonesia</div></div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Jelajahi materi</h3>
+        <div class="nav-cards">
+          <button class="card nav-card" data-goto="istilah">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 4.5C4 4 4.6 3.7 5 3.8c2 .4 4 1.3 5.5 2.7v13c-1.5-1.4-3.5-2.3-5.5-2.7-.4-.1-1-.4-1-1z"/><path d="M20 4.5c0-.5-.6-.8-1-.7-2 .4-4 1.3-5.5 2.7v13c1.5-1.4 3.5-2.3 5.5-2.7.4-.1 1-.4 1-1z"/></svg></div>
+            <h3>Istilah Penting</h3>
+            <p>Instruksi bahasa Inggris yang sering muncul pada soal aljabar buku Bird, beserta padanan Indonesianya.</p>
+            <span class="tag">10 istilah &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="hukum-indeks">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 18 14 6" stroke-linecap="round"/><circle cx="17" cy="7" r="2.6"/><circle cx="6" cy="18" r="1.6"/></svg></div>
+            <h3>Enam Hukum Indeks</h3>
+            <p>Perkalian, pembagian, pangkat berpangkat, pangkat pecahan, pangkat negatif, dan pangkat nol &mdash; plus 3 contoh penerapan.</p>
+            <span class="tag">6 hukum + 3 contoh &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="substitusi">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M7 7h6M7 7l3-3M7 7l3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 17H11M17 17l-3-3M17 17l-3 3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Substitusi Nilai</h3>
+            <p>Mengganti variabel dengan nilai bilangan, termasuk pecahan campuran, lalu menghitung hasil akhirnya.</p>
+            <span class="tag">Contoh 1 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="perkalian">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg></div>
+            <h3>Perkalian Suku Banyak</h3>
+            <p>Mengalikan setiap suku pada faktor pertama dengan setiap suku pada faktor kedua, lalu menggabungkan suku sejenis.</p>
+            <span class="tag">Contoh 2 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="tanda-kurung">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 4c-2 1.5-2.5 3.5-2.5 8s.5 6.5 2.5 8" stroke-linecap="round"/><path d="M15 4c2 1.5 2.5 3.5 2.5 8s-.5 6.5-2.5 8" stroke-linecap="round"/></svg></div>
+            <h3>Tanda Kurung</h3>
+            <p>Melepas tanda kurung tunggal dan kurung bersarang secara sistematis dari kurung terdalam ke luar.</p>
+            <span class="tag">Contoh 6&ndash;7 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="faktorisasi">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="16" r="3.2"/><path d="M10.3 10.3 13.7 13.7" stroke-linecap="round"/></svg></div>
+            <h3>Faktorisasi</h3>
+            <p>Menentukan faktor persekutuan terbesar (FPB) dari seluruh suku dan menuliskan bentuk terfaktorkan.</p>
+            <span class="tag">Contoh 8 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="bodmas">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 6h5M4 12h9M4 18h5" stroke-linecap="round"/><circle cx="18" cy="12" r="2.6"/></svg></div>
+            <h3>Urutan Operasi (BODMAS)</h3>
+            <p>Menghitung bentuk aljabar dengan urutan operasi yang konsisten: kali &amp; bagi mendahului tambah &amp; kurang.</p>
+            <span class="tag">Contoh 9&ndash;10 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="latihan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 20 5 15.5 15.5 5l3.5 3.5L8.5 19z"/><path d="M13.5 6.5l3.5 3.5"/></svg></div>
+            <h3>Latihan Mandiri</h3>
+            <p>Delapan soal operasi dasar dan hukum indeks untuk didiskusikan dan dikelompokkan menurut hukum yang dipakai.</p>
+            <span class="tag">8 soal &rarr;</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="source-tag">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5c2-1 5-1.5 8-.3v13c-3-1.2-6-.7-8 .3z"/><path d="M20 5.5c-2-1-5-1.5-8-.3v13c3-1.2 6-.7 8 .3z"/></svg>
+        <div><span class="t1">Sumber materi</span><span class="t2">J. Bird &mdash; Higher Engineering Mathematics</span></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-istilah">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 1 dari 8</span>
+        <h2>Istilah dalam Soal Aljabar</h2>
+        <p class="lede">Buku Bird memberi instruksi soal dalam bahasa Inggris. Mengenali kata kuncinya membuat soal langsung terbaca sebagai perintah matematis.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Tujuan belajar</span>Memahami instruksi bahasa Inggris yang sering muncul dalam soal aljabar.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="glossary">
+          <thead><tr><th>Istilah (Inggris)</th><th>Arti (Indonesia)</th></tr></thead>
+          <tbody>
+            <tr><td class="en">PROBLEM</td><td class="id">Contoh Soal</td></tr>
+            <tr><td class="en">EVALUATE</td><td class="id">Tentukan Nilai</td></tr>
+            <tr><td class="en">SIMPLIFY</td><td class="id">Sederhanakanlah</td></tr>
+            <tr><td class="en">WHEN</td><td class="id">Jika</td></tr>
+            <tr><td class="en">MULTIPLY (BY)</td><td class="id">Kalikan (dengan)</td></tr>
+            <tr><td class="en">REMOVE THE BRACKETS</td><td class="id">Hilangkan Tanda Kurung</td></tr>
+            <tr><td class="en">ADDING GIVE(S)</td><td class="id">Penjumlahan Menghasilkan</td></tr>
+            <tr><td class="en">AND / OR</td><td class="id">Dan / Atau</td></tr>
+            <tr><td class="en">EXERCISE</td><td class="id">Soal Latihan</td></tr>
+            <tr><td class="en">FACTORIZE</td><td class="id">Faktorkanlah</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="discuss">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Diskusi kelas</span><p>Mengapa mahasiswa teknik perlu memahami instruksi bahasa Inggris, selain notasi matematika, ketika membaca buku Bird?</p></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-hukum-indeks">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 2 dari 8</span>
+        <h2>Enam Hukum Indeks</h2>
+        <p class="lede">Semua penyederhanaan pangkat pada aljabar teknik kembali ke enam aturan ini.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Tujuan belajar</span>Menerapkan enam hukum indeks: perkalian, pembagian, pangkat berpangkat, pecahan, negatif, dan nol.</p>
+        </div>
+      </div>
+
+      <div class="law-grid">
+        <div class="card law-card"><div class="idx">i</div><div class="formula mathy"><span class="frac"><span class="num">a<sup>m</sup></span><span class="den">a<sup>n</sup></span></span> = a<sup>m&minus;n</sup></div><p>Pembagian &mdash; kurangkan pangkat penyebut dari pangkat pembilang.</p></div>
+        <div class="card law-card"><div class="idx">ii</div><div class="formula mathy">(a<sup>m</sup>)<sup>n</sup> = a<sup>mn</sup></div><p>Pangkat berpangkat &mdash; kalikan kedua pangkat.</p></div>
+        <div class="card law-card"><div class="idx">iii</div><div class="formula mathy">a<sup>m</sup> &times; a<sup>n</sup> = a<sup>m+n</sup></div><p>Perkalian &mdash; jumlahkan pangkat pada basis yang sama.</p></div>
+        <div class="card law-card"><div class="idx">iv</div><div class="formula mathy">a<sup>&minus;n</sup> = <span class="frac"><span class="num">1</span><span class="den">a<sup>n</sup></span></span></div><p>Pangkat negatif &mdash; balikkan menjadi pecahan berpangkat positif.</p></div>
+        <div class="card law-card"><div class="idx">v</div><div class="formula mathy">a<sup>0</sup> = 1</div><p>Pangkat nol &mdash; berlaku untuk setiap a &ne; 0.</p></div>
+        <div class="card law-card"><div class="idx">vi</div><div class="formula mathy">a<sup>m/n</sup> = <sup>n</sup>&radic;(a<sup>m</sup>)</div><p>Pangkat pecahan &mdash; pembilang jadi pangkat, penyebut jadi indeks akar.</p></div>
+      </div>
+
+      <div class="discuss">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Diskusi kelas</span><p>Turunkan a&#8304; = 1 dari a<sup class="mathy">m</sup>/a<sup class="mathy">n</sup> dengan m = n dan a &ne; 0. Mengapa syarat a &ne; 0 diperlukan?</p></div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title"><span class="n">3</span>Contoh 3 &mdash; Sederhanakan, lalu hitung</h3>
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">03</div>
+            <div><h4>Hukum indeks pada pembagian pangkat</h4><div class="sub">Sederhanakan bentuk pangkat sebelum substitusi nilai.</div></div>
+          </div>
+          <div class="given-row"><span class="chip">a = 3</span><span class="chip">b = 1/8</span><span class="chip">c = 2</span></div>
+          <div class="problem-line mathy"><span class="frac"><span class="num">a<sup>3</sup>b<sup>2</sup>c<sup>4</sup></span><span class="den">abc<sup>&minus;2</sup></span></span></div>
+          <div class="steps mathy">
+            <div class="step-line">= a<sup>3&minus;1</sup>b<sup>2&minus;1</sup>c<sup>4&minus;(&minus;2)</sup> = a<sup>2</sup>bc<sup>6</sup></div>
+            <div class="step-line">= (3)<sup>2</sup>(1/8)(2)<sup>6</sup> = (9)(1/8)(64)</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">a&sup2;bc&#8310; = 72</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Mengapa membagi dengan c<sup>&minus;2</sup> sama dengan mengalikan c&sup2;? Jelaskan langkah 4 &minus; (&minus;2) = 6.</p></div></div>
+        </div>
+
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">04</div>
+            <div><h4>Pecahan aljabar</h4><div class="sub">Memisahkan pecahan menjadi suku tunggal, lalu menerapkan hukum pembagian indeks.</div></div>
+          </div>
+          <div class="problem-line mathy"><span class="frac"><span class="num">x<sup>2</sup>y<sup>3</sup> + xy<sup>2</sup></span><span class="den">xy</span></span></div>
+          <div class="steps mathy">
+            <div class="step-line">= <span class="frac"><span class="num">x<sup>2</sup>y<sup>3</sup></span><span class="den">xy</span></span> + <span class="frac"><span class="num">xy<sup>2</sup></span><span class="den">xy</span></span></div>
+            <div class="step-line">= x<sup>2&minus;1</sup>y<sup>3&minus;1</sup> + x<sup>1&minus;1</sup>y<sup>2&minus;1</sup> = xy<sup>2</sup> + y</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">xy&sup2; + y = y(xy + 1)</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Kapan bentuk xy&sup2; + y lebih berguna? Kapan bentuk y(xy + 1) lebih berguna?</p></div></div>
+        </div>
+
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">05</div>
+            <div><h4>Pangkat pecahan dan bentuk akar</h4><div class="sub">Mengubah bentuk akar menjadi pangkat pecahan, lalu menyederhanakan dengan hukum indeks.</div></div>
+          </div>
+          <div class="problem-line mathy">(x<sup>2</sup>&radic;y)(&radic;x &middot; <sup>3</sup>&radic;y<sup>2</sup>) &divide; &radic;(x<sup>5</sup>y<sup>3</sup>)</div>
+          <div class="steps mathy">
+            <div class="step-line">= <span class="frac"><span class="num">x<sup>2</sup>y<sup>1/2</sup> &middot; x<sup>1/2</sup>y<sup>2/3</sup></span><span class="den">x<sup>5/2</sup>y<sup>3/2</sup></span></span></div>
+            <div class="step-line">= x<sup>2+1/2&minus;5/2</sup> y<sup>1/2+2/3&minus;3/2</sup> = x<sup>0</sup>y<sup>&minus;1/3</sup></div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">y<sup>&minus;1/3</sup> = 1 / <sup>3</sup>&radic;y</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Jika x&#8304; = 1 membuat x hilang dari hasil, apakah nilai x bebas dipilih? Periksa syarat bentuk asal.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-substitusi">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 3 dari 8</span>
+        <h2>Substitusi Nilai</h2>
+        <p class="lede">Mengganti variabel dengan nilai bilangan &mdash; termasuk pecahan campuran &mdash; lalu menghitung hasilnya.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Tujuan belajar</span>Mengganti variabel dengan nilai bilangan, termasuk pecahan, lalu menghitung hasilnya.</p>
+        </div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">01</div>
+          <div><h4>Evaluate 4a&sup2;bc&sup3; &minus; 2ac</h4><div class="sub">Nilai diketahui &mdash; hitung pangkat lebih dulu, baru kalikan koefisien.</div></div>
+        </div>
+        <div class="given-row"><span class="chip">a = 2</span><span class="chip">b = 1/2</span><span class="chip">c = 1&frac12;</span></div>
+        <div class="problem-line mathy">4a&sup2;bc&sup3; &minus; 2ac</div>
+        <div class="steps mathy">
+          <div class="step-line">= <span class="frac"><span class="num">4&times;2&times;2&times;3&times;3&times;3</span><span class="den">2&times;2&times;2&times;2</span></span> &minus; <span class="frac"><span class="num">2&times;2&times;3</span><span class="den">2</span></span></div>
+          <div class="step-line">= 27 &minus; 6</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">4a&sup2;bc&sup3; &minus; 2ac = 21</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Untuk c = 1&frac12;, mengapa c&sup3; dihitung sebelum dikalikan dengan 4a&sup2;b? Apa akibatnya jika urutan tertukar?</p></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-perkalian">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 4 dari 8</span>
+        <h2>Perkalian Suku Banyak</h2>
+        <p class="lede">Mengalikan setiap suku pada faktor pertama dengan setiap suku pada faktor kedua, lalu menggabungkan suku sejenis.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Tujuan belajar</span>Mengalikan setiap suku pada faktor pertama dengan setiap suku pada faktor kedua, lalu menggabungkan suku sejenis.</p>
+        </div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">02</div>
+          <div><h4>Perkalian suku dua</h4><div class="sub">Empat hasil kali, dua di antaranya bergabung menjadi satu suku.</div></div>
+        </div>
+        <div class="problem-line mathy">(3x + 2y)(x &minus; y)</div>
+        <div class="steps mathy">
+          <div class="step-line">= 3x&middot;x + 3x&middot;(&minus;y) + 2y&middot;x + 2y&middot;(&minus;y)</div>
+          <div class="step-line">= 3x&sup2; &minus; 3xy + 2xy &minus; 2y&sup2;</div>
+          <div class="step-line">= 3x&sup2; &minus; xy &minus; 2y&sup2;</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">3x&sup2; &minus; xy &minus; 2y&sup2;</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Dari empat suku hasil perkalian, suku mana yang bergabung? Mengapa x&sup2; dan y&sup2; tidak dapat digabungkan?</p></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-tanda-kurung">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 5 dari 8</span>
+        <h2>Tanda Kurung</h2>
+        <p class="lede">Distribusikan tanda minus atau faktor di luar kurung, lalu gabungkan suku sejenis &mdash; termasuk kurung yang bersarang.</p>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title"><span class="n">6</span>Contoh 6 &mdash; Pelepasan tanda kurung</h3>
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">06</div>
+            <div><h4>Distribusi tanda pada dua kurung</h4><div class="sub">Perhatikan tanda setiap suku saat kurung dikalikan minus.</div></div>
+          </div>
+          <div class="problem-line mathy">a&sup2; &minus; (2a &minus; ab) &minus; a(3b + a)</div>
+          <div class="steps mathy">
+            <div class="step-line">= a&sup2; &minus; 2a + ab &minus; 3ab &minus; a&sup2;</div>
+            <div class="step-line">= &minus;2a &minus; 2ab</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">&minus;2a &minus; 2ab = &minus;2a(1 + b)</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Bandingkan &minus;(2a &minus; ab) dan &minus;a(3b + a). Bagaimana sifat distributif menentukan tanda setiap suku?</p></div></div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title"><span class="n">7</span>Contoh 7 &mdash; Kurung bersarang</h3>
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">07</div>
+            <div><h4>Tiga lapis kurung: (), {}, []</h4><div class="sub">Selesaikan dari kurung terdalam ke luar agar tanda tidak tertukar.</div></div>
+          </div>
+          <div class="problem-line mathy">2a &minus; [3{2(4a &minus; b) &minus; 5(a + 2b)} + 4a]</div>
+          <div class="steps mathy">
+            <div class="step-line">= 2a &minus; [3{8a &minus; 2b &minus; 5a &minus; 10b} + 4a]</div>
+            <div class="step-line">= 2a &minus; [3{3a &minus; 12b} + 4a]</div>
+            <div class="step-line">= 2a &minus; [9a &minus; 36b + 4a]</div>
+            <div class="step-line">= 2a &minus; [13a &minus; 36b]</div>
+            <div class="step-line">= 2a &minus; 13a + 36b</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">&minus;11a + 36b</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Mengapa memulai dari kurung terdalam membantu menghindari kesalahan tanda? Jelaskan setiap tahap.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-faktorisasi">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 6 dari 8</span>
+        <h2>Faktorisasi</h2>
+        <p class="lede">Menentukan faktor persekutuan terbesar (FPB) dari seluruh suku, lalu menuliskan bentuk terfaktorkan.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Tujuan belajar</span>Menentukan faktor persekutuan terbesar (FPB) dan menuliskan bentuk terfaktorkan.</p>
+        </div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">08</div>
+          <div><h4>Faktor persekutuan</h4><div class="sub">Tiga soal dengan FPB yang berbeda kompleksitasnya.</div></div>
+        </div>
+        <div class="factor-grid">
+          <div class="factor-part"><div class="lbl">(a)</div><div class="q mathy">xy &minus; 3xz</div><div class="arrow">&darr; FPB = x</div><div class="a mathy">x(y &minus; 3z)</div></div>
+          <div class="factor-part"><div class="lbl">(b)</div><div class="q mathy">4a&sup2; + 16ab&sup3;</div><div class="arrow">&darr; FPB = 4a</div><div class="a mathy">4a(a + 4b&sup3;)</div></div>
+          <div class="factor-part"><div class="lbl">(c)</div><div class="q mathy">3a&sup2;b &minus; 6ab&sup2; + 15ab</div><div class="arrow">&darr; FPB = 3ab</div><div class="a mathy">3ab(a &minus; 2b + 5)</div></div>
+        </div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Bagaimana memastikan 3ab merupakan FPB pada bagian (c), sehingga tidak ada faktor bersama tersisa?</p></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-bodmas">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 7 dari 8</span>
+        <h2>Urutan Operasi (BODMAS)</h2>
+        <p class="lede">Kali dan bagi selalu mendahului tambah dan kurang; operasi setingkat dikerjakan dari kiri ke kanan.</p>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title"><span class="n">9</span>Contoh 9 &mdash; Urutan operasi</h3>
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">09</div>
+            <div><h4>Perkalian &amp; pembagian sebelum penjumlahan</h4><div class="sub">Kelompokkan suku kali/bagi lebih dulu, baru gabungkan suku sejenis.</div></div>
+          </div>
+          <div class="problem-line mathy">3c + 2c &times; 4c + c &divide; 5c &minus; 8c</div>
+          <div class="steps mathy">
+            <div class="step-line">= 3c + (2c &times; 4c) + (c &divide; 5c) &minus; 8c</div>
+            <div class="step-line">= 3c + 8c&sup2; + 1/5 &minus; 8c</div>
+            <div class="step-line">= 8c&sup2; + (3c &minus; 8c) + 1/5</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">8c&sup2; &minus; 5c + 1/5 = c(8c &minus; 5) + 1/5</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Tambahkan kurung yang menunjukkan urutan BODMAS. Mengapa kali dan bagi mendahului tambah dan kurang?</p></div></div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title"><span class="n">10</span>Contoh 10 &mdash; Pembagian aljabar</h3>
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">10</div>
+            <div><h4>Hasil berupa pecahan aljabar</h4><div class="sub">Suku dengan penyebut a tidak bisa disederhanakan lebih lanjut.</div></div>
+          </div>
+          <div class="problem-line mathy">(2a &minus; 3) &divide; 4a + 5 &times; 6 &minus; 3a</div>
+          <div class="steps mathy">
+            <div class="step-line">= <span class="frac"><span class="num">2a &minus; 3</span><span class="den">4a</span></span> + (5 &times; 6) &minus; 3a</div>
+            <div class="step-line">= <span class="frac"><span class="num">2a</span><span class="den">4a</span></span> &minus; <span class="frac"><span class="num">3</span><span class="den">4a</span></span> + 30 &minus; 3a</div>
+            <div class="step-line">= 1/2 &minus; <span class="frac"><span class="num">3</span><span class="den">4a</span></span> + 30 &minus; 3a</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">30&frac12; &minus; 3/(4a) &minus; 3a</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Mengapa (2a &minus; 3)/(4a) tidak dapat diubah menjadi bentuk tanpa penyebut a? Suku mana yang menghalanginya?</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-latihan">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 8 dari 8</span>
+        <h2>Latihan Mandiri</h2>
+        <p class="lede">Latihan 1 &mdash; operasi dasar dan hukum indeks. Kerjakan tiap soal, lalu kelompokkan menurut hukum indeks yang digunakan.</p>
+      </div>
+
+      <div class="latihan-grid">
+        <div class="card latihan-card"><div class="num">1</div><div class="expr">(x&sup2;y&sup3;z)(x&sup3;yz&sup2;)</div><div class="cond">x = 1/2, y = 2, z = 3</div></div>
+        <div class="card latihan-card"><div class="num">2</div><div class="expr">2ab + 3bc &minus; abc</div><div class="cond">a = 2, b = &minus;2, c = 4</div></div>
+        <div class="card latihan-card"><div class="num">3</div><div class="expr">5pq&sup2;r&sup3;</div><div class="cond">p = 2/5, q = &minus;2, r = &minus;1</div></div>
+        <div class="card latihan-card"><div class="num">4</div><div class="expr">(a<sup>3/2</sup>bc<sup>&minus;3</sup>)(a<sup>1/2</sup>b<sup>&minus;1/2</sup>c)</div><div class="cond">a = 3, b = 4, c = 2</div></div>
+        <div class="card latihan-card"><div class="num">5</div><div class="expr">(a&sup2;b + a&sup3;b) &divide; a&sup2;b&sup2;</div><div class="cond">Sederhanakan bentuk umum</div></div>
+        <div class="card latihan-card"><div class="num">6</div><div class="expr">(4x &minus; 3y + 2z) &minus; (x + 2y &minus; 3z)</div><div class="cond">Sederhanakan bentuk umum</div></div>
+        <div class="card latihan-card"><div class="num">7</div><div class="expr">(a&sup3;b<sup>1/2</sup>c<sup>&minus;1/2</sup>)(ab)<sup>1/3</sup> &divide; (&radic;a&sup3; &middot; &radic;b &middot; c)</div><div class="cond">Sederhanakan bentuk umum</div></div>
+        <div class="card latihan-card"><div class="num">8</div><div class="expr">(2a &minus; 5b + c)(3a + b)</div><div class="cond">Sederhanakan bentuk umum</div></div>
+      </div>
+
+      <div class="discuss">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg>
+        <div><span class="lbl">Diskusi</span><p>Kelompokkan kedelapan soal di atas menurut hukum indeks yang digunakan (i&ndash;vi pada bagian Enam Hukum Indeks).</p></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-ringkasan-akhir">
+      <div class="view-head">
+        <span class="eyebrow">Penutup</span>
+        <h2>Ringkasan &amp; Referensi</h2>
+        <p class="lede">Enam gagasan inti dari pertemuan ini, untuk direvisi sebelum mengerjakan latihan mandiri.</p>
+      </div>
+
+      <div class="summary-list">
+        <div class="card summary-item"><span class="dot"></span><div><h4>Hukum indeks</h4><p>Gunakan aturan perkalian, pembagian, pangkat berpangkat, pecahan, negatif, dan nol sesuai syaratnya.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Substitusi</h4><p>Hitung pangkat variabel sebelum mengalikannya dengan koefisien.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Perkalian</h4><p>Kalikan setiap suku antarfaktor, lalu gabungkan suku sejenis.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Kurung bersarang</h4><p>Mulai dari kurung terdalam agar distribusi tanda mudah dilacak.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Faktorisasi</h4><p>Keluarkan faktor persekutuan terbesar dari seluruh suku.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>BODMAS</h4><p>Kali dan bagi mendahului tambah dan kurang. Operasi setingkat dikerjakan dari kiri ke kanan.</p></div></div>
+      </div>
+
+      <div class="source-tag">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5c2-1 5-1.5 8-.3v13c-3-1.2-6-.7-8 .3z"/><path d="M20 5.5c-2-1-5-1.5-8-.3v13c3-1.2 6-.7 8 .3z"/></svg>
+        <div><span class="t1">Sumber materi</span><span class="t2">J. Bird &mdash; Higher Engineering Mathematics</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function showView(target, opts){
+    opts = opts || {};
+    document.querySelectorAll('main > section.view').forEach(s=>s.classList.remove('active'));
+    const el = document.getElementById('view-'+target);
+    if(el){ el.classList.add('active'); if(!opts.skipScroll){ el.scrollIntoView({block:'start'}); } }
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target === target);
+    });
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> showView(el.dataset.goto));
+  });
+
+  showView('ringkasan', {skipScroll:true});
+</script>
+
+</body>
+</html>

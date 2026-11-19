@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dasbor Persamaan Aljabar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  color-scheme: light;
+  --navy-950:#0f1f4d;
+  --navy-900:#142b66;
+  --navy-800:#1a3579;
+  --navy-700:#1d3b8b;
+  --navy-600:#2f52ab;
+  --navy-500:#4a6bc4;
+  --navy-100:#e1e9ef;
+
+  --paper:#f8fafc;
+  --surface:#ffffff;
+  --surface-2:#eef2f7;
+  --ink:#16233f;
+  --ink-soft:#54607a;
+  --ink-faint:#8792a8;
+  --line:#dbe3ee;
+
+  --accent:#f49e0c;
+  --accent-ink:#7a4c02;
+  --accent-soft:#fdf1da;
+
+  --result:#0d7a5f;
+  --result-soft:#e2f5ee;
+
+  --given:#2f52ab;
+  --given-soft:#e7ecfa;
+
+  --shadow: 0 1px 2px rgba(20,43,102,.06), 0 12px 28px -12px rgba(20,43,102,.22);
+
+  /* fixed brand rail (deliberately constant across themes) */
+  --sidebar-bg1:#0f1f4d;
+  --sidebar-bg2:#1a3579;
+  --sidebar-ink:#eef2fb;
+  --sidebar-ink-soft:#a9b7dd;
+  --sidebar-line:rgba(255,255,255,.12);
+  --sidebar-active-bg:rgba(244,158,12,.16);
+  --sidebar-active-line:#f49e0c;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0a1330;
+    --surface:#111b3d;
+    --surface-2:#16224a;
+    --ink:#e8ecf8;
+    --ink-soft:#aab4d6;
+    --ink-faint:#7883ab;
+    --line:#243063;
+    --navy-100:#1b2757;
+
+    --accent:#ffb545;
+    --accent-ink:#ffdca3;
+    --accent-soft:#3a2a10;
+
+    --result:#3ddba3;
+    --result-soft:#0f3630;
+
+    --given:#9db8ff;
+    --given-soft:#182451;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0a1330;
+  --surface:#111b3d;
+  --surface-2:#16224a;
+  --ink:#e8ecf8;
+  --ink-soft:#aab4d6;
+  --ink-faint:#7883ab;
+  --line:#243063;
+  --navy-100:#1b2757;
+
+  --accent:#ffb545;
+  --accent-ink:#ffdca3;
+  --accent-soft:#3a2a10;
+
+  --result:#3ddba3;
+  --result-soft:#0f3630;
+
+  --given:#9db8ff;
+  --given-soft:#182451;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -14px rgba(0,0,0,.6);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"Fraunces", Georgia, serif;
+  margin:0;
+  text-wrap:balance;
+  color:var(--ink);
+}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+.mathy, .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric:tabular-nums;}
+
+/* stacked fraction */
+.frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 .2em; line-height:1.15; font-size:.94em; position:relative; top:.05em;}
+.frac .num{padding:0 .18em .06em; border-bottom:1.4px solid currentColor;}
+.frac .den{padding:.06em .18em 0;}
+sup, sub{line-height:0;}
+
+/* ============ LAYOUT SHELL ============ */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:278px; flex:0 0 278px;
+  background:linear-gradient(175deg, var(--sidebar-bg1), var(--sidebar-bg2) 78%);
+  color:var(--sidebar-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--sidebar-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px;}
+
+.brand{padding:26px 22px 18px; border-bottom:1px solid var(--sidebar-line);}
+.brand-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:rgba(244,158,12,.18); color:var(--accent-ink, var(--accent));
+  margin-bottom:14px;
+}
+.brand-mark svg{width:21px; height:21px; stroke:var(--accent); fill:none;}
+.brand h1{font-size:1.28rem; font-weight:700; color:#fff; line-height:1.2;}
+.brand .sub{margin-top:6px; font-size:.78rem; color:var(--sidebar-ink-soft); line-height:1.4;}
+.brand .sub b{color:var(--sidebar-ink); font-weight:600;}
+
+nav.navlist{padding:14px 12px 26px; flex:1;}
+.nav-group-label{
+  font-size:.66rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sidebar-ink-soft); opacity:.75;
+  padding:16px 12px 6px;
+}
+.nav-group-label:first-child{padding-top:6px;}
+.nav-btn{
+  width:100%; display:flex; align-items:center; gap:11px;
+  padding:9px 12px; margin:2px 0; border:none; background:transparent;
+  border-radius:9px; color:var(--sidebar-ink-soft); text-align:left;
+  font-size:.87rem; font-weight:500; cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-btn svg{width:17px; height:17px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7;}
+.nav-btn:hover{background:rgba(255,255,255,.07); color:#fff;}
+.nav-btn.active{
+  background:var(--sidebar-active-bg); color:#fff; font-weight:600;
+  border-left:3px solid var(--sidebar-active-line);
+}
+
+.sidebar-foot{padding:16px 22px 22px; border-top:1px solid var(--sidebar-line); font-size:.72rem; color:var(--sidebar-ink-soft); line-height:1.5;}
+
+main{flex:1; min-width:0;}
+.view{display:none; padding:44px 48px 80px; max-width:980px;}
+.view.active{display:block;}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:100px; margin-bottom:14px;
+}
+.view-head h2{font-size:clamp(1.5rem,1.25rem + 1.1vw,2.05rem); font-weight:700;}
+.view-head .lede{margin-top:10px; font-size:1rem; color:var(--ink-soft); max-width:60ch; line-height:1.55;}
+
+.objective{
+  margin-top:18px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px;
+}
+.objective svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--navy-600); fill:none; stroke-width:1.8;}
+.objective .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy-600); display:block; margin-bottom:3px;}
+.objective p{font-size:.92rem; color:var(--ink); line-height:1.5;}
+
+/* ============ TOPBAR MOBILE ============ */
+.mobile-topbar{display:none;}
+.hamburger-btn{
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+  width:38px; height:38px; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.25); border-radius:8px; cursor:pointer; padding:0; flex:none;
+}
+.hamburger-btn span{display:block; width:17px; height:1.6px; background:#fff; border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+/* ============ COMPONENTS ============ */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px;}
+.stat-tile{padding:18px 18px 16px;}
+.stat-tile .num{font-family:"Fraunces",serif; font-weight:700; font-size:1.9rem; color:var(--navy-700); line-height:1;}
+.stat-tile .lbl{margin-top:6px; font-size:.8rem; color:var(--ink-soft);}
+
+.nav-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.nav-card{
+  padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover{transform:translateY(-2px); box-shadow:0 4px 6px rgba(20,43,102,.06),0 18px 30px -14px rgba(20,43,102,.28);}
+.nav-card .icon-wrap{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  background:var(--navy-100); color:var(--navy-700);
+}
+.nav-card .icon-wrap svg{width:19px; height:19px; stroke:var(--navy-700); fill:none; stroke-width:1.7;}
+.nav-card h3{font-size:1rem; font-weight:600;}
+.nav-card p{font-size:.85rem; color:var(--ink-soft); line-height:1.45;}
+.nav-card .tag{font-size:.7rem; font-weight:700; color:var(--navy-600); letter-spacing:.03em;}
+
+.section-block{margin-top:34px;}
+.section-block > h3.block-title{font-size:1.15rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+.section-block > h3.block-title .n{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px;
+  background:var(--navy-700); color:#fff; font-size:.78rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+.section-block > .part-label{
+  font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy-600);
+  margin:18px 0 -6px;
+}
+
+/* discussion callout */
+.discuss{
+  margin-top:16px; display:flex; gap:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.discuss svg{width:18px; height:18px; flex:none; margin-top:2px; stroke:var(--accent-ink); fill:none; stroke-width:1.8;}
+.discuss .lbl{font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); display:block; margin-bottom:3px;}
+.discuss p{font-size:.9rem; color:var(--ink); line-height:1.5;}
+
+/* example card */
+.example-card{padding:22px 24px; margin-top:16px;}
+.example-head{display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+.example-badge{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:38px; padding:0 10px;
+  border-radius:10px; background:var(--navy-700); color:#fff; font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.85rem;
+}
+.example-head h4{font-size:1.02rem; font-weight:700; color:var(--ink);}
+.example-head .sub{font-size:.8rem; color:var(--ink-soft); margin-top:1px;}
+
+.given-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+.chip{
+  font-family:"JetBrains Mono",monospace; font-size:.82rem; font-weight:500;
+  padding:5px 11px; border-radius:100px; background:var(--given-soft); color:var(--given); border:1px solid color-mix(in srgb, var(--given) 25%, transparent);
+}
+
+.problem-line{
+  font-size:1.15rem; color:var(--given); background:var(--given-soft); border-radius:10px; padding:14px 16px;
+  margin-bottom:14px; overflow-x:auto;
+}
+.steps{margin-bottom:16px;}
+.step-line{
+  font-size:1.02rem; color:var(--ink); padding:5px 0; overflow-x:auto; white-space:nowrap;
+}
+.step-line:not(:first-child){padding-left:1.35em; color:var(--ink-soft);}
+.step-line .tag{color:var(--ink-faint); font-size:.82rem; margin-left:.6em;}
+
+.answer-box{
+  display:flex; align-items:center; gap:12px; background:var(--result-soft); border-radius:10px;
+  padding:13px 16px; border:1px solid color-mix(in srgb, var(--result) 30%, transparent);
+}
+.answer-box svg{width:18px; height:18px; flex:none; stroke:var(--result); fill:none; stroke-width:2.2;}
+.answer-box .val{font-size:1.08rem; font-weight:600; color:var(--result); font-family:"JetBrains Mono",monospace;}
+.answer-box .lbl{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--result); opacity:.8; display:block; margin-bottom:2px;}
+
+/* factor / two-part grids */
+.factor-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px;}
+.factor-part{background:var(--surface-2); border-radius:10px; padding:14px; text-align:center;}
+.factor-part .lbl{font-size:.72rem; font-weight:700; color:var(--ink-faint); margin-bottom:8px;}
+.factor-part .q{font-family:"JetBrains Mono",monospace; color:var(--given); font-size:1rem;}
+.factor-part .arrow{color:var(--ink-faint); margin:6px 0; font-size:.85rem;}
+.factor-part .a{font-family:"JetBrains Mono",monospace; color:var(--result); font-weight:600; font-size:1rem;}
+
+/* latihan grid */
+.latihan-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:16px;}
+.latihan-card{padding:16px 18px;}
+.latihan-card .top-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+.latihan-card .num{
+  display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:100px;
+  background:var(--navy-700); color:#fff; font-size:.74rem; font-weight:700; font-family:"JetBrains Mono",monospace;
+}
+.diff-dots{display:inline-flex; gap:4px; align-items:center;}
+.diff-dots .dot{width:7px; height:7px; border-radius:100px; background:var(--line);}
+.diff-dots .dot.filled{background:var(--accent);}
+.latihan-card .expr{font-family:"JetBrains Mono",monospace; font-size:.98rem; color:var(--ink); margin-bottom:4px; overflow-x:auto;}
+.latihan-card .expr + .expr{margin-top:2px;}
+.latihan-card .cond{font-size:.78rem; color:var(--navy-600); font-weight:600; margin-top:8px;}
+
+/* summary list */
+.summary-list{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.summary-item{display:flex; gap:13px; padding:15px 17px; align-items:flex-start;}
+.summary-item .dot{
+  width:8px; height:8px; border-radius:100px; background:var(--accent); flex:none; margin-top:7px;
+}
+.summary-item h4{font-size:.94rem; font-weight:700; margin-bottom:3px;}
+.summary-item p{font-size:.88rem; color:var(--ink-soft); line-height:1.55;}
+
+.source-tag{
+  margin-top:26px; display:flex; align-items:center; gap:10px; padding:16px 18px; border-radius:12px;
+  background:var(--navy-900); color:#fff;
+}
+.source-tag svg{width:20px; height:20px; flex:none; stroke:var(--accent); fill:none; stroke-width:1.7;}
+.source-tag .t1{font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sidebar-ink-soft); display:block; margin-bottom:2px;}
+.source-tag .t2{font-size:.95rem; font-weight:600;}
+
+.flow-strip{
+  margin-top:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line);
+  font-family:"JetBrains Mono",monospace; font-size:.85rem; color:var(--ink-soft); overflow-x:auto;
+}
+.flow-strip .arrow{color:var(--accent); font-weight:700;}
+
+/* ============ MOBILE ============ */
+@media (max-width:880px){
+  .shell{display:block;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:14px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(120deg, var(--sidebar-bg1), var(--sidebar-bg2));
+    padding:13px 16px; border-bottom:1px solid var(--sidebar-line);
+  }
+  .mobile-topbar .t{color:#fff; font-weight:700; font-size:.98rem; font-family:"Fraunces",serif;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; width:82%; max-width:300px;
+    transform:translateX(-100%); transition:transform .28s ease;
+    box-shadow:2px 0 28px rgba(0,0,0,.35);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{position:fixed; inset:0; background:rgba(6,10,26,.55); z-index:55;}
+  .sidebar-overlay.show{display:block;}
+  main{width:100%; min-width:0;}
+  .view{padding:26px 18px 60px; scroll-margin-top:78px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-cards{grid-template-columns:1fr;}
+  .factor-grid{grid-template-columns:1fr;}
+  .latihan-grid{grid-template-columns:1fr;}
+}
+@media (max-width:520px){
+  .problem-line, .step-line{font-size:.92rem;}
+}
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .nav-card{transition:none;}
+}
+</style>
+
+
+</head>
+<body>
+<div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="t">Persamaan Aljabar</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M6 4h5l-3 7h4l-6 9 1-7H4l2-9z" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </div>
+      <h1>Persamaan Aljabar</h1>
+      <div class="sub">Linear hingga Kuadrat<br><b>Matematika Teknik</b> · sumber Bird</div>
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-group-label">Mulai di sini</div>
+      <button class="nav-btn" data-target="ringkasan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        Ringkasan
+      </button>
+
+      <div class="nav-group-label">Materi pokok</div>
+      <button class="nav-btn" data-target="persamaan-linear">
+        <svg viewBox="0 0 24 24"><path d="M4 12h16M4 12l4-4M4 12l4 4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="12" r="2.2"/></svg>
+        Persamaan Linear
+      </button>
+      <button class="nav-btn" data-target="transposisi">
+        <svg viewBox="0 0 24 24"><path d="M5 8h9M14 8l-3-3M14 8l-3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 16h-9M10 16l3-3M10 16l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Transposisi Rumus
+      </button>
+      <button class="nav-btn" data-target="simultan">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16" stroke-linecap="round"/><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg>
+        Persamaan Simultan
+      </button>
+      <button class="nav-btn" data-target="kuadrat">
+        <svg viewBox="0 0 24 24"><path d="M4 18c2-9 5-13 8-13s6 4 8 13" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        Persamaan Kuadrat
+      </button>
+
+      <div class="nav-group-label">Praktik &amp; Penutup</div>
+      <button class="nav-btn" data-target="latihan">
+        <svg viewBox="0 0 24 24"><path d="M4 20 5 15.5 15.5 5l3.5 3.5L8.5 19z"/><path d="M13.5 6.5l3.5 3.5"/></svg>
+        Latihan Terstruktur
+      </button>
+      <button class="nav-btn" data-target="ringkasan-akhir">
+        <svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-2.5 3.5L16 11H5" stroke-linejoin="round"/></svg>
+        Ringkasan &amp; Referensi
+      </button>
+    </nav>
+    <div class="sidebar-foot">Dasbor referensi kuliah &middot; 15 slide dipetakan ke 6 bagian</div>
+  </aside>
+
+  <main id="mainArea">
+<section class="view active" id="view-ringkasan">
+      <div class="view-head">
+        <span class="eyebrow">Matematika Teknik &middot; Aljabar 1.3</span>
+        <h2>Persamaan: Linear hingga Kuadrat</h2>
+        <p class="lede">Referensi kerja untuk satu pertemuan aljabar: dari persamaan linear sederhana, transposisi rumus fisika, sistem persamaan simultan, sampai persamaan kuadrat &mdash; dua belas contoh soal terurai dan enam latihan berjenjang, dipetakan dari 15 slide perkuliahan.</p>
+        <div class="objective">
+          <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.2"/></svg>
+          <p><span class="lbl">Prinsip utama</span>Operasi yang sama pada kedua ruas persamaan selalu menjaga kesetaraan &mdash; inilah dasar dari setiap teknik pada dasbor ini.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-tile"><div class="num">4</div><div class="lbl">Kategori materi</div></div>
+        <div class="card stat-tile"><div class="num">12</div><div class="lbl">Contoh soal terurai</div></div>
+        <div class="card stat-tile"><div class="num">6</div><div class="lbl">Latihan berjenjang</div></div>
+        <div class="card stat-tile"><div class="num">3</div><div class="lbl">Tingkat kesulitan</div></div>
+      </div>
+
+      <div class="flow-strip">
+        <span>4&minus;3x=2x&minus;11</span><span class="arrow">&rarr;</span>
+        <span>v=u+ft/m</span><span class="arrow">&rarr;</span>
+        <span>7x&minus;2y=26, 6x+5y=29</span><span class="arrow">&rarr;</span>
+        <span>ax&sup2;+bx+c=0</span>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title">Jelajahi materi</h3>
+        <div class="nav-cards">
+          <button class="card nav-card" data-goto="persamaan-linear">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 12l4-4M4 12l4 4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="12" r="2.2"/></svg></div>
+            <h3>Persamaan Linear</h3>
+            <p>Isolasi variabel, ekspansi tanda kurung, persamaan rasional dengan perkalian silang, dan persamaan bentuk akar.</p>
+            <span class="tag">Contoh 11&ndash;14 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="transposisi">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M5 8h9M14 8l-3-3M14 8l-3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 16h-9M10 16l3-3M10 16l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Transposisi Rumus</h3>
+            <p>Menjadikan variabel tertentu sebagai subjek baru &mdash; rumus fisika, impedansi AC, dan rumus kompleks dua tahap.</p>
+            <span class="tag">Contoh 15&ndash;17 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="simultan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16" stroke-linecap="round"/><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg></div>
+            <h3>Persamaan Simultan</h3>
+            <p>Menyelesaikan sistem dua persamaan dua variabel melalui eliminasi &mdash; termasuk sistem berkoefisien pecahan.</p>
+            <span class="tag">Contoh 18&ndash;19 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="kuadrat">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 18c2-9 5-13 8-13s6 4 8 13" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
+            <h3>Persamaan Kuadrat</h3>
+            <p>Faktorisasi ax&sup2;+bx+c=0, menyusun persamaan dari akar yang diketahui, dan rumus ABC untuk kasus sulit difaktorkan.</p>
+            <span class="tag">Contoh 20&ndash;22 &rarr;</span>
+          </button>
+          <button class="card nav-card" data-goto="latihan">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 20 5 15.5 15.5 5l3.5 3.5L8.5 19z"/><path d="M13.5 6.5l3.5 3.5"/></svg></div>
+            <h3>Latihan Terstruktur</h3>
+            <p>Enam soal berjenjang &mdash; Exercise 4 &mdash; dari sistem simultan sampai kuadrat dengan rumus ABC.</p>
+            <span class="tag">6 soal &rarr;</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="source-tag">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5c2-1 5-1.5 8-.3v13c-3-1.2-6-.7-8 .3z"/><path d="M20 5.5c-2-1-5-1.5-8-.3v13c3-1.2 6-.7 8 .3z"/></svg>
+        <div><span class="t1">Sumber materi</span><span class="t2">J. Bird &mdash; Higher Engineering Mathematics</span></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-persamaan-linear">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 1 dari 4</span>
+        <h2>Persamaan Linear</h2>
+        <p class="lede">Empat cara persamaan linear muncul dalam soal teknik: isolasi variabel langsung, ekspansi tanda kurung, bentuk rasional, dan bentuk akar.</p>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">11</div>
+          <div><h4>Isolasi variabel persamaan linear</h4><div class="sub">Kelompokkan suku sejenis di kedua ruas untuk menyelesaikan variabel tunggal.</div></div>
+        </div>
+        <div class="problem-line mathy">4 &minus; 3x = 2x &minus; 11</div>
+        <div class="steps mathy">
+          <div class="step-line">4 + 11 = 2x + 3x</div>
+          <div class="step-line">15 = 5x</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">x = 3</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Jika koefisien x pada kedua ruas sama besar (mis. 4&minus;3x = 7&minus;3x), apa maknanya secara aljabar dan geometris pada grafik kedua garis?</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">12</div>
+          <div><h4>Ekspansi tanda kurung</h4><div class="sub">Distribusikan setiap faktor sebelum mengumpulkan suku sejenis.</div></div>
+        </div>
+        <div class="problem-line mathy">4(2a &minus; 3) &minus; 2(a &minus; 4) = 3(a &minus; 3) &minus; 1</div>
+        <div class="steps mathy">
+          <div class="step-line">8a &minus; 12 &minus; 2a + 8 = 3a &minus; 9 &minus; 1</div>
+          <div class="step-line">8a &minus; 2a &minus; 3a = &minus;9 &minus; 1 + 12 &minus; 8</div>
+          <div class="step-line">3a = &minus;6</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">a = &minus;2</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Kesalahan umum: lupa mendistribusikan tanda negatif pada &minus;2(a&minus;4). Rancang strategi pemeriksaan mandiri agar kesalahan tanda terdeteksi lebih awal.</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">13</div>
+          <div><h4>Persamaan rasional dan perkalian silang</h4><div class="sub">Perbandingan dua pecahan aljabar diselesaikan dengan perkalian silang.</div></div>
+        </div>
+        <div class="problem-line mathy"><span class="frac"><span class="num">3</span><span class="den">x &minus; 2</span></span> = <span class="frac"><span class="num">4</span><span class="den">3x + 4</span></span></div>
+        <div class="steps mathy">
+          <div class="step-line">3(3x + 4) = 4(x &minus; 2)</div>
+          <div class="step-line">9x + 12 = 4x &minus; 8</div>
+          <div class="step-line">9x &minus; 4x = &minus;8 &minus; 12</div>
+          <div class="step-line">5x = &minus;20</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">x = &minus;4</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Sebelum perkalian silang, apa syarat domain (nilai x yang dikecualikan) agar persamaan terdefinisi? Apakah x = &minus;4 memenuhi syarat itu?</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">14</div>
+          <div><h4>Persamaan bentuk akar</h4><div class="sub">Substitusi strategis menyederhanakan variabel di dalam tanda akar.</div></div>
+        </div>
+        <div class="problem-line mathy"><span class="frac"><span class="num">&radic;t + 3</span><span class="den">&radic;t</span></span> = 2</div>
+        <div class="steps mathy">
+          <div class="step-line">&radic;t + 3 = 2&radic;t</div>
+          <div class="step-line">3 = &radic;t</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">t = 9</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Mengapa mengkuadratkan kedua ruas WAJIB diverifikasi ke persamaan asal? Berikan contoh kasus munculnya akar semu.</p></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-transposisi">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 2 dari 4</span>
+        <h2>Transposisi Rumus</h2>
+        <p class="lede">Mentransposisi rumus multi-variabel untuk menjadikan variabel tertentu sebagai subjek baru &mdash; dari rumus gerak, impedansi AC, sampai rumus optik dua tahap.</p>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">15</div>
+          <div><h4>Transposisi rumus fisika</h4><div class="sub">Menjadikan f sebagai subjek dari rumus gerak.</div></div>
+        </div>
+        <div class="problem-line mathy">v = u + <span class="frac"><span class="num">ft</span><span class="den">m</span></span></div>
+        <div class="steps mathy">
+          <div class="step-line"><span class="frac"><span class="num">ft</span><span class="den">m</span></span> = v &minus; u</div>
+          <div class="step-line">ft = m(v &minus; u)</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">f = (m/t)(v &minus; u)</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Rumus ini menyerupai v = u + at (Hukum Newton II) dengan a = f/m. Mengapa keterampilan transposisi penting untuk sistem kontrol real-time?</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">16</div>
+          <div><h4>Transposisi impedansi AC</h4><div class="sub">Mengkuadratkan kedua ruas sebelum mengisolasi X.</div></div>
+        </div>
+        <div class="problem-line mathy">Z = &radic;(R&sup2; + X&sup2;)</div>
+        <div class="steps mathy">
+          <div class="step-line">R&sup2; + X&sup2; = Z&sup2;</div>
+          <div class="step-line">X&sup2; = Z&sup2; &minus; R&sup2;</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">X = &radic;(Z&sup2; &minus; R&sup2;)</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Secara matematis X = &plusmn;&radic;(Z&sup2;&minus;R&sup2;). Mengapa hanya akar positif yang relevan pada rangkaian AC? Kapan tanda negatif tetap bermakna fisis?</p></div></div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="block-title"><span class="n">17</span>Contoh 17 &mdash; Transposisi rumus kompleks</h3>
+        <div class="card example-card">
+          <div class="example-head">
+            <div class="example-badge">17</div>
+            <div><h4>Rumus optik dua tahap</h4><div class="sub">Variabel target p muncul di kedua ruas &mdash; butuh faktorisasi untuk isolasi penuh.</div></div>
+          </div>
+          <div class="problem-line mathy"><span class="frac"><span class="num">D</span><span class="den">d</span></span> = &radic;<span class="frac"><span class="num">f + p</span><span class="den">f &minus; p</span></span></div>
+
+          <div class="part-label">Bagian 1 &middot; Kuadratkan kedua ruas</div>
+          <div class="steps mathy">
+            <div class="step-line"><span class="frac"><span class="num">f + p</span><span class="den">f &minus; p</span></span> = <span class="frac"><span class="num">D&sup2;</span><span class="den">d&sup2;</span></span></div>
+            <div class="step-line">d&sup2;(f + p) = D&sup2;(f &minus; p)</div>
+          </div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas &middot; Bagian 1</span><p>Sebelum kurung dibuka, prediksikan: apakah p akan berada di satu ruas atau tersebar di kedua ruas? Mengapa ini penting untuk strategi berikutnya?</p></div></div>
+
+          <div class="part-label">Bagian 2 &middot; Faktorisasi untuk isolasi variabel</div>
+          <div class="steps mathy">
+            <div class="step-line">d&sup2;f + d&sup2;p = D&sup2;f &minus; D&sup2;p</div>
+            <div class="step-line">d&sup2;p + D&sup2;p = D&sup2;f &minus; d&sup2;f</div>
+            <div class="step-line">p(d&sup2; + D&sup2;) = f(D&sup2; &minus; d&sup2;)</div>
+          </div>
+          <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">p = f(D&sup2; &minus; d&sup2;) / (d&sup2; + D&sup2;)</span></div></div>
+          <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas &middot; Bagian 2</span><p>Rumus ini menyerupai perhitungan optik geometris. Jika D = d, apa yang terjadi pada nilai p? Interpretasikan secara fisis.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-simultan">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 3 dari 4</span>
+        <h2>Persamaan Simultan</h2>
+        <p class="lede">Menyelesaikan sistem dua persamaan linear dua variabel melalui metode eliminasi &mdash; termasuk sistem yang butuh dua putaran perkalian.</p>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">18</div>
+          <div><h4>Eliminasi dengan koefisien setara</h4><div class="sub">Samakan koefisien y, lalu jumlahkan kedua persamaan.</div></div>
+        </div>
+        <div class="problem-line mathy">7x &minus; 2y = 26 &nbsp;(1) &nbsp;&nbsp; 6x + 5y = 29 &nbsp;(2)</div>
+        <div class="steps mathy">
+          <div class="step-line">(1) &times; 5: &nbsp; 35x &minus; 10y = 130 &nbsp;(3)</div>
+          <div class="step-line">(2) &times; 2: &nbsp; 12x + 10y = 58 &nbsp;(4)</div>
+          <div class="step-line">(3) + (4): &nbsp; 47x = 188</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">x = 4, &nbsp; y = 1</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Mengapa kita memilih mengeliminasi y (bukan x)? Berdasarkan koefisien awal, faktor pengali mana yang paling efisien secara komputasional?</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">19</div>
+          <div><h4>Sistem berkoefisien pecahan</h4><div class="sub">Ubah ke bentuk bulat lebih dulu, lalu eliminasi dua putaran.</div></div>
+        </div>
+        <div class="problem-line mathy"><span class="frac"><span class="num">x</span><span class="den">8</span></span> + <span class="frac"><span class="num">5</span><span class="den">2</span></span> = y &nbsp;(1) &nbsp;&nbsp; 11 + <span class="frac"><span class="num">y</span><span class="den">3</span></span> = 3x &nbsp;(2)</div>
+        <div class="steps mathy">
+          <div class="step-line">(1) &times; 8: &nbsp; x + 20 = 8y &nbsp;(3)</div>
+          <div class="step-line">(2) &times; 3: &nbsp; 9x &minus; y = 33 &nbsp;(4)</div>
+          <div class="step-line">dari (3): &nbsp; x &minus; 8y = &minus;20 &nbsp;(5)</div>
+          <div class="step-line">(4) &times; 8: &nbsp; 72x &minus; 8y = 264 &nbsp;(6)</div>
+          <div class="step-line">(6) &minus; (5): &nbsp; 71x = 284</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">x = 4, &nbsp; y = 3</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Sistem ini butuh dua putaran eliminasi. Identifikasi mengapa satu putaran perkalian tidak cukup menyamakan koefisien y di sini.</p></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-kuadrat">
+      <div class="view-head">
+        <span class="eyebrow">Bagian 4 dari 4</span>
+        <h2>Persamaan Kuadrat</h2>
+        <p class="lede">Tiga cara menyelesaikan persamaan kuadrat: faktorisasi ketika a &ne; 1, menyusun persamaan dari akar yang diketahui, dan rumus ABC untuk kasus sulit difaktorkan.</p>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">20</div>
+          <div><h4>Faktorisasi persamaan kuadrat</h4><div class="sub">Uji suku dalam-luar untuk ax&sup2;+bx+c=0 dengan a &ne; 1.</div></div>
+        </div>
+        <div class="factor-grid">
+          <div class="factor-part">
+            <div class="lbl">(a)</div>
+            <div class="q mathy">3x&sup2; &minus; 11x &minus; 4 = 0</div>
+            <div class="arrow">&darr; (3x+1)(x&minus;4) = 0</div>
+            <div class="a mathy">x = &minus;1/3 atau x = 4</div>
+          </div>
+          <div class="factor-part">
+            <div class="lbl">(b)</div>
+            <div class="q mathy">4x&sup2; + 8x + 3 = 0</div>
+            <div class="arrow">&darr; (2x+3)(2x+1) = 0</div>
+            <div class="a mathy">x = &minus;3/2 atau x = &minus;1/2</div>
+          </div>
+        </div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Untuk 3x&sup2;&minus;11x&minus;4=0 ada tiga kombinasi faktor konstanta yang mungkin. Rancang heuristik cepat untuk menebak kombinasi yang tepat tanpa mencoba semuanya.</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">21</div>
+          <div><h4>Persamaan dari akar yang diketahui</h4><div class="sub">Membalik proses faktorisasi menggunakan bentuk Vieta.</div></div>
+        </div>
+        <div class="given-row"><span class="chip">Akar 1/3</span><span class="chip">Akar &minus;2</span></div>
+        <div class="problem-line mathy">(x &minus; 1/3)(x + 2) = 0</div>
+        <div class="steps mathy">
+          <div class="step-line">x&sup2; + 2x &minus; (1/3)x &minus; 2/3 = 0</div>
+          <div class="step-line">x&sup2; + (5/3)x &minus; 2/3 = 0</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir</span><span class="val mathy">3x&sup2; + 5x &minus; 2 = 0</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Turunkan rumus umum Vieta x&sup2;&minus;(&alpha;+&beta;)x+&alpha;&beta;=0 dari jumlah dan hasil kali akar. Bagaimana rumus ini mempercepat penyusunan persamaan?</p></div></div>
+      </div>
+
+      <div class="card example-card">
+        <div class="example-head">
+          <div class="example-badge">22</div>
+          <div><h4>Penyelesaian dengan rumus ABC</h4><div class="sub">Untuk kasus yang sulit difaktorkan &mdash; hasil dihitung sampai 2 desimal.</div></div>
+        </div>
+        <div class="given-row"><span class="chip">a = 4</span><span class="chip">b = 7</span><span class="chip">c = 2</span></div>
+        <div class="problem-line mathy">4x&sup2; + 7x + 2 = 0</div>
+        <div class="steps mathy">
+          <div class="step-line">x = (&minus;b &plusmn; &radic;(b&sup2;&minus;4ac)) / 2a</div>
+          <div class="step-line">x = (&minus;7 &plusmn; &radic;(7&sup2;&minus;4(4)(2))) / 2(4)</div>
+          <div class="step-line">x = (&minus;7 &plusmn; &radic;17) / 8 = (&minus;7 &plusmn; 4.123) / 8</div>
+        </div>
+        <div class="answer-box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><div><span class="lbl">Hasil akhir (2 desimal)</span><span class="val mathy">x = &minus;0.36 atau x = &minus;1.39</span></div></div>
+        <div class="discuss"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" stroke-linejoin="round"/></svg><div><span class="lbl">Diskusi kelas</span><p>Diskriminan b&sup2;&minus;4ac menentukan jenis akar. Diskusikan tiga skenario (positif, nol, negatif) dan interpretasinya (real berbeda, real kembar, kompleks).</p></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-latihan">
+      <div class="view-head">
+        <span class="eyebrow">Penutup &middot; Exercise 4</span>
+        <h2>Latihan Terstruktur</h2>
+        <p class="lede">Enam soal dengan tingkat kesulitan bertahap, mencakup persamaan simultan dan kuadrat.</p>
+      </div>
+
+      <div class="latihan-grid">
+        <div class="card latihan-card">
+          <div class="top-row"><div class="num">1</div><div class="diff-dots"><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></div></div>
+          <div class="expr">8x &minus; 3y = 51</div>
+          <div class="expr">3x + 4y = 14</div>
+          <div class="cond">Simultan</div>
+        </div>
+        <div class="card latihan-card">
+          <div class="top-row"><div class="num">2</div><div class="diff-dots"><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></div></div>
+          <div class="expr">5a = 1 &minus; 3b</div>
+          <div class="expr">2b + a + 4 = 0</div>
+          <div class="cond">Simultan</div>
+        </div>
+        <div class="card latihan-card">
+          <div class="top-row"><div class="num">3</div><div class="diff-dots"><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div></div>
+          <div class="expr">x/5 + 2y/3 = 49/15</div>
+          <div class="expr">3x/7 &minus; y/2 + 5/7 = 0</div>
+          <div class="cond">Simultan &middot; Pecahan</div>
+        </div>
+        <div class="card latihan-card">
+          <div class="top-row"><div class="num">4</div><div class="diff-dots"><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div></div>
+          <div class="expr">(a) x&sup2; + 4x &minus; 32 = 0</div>
+          <div class="expr">(b) 8x&sup2; + 2x &minus; 15 = 0</div>
+          <div class="cond">Kuadrat &middot; Faktorisasi</div>
+        </div>
+        <div class="card latihan-card">
+          <div class="top-row"><div class="num">5</div><div class="diff-dots"><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></div></div>
+          <div class="expr">Akar 2 dan &minus;5</div>
+          <div class="expr">&rArr; tentukan persamaan kuadratnya</div>
+          <div class="cond">Kuadrat &middot; Rekonstruksi</div>
+        </div>
+        <div class="card latihan-card">
+          <div class="top-row"><div class="num">6</div><div class="diff-dots"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></div></div>
+          <div class="expr">(a) 2x&sup2; + 5x &minus; 4 = 0</div>
+          <div class="expr">(b) 4t&sup2; &minus; 11t + 3 = 0</div>
+          <div class="cond">Kuadrat &middot; Rumus ABC</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-ringkasan-akhir">
+      <div class="view-head">
+        <span class="eyebrow">Penutup</span>
+        <h2>Ringkasan &amp; Referensi</h2>
+        <p class="lede">Empat gagasan inti dari pertemuan ini, untuk direvisi sebelum mengerjakan latihan terstruktur.</p>
+      </div>
+
+      <div class="summary-list">
+        <div class="card summary-item"><span class="dot"></span><div><h4>Persamaan linear</h4><p>Kelompokkan suku sejenis di kedua ruas; distribusikan tanda kurung dengan hati-hati; verifikasi solusi ke persamaan asal saat mengkuadratkan bentuk akar.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Transposisi rumus</h4><p>Isolasi variabel target langkah demi langkah; kuadratkan kedua ruas untuk rumus berakar; gunakan faktorisasi saat variabel muncul di lebih dari satu suku.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Persamaan simultan</h4><p>Samakan koefisien salah satu variabel sebelum eliminasi; sistem berkoefisien pecahan mungkin butuh dua putaran perkalian.</p></div></div>
+        <div class="card summary-item"><span class="dot"></span><div><h4>Persamaan kuadrat</h4><p>Faktorkan bila memungkinkan; gunakan bentuk Vieta untuk menyusun persamaan dari akar; pakai rumus ABC ketika faktorisasi sulit ditemukan.</p></div></div>
+      </div>
+
+      <div class="source-tag">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5c2-1 5-1.5 8-.3v13c-3-1.2-6-.7-8 .3z"/><path d="M20 5.5c-2-1-5-1.5-8-.3v13c3-1.2 6-.7 8 .3z"/></svg>
+        <div><span class="t1">Sumber materi</span><span class="t2">J. Bird &mdash; Higher Engineering Mathematics</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function showView(target, opts){
+    opts = opts || {};
+    document.querySelectorAll('main > section.view').forEach(s=>s.classList.remove('active'));
+    const el = document.getElementById('view-'+target);
+    if(el){ el.classList.add('active'); if(!opts.skipScroll){ el.scrollIntoView({block:'start'}); } }
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target === target);
+    });
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showView(btn.dataset.target);
+      closeSidebar();
+    });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=> showView(el.dataset.goto));
+  });
+
+  showView('ringkasan', {skipScroll:true});
+</script>
+
+</body>
+</html>

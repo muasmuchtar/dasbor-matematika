@@ -1,0 +1,704 @@
+<title>Aljabar Fondasional</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eef1ef;
+    --surface:#ffffff;
+    --surface-2:#e3e9e5;
+    --ink:#16232b;
+    --ink-soft:#54636b;
+    --border:#c9d3ce;
+    --brand:#2b4c7e;
+    --brand-soft:#dbe6f2;
+    --accent:#a8631a;
+    --accent-soft:#f3e2c8;
+    --good:#2f7a4f;
+    --good-soft:#dcefe1;
+    --warn:#a8631a;
+    --warn-soft:#f3e2c8;
+    --bad:#a8402a;
+    --bad-soft:#f5ddd6;
+    --grid-line:rgba(43,76,126,.06);
+    --sidebar-bg:#101d29;
+    --sidebar-bg-2:#16283a;
+    --sidebar-text:#c9d6de;
+    --sidebar-text-dim:#7f939f;
+    --sidebar-active:#1f3247;
+    --shadow:0 1px 2px rgba(16,29,41,.06),0 10px 26px -14px rgba(16,29,41,.22);
+    --radius:10px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1417; --surface:#141e23; --surface-2:#1a252b; --ink:#e7edf0; --ink-soft:#9fb0b8;
+      --border:#2a373e; --brand:#7fa9dc; --brand-soft:#1c3049; --accent:#dd9e56; --accent-soft:#392c19;
+      --good:#79c393; --good-soft:#153223; --warn:#dd9e56; --warn-soft:#392c19; --bad:#e08a71; --bad-soft:#3a2019;
+      --grid-line:rgba(127,169,220,.07); --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 26px -14px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1417; --surface:#141e23; --surface-2:#1a252b; --ink:#e7edf0; --ink-soft:#9fb0b8;
+    --border:#2a373e; --brand:#7fa9dc; --brand-soft:#1c3049; --accent:#dd9e56; --accent-soft:#392c19;
+    --good:#79c393; --good-soft:#153223; --warn:#dd9e56; --warn-soft:#392c19; --bad:#e08a71; --bad-soft:#3a2019;
+    --grid-line:rgba(127,169,220,.07); --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 26px -14px rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'IBM Plex Serif',Georgia,serif; text-wrap:balance; margin:0;}
+  p{line-height:1.62; margin:0;}
+  .eq, .mono{font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+  ::selection{background:var(--brand-soft); color:var(--ink);}
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ================= LAYOUT ================= */
+  .shell{display:flex; min-height:100vh;}
+  .sidebar{
+    width:272px; flex:0 0 272px; background:var(--sidebar-bg);
+    background-image:linear-gradient(180deg,var(--sidebar-bg-2),var(--sidebar-bg) 220px);
+    color:var(--sidebar-text); position:sticky; top:0; height:100vh; overflow-y:auto;
+    display:flex; flex-direction:column; z-index:20;
+  }
+  .brand-block{padding:26px 22px 18px; border-bottom:1px solid rgba(255,255,255,.08);}
+  .brand-block .eyebrow{font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--sidebar-text-dim); font-weight:600;}
+  .brand-block h1{font-size:20px; color:#f2f6f8; margin-top:6px; line-height:1.3;}
+  .brand-block .sub{font-size:12.5px; color:var(--sidebar-text-dim); margin-top:8px; line-height:1.5;}
+
+  nav.map{padding:14px 12px 24px; display:flex; flex-direction:column; gap:2px; flex:1;}
+  .nav-group-label{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--sidebar-text-dim); padding:14px 12px 6px; font-weight:600;}
+  .nav-btn{
+    display:flex; align-items:center; gap:11px; text-align:left; width:100%;
+    background:transparent; border:none; color:var(--sidebar-text); padding:10px 12px; border-radius:8px;
+    cursor:pointer; font-size:13.5px; font-weight:500;
+  }
+  .nav-btn .tag{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--sidebar-text-dim); width:20px; flex:none;}
+  .nav-btn:hover{background:rgba(255,255,255,.06);}
+  .nav-btn.active{background:var(--sidebar-active); color:#fff;}
+  .nav-btn.active .tag{color:#bcd3ea;}
+  .sidebar-foot{padding:16px 22px 20px; border-top:1px solid rgba(255,255,255,.08); font-size:11px; color:var(--sidebar-text-dim); line-height:1.6;}
+
+  main{flex:1; min-width:0; padding:44px 52px 70px;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size:28px 28px;
+  }
+  #mainScroll{max-width:840px; margin:0 auto;}
+
+  .mobile-topbar{display:none;}
+  .hamburger-btn{
+    display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;
+    width:38px; height:38px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
+    border-radius:8px; cursor:pointer; padding:0; flex:none;
+  }
+  .hamburger-btn span{display:block; width:16px; height:1.5px; background:#dbe4ec;}
+  .sidebar-overlay{display:none;}
+
+  /* ================= COMPONENTS ================= */
+  section.view{display:none;}
+  section.view.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+  @media (prefers-reduced-motion:reduce){ section.view.active{animation:none;} }
+
+  .view-head{margin-bottom:30px;}
+  .view-head .eyebrow{font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-weight:600;}
+  .view-head h2{font-size:30px; margin-top:8px; letter-spacing:-.01em;}
+  .view-head .obj{margin-top:14px; padding:12px 16px; background:var(--brand-soft); border-radius:8px; font-size:14px; color:var(--ink); border-left:3px solid var(--brand);}
+  .view-head .obj b{font-family:'IBM Plex Sans'; color:var(--brand);}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);}
+
+  /* -- roadmap stepper (ringkasan) -- */
+  .roadmap{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:26px 0 8px;}
+  .roadmap .pill{background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:9px 16px; font-size:13px; font-weight:600; box-shadow:var(--shadow); white-space:nowrap;}
+  .roadmap .arrow{color:var(--ink-soft); font-size:15px;}
+
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 6px;}
+  .meta-chip{font-size:12px; padding:6px 12px; border:1px solid var(--border); border-radius:999px; color:var(--ink-soft); background:var(--surface);}
+  .meta-chip b{color:var(--ink); font-weight:600;}
+
+  .ref-box{margin-top:26px; padding:18px 20px; border:1px dashed var(--border); border-radius:var(--radius); font-size:13.5px; color:var(--ink-soft); font-family:'IBM Plex Serif',serif; font-style:italic;}
+
+  .overview-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:30px;}
+  .nav-card{
+    text-align:left; cursor:pointer; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 18px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:6px;
+  }
+  .nav-card .tag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--brand); font-weight:600;}
+  .nav-card h3{font-size:15.5px; font-family:'IBM Plex Sans'; font-weight:600;}
+  .nav-card p{font-size:12.5px; color:var(--ink-soft);}
+
+  /* -- table -- */
+  .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:18px 0; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);}
+  table{min-width:520px; width:100%; border-collapse:collapse; background:var(--surface); font-size:13.5px;}
+  thead th{text-align:left; font-family:'IBM Plex Sans'; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); background:var(--surface-2); padding:11px 16px; border-bottom:1px solid var(--border); font-weight:600;}
+  tbody td{padding:12px 16px; border-bottom:1px solid var(--border); vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-2);}
+  td.eq, th.eq{white-space:nowrap;}
+
+  .example-note{margin-top:16px; padding:14px 16px; background:var(--surface-2); border-radius:8px; font-size:13px; display:flex; gap:10px; align-items:flex-start;}
+  .example-note .ic{flex:none; font-family:'IBM Plex Mono',monospace; color:var(--brand); font-weight:700;}
+
+  /* -- case cards -- */
+  .case-card{margin:26px 0; padding:22px 24px; }
+  .case-head{display:flex; align-items:baseline; gap:12px; margin-bottom:4px;}
+  .case-num{font-family:'IBM Plex Mono',monospace; color:var(--accent); font-weight:600; font-size:13px;}
+  .case-head h3{font-size:17.5px; font-family:'IBM Plex Sans'; font-weight:600;}
+  .case-obj{font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-top:2px; margin-bottom:14px; font-family:'IBM Plex Serif',serif;}
+
+  .soal-box{background:var(--brand-soft); border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:14px;}
+  .soal-box .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--brand); font-weight:700; display:block; margin-bottom:5px;}
+  .soal-box .eq{font-size:15px;}
+
+  .derivation{display:flex; flex-direction:column; gap:9px; padding:4px 2px;}
+  .derivation .step{display:grid; grid-template-columns:24px 1fr; gap:12px; align-items:baseline;}
+  .derivation .step .idx{font-family:'IBM Plex Sans'; font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .derivation .step .eq{font-size:14.5px; line-height:1.5; overflow-x:auto;}
+  .derivation .step.final .eq{color:var(--accent); font-weight:600; font-size:15.5px;}
+  .derivation .step .note{display:block; font-family:'IBM Plex Sans'; font-size:11.5px; color:var(--ink-soft); font-style:italic; margin-top:2px;}
+
+  .discuss-box{margin-top:18px; padding:14px 16px; border:1px solid var(--warn); border-left-width:3px; border-radius:8px; background:var(--warn-soft); display:flex; gap:12px;}
+  .discuss-box .qm{flex:none; font-family:'IBM Plex Serif',serif; font-weight:700; font-size:18px; color:var(--warn); line-height:1;}
+  .discuss-box .body .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; font-weight:700; color:var(--warn); display:block; margin-bottom:4px;}
+  .discuss-box .body p{font-size:13.5px; color:var(--ink);}
+
+  /* multiplication grid (kasus 2) */
+  .mult-grid{font-family:'IBM Plex Mono',monospace; font-size:15px; display:flex; flex-direction:column; gap:6px; background:var(--surface-2); border-radius:8px; padding:16px 20px; margin-bottom:16px;}
+  .mult-grid .row{display:flex; justify-content:flex-end; gap:8px;}
+  .mult-grid .rule{border-top:1.5px solid var(--ink); margin:2px 0;}
+  .mult-grid .op-line{display:flex; justify-content:space-between; font-size:13px; color:var(--ink-soft); font-family:'IBM Plex Sans'; margin-top:4px;}
+
+  /* difficulty dots */
+  .dots{display:inline-flex; gap:4px; align-items:center;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--border); display:inline-block;}
+  .dot.on.d1{background:var(--good);}
+  .dot.on.d2{background:var(--warn);}
+  .dot.on.d3{background:var(--bad);}
+  .diff-legend{display:flex; gap:18px; flex-wrap:wrap; margin-bottom:16px; font-size:12px; color:var(--ink-soft);}
+  .diff-legend .item{display:flex; align-items:center; gap:7px;}
+
+  /* bodmas mnemonic */
+  .bodmas-bar{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 24px;}
+  .bodmas-bar .letter{background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; box-shadow:var(--shadow); text-align:center; flex:1 1 90px; min-width:90px;}
+  .bodmas-bar .letter b{display:block; font-family:'IBM Plex Serif',serif; font-size:20px; color:var(--brand);}
+  .bodmas-bar .letter span{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+
+  /* concept map */
+  .map-wrap{margin-top:20px; padding:12px; overflow-x:auto;}
+  .map-wrap svg{display:block; margin:0 auto; min-width:560px;}
+  .reflect-box{margin-top:22px; padding:20px 22px; border-radius:var(--radius); background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow);}
+  .reflect-box .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); font-weight:700;}
+  .reflect-box p{margin-top:10px; font-size:16px; font-family:'IBM Plex Serif',serif; font-style:italic; line-height:1.6;}
+
+  .content-footer{display:flex; justify-content:space-between; gap:12px; margin-top:44px; padding-top:20px; border-top:1px solid var(--border);}
+  .foot-btn{display:flex; flex-direction:column; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 16px; cursor:pointer; box-shadow:var(--shadow); max-width:48%;}
+  .foot-btn .lbl{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft);}
+  .foot-btn .name{font-size:13.5px; font-weight:600; color:var(--brand);}
+  .foot-btn.next{align-items:flex-end; text-align:right;}
+  .foot-btn[hidden]{visibility:hidden;}
+
+  .section-sub-label{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft); font-weight:600; margin:34px 0 6px;}
+  .section-sub-label:first-of-type{margin-top:6px;}
+
+  /* ================= MOBILE ================= */
+  @media (max-width:880px){
+    .shell{display:block;}
+    .mobile-topbar{
+      display:flex; align-items:center; gap:14px; position:sticky; top:0; z-index:40;
+      background:var(--sidebar-bg); padding:13px 18px;
+    }
+    .mobile-topbar .mt-title{color:#f2f6f8; font-family:'IBM Plex Serif',serif; font-size:15px;}
+    .sidebar{
+      position:fixed; top:0; left:0; z-index:60; width:84%; max-width:300px;
+      transform:translateX(-100%); transition:transform .28s ease; box-shadow:2px 0 32px rgba(0,0,0,.35);
+    }
+    .sidebar.open{transform:translateX(0);}
+    .sidebar-overlay{position:fixed; inset:0; background:rgba(9,15,19,.55); z-index:55;}
+    .sidebar-overlay.show{display:block;}
+    main{width:100%; min-width:0; padding:26px 18px 60px; background-size:20px 20px;}
+    .overview-grid{grid-template-columns:1fr;}
+    .view-head h2{font-size:24px;}
+    .case-card{padding:18px 16px;}
+    .content-footer{flex-direction:column;}
+    .foot-btn{max-width:100%;}
+    .foot-btn.next{align-items:flex-start; text-align:left;}
+  }
+</style>
+
+<div class="shell">
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu navigasi">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mt-title">Aljabar Fondasional</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-block">
+      <div class="eyebrow">Instructional Design Guide</div>
+      <h1>Aljabar Fondasional</h1>
+      <div class="sub">Hukum Indeks &amp; Manipulasi Ekspresi — Program Studi Teknik / Sains, Tingkat 1</div>
+    </div>
+    <nav class="map">
+      <div class="nav-group-label">Mulai</div>
+      <button class="nav-btn js-nav" data-target="ringkasan"><span class="tag">00</span>Ringkasan Modul</button>
+
+      <div class="nav-group-label">Fondasi</div>
+      <button class="nav-btn js-nav" data-target="kosakata"><span class="tag">01</span>Kosakata Teknis</button>
+      <button class="nav-btn js-nav" data-target="hukum-indeks"><span class="tag">02</span>Hukum Indeks</button>
+
+      <div class="nav-group-label">Studi Kasus</div>
+      <button class="nav-btn js-nav" data-target="evaluasi"><span class="tag">03</span>Evaluasi &amp; Perkalian</button>
+      <button class="nav-btn js-nav" data-target="penyederhanaan"><span class="tag">04</span>Penyederhanaan Bertingkat</button>
+      <button class="nav-btn js-nav" data-target="konsolidasi"><span class="tag">05</span>Konsolidasi Mandiri</button>
+      <button class="nav-btn js-nav" data-target="faktorisasi"><span class="tag">06</span>Faktorisasi &amp; BODMAS</button>
+
+      <div class="nav-group-label">Penutup</div>
+      <button class="nav-btn js-nav" data-target="sintesis"><span class="tag">07</span>Sintesis &amp; Refleksi</button>
+    </nav>
+    <div class="sidebar-foot">Referensi: <em>Higher Engineering Mathematics</em> — John Bird</div>
+  </aside>
+
+  <main>
+    <div id="mainScroll">
+
+      <!-- ============ 00 RINGKASAN ============ -->
+      <section class="view active" id="view-ringkasan">
+        <div class="view-head">
+          <div class="eyebrow">Modul 2 · Aljabar Dasar</div>
+          <h2>Aljabar Fondasional: Hukum Indeks &amp; Manipulasi Ekspresi</h2>
+          <div class="obj">Dasbor ini menyusun ulang panduan instruksional 14-slide menjadi modul referensi yang dapat ditelusuri per-topik — untuk persiapan mengajar maupun belajar mandiri.</div>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-chip"><b>Audiens</b> · Teknik / Sains, Tingkat 1</span>
+          <span class="meta-chip"><b>Total</b> · 10 studi kasus, 8 latihan mandiri</span>
+          <span class="meta-chip"><b>Fokus HOTS</b> · 8 diskusi kelas</span>
+        </div>
+
+        <div class="roadmap">
+          <span class="pill">Kosakata Teknis</span><span class="arrow">→</span>
+          <span class="pill">Hukum Indeks</span><span class="arrow">→</span>
+          <span class="pill">Evaluasi &amp; Perkalian</span><span class="arrow">→</span>
+          <span class="pill">Penyederhanaan Bertingkat</span><span class="arrow">→</span>
+          <span class="pill">Faktorisasi &amp; BODMAS</span>
+        </div>
+
+        <div class="overview-grid">
+          <button class="nav-card js-nav" data-target="kosakata">
+            <span class="tag">01 — Fondasi</span>
+            <h3>Kosakata Teknis</h3>
+            <p>Dekode instruksi matematis berbahasa Inggris: evaluate, simplify, factorize, dan lainnya.</p>
+          </button>
+          <button class="nav-card js-nav" data-target="hukum-indeks">
+            <span class="tag">02 — Fondasi</span>
+            <h3>Hukum Indeks</h3>
+            <p>Enam aksioma fundamental yang mendasari seluruh manipulasi eksponensial.</p>
+          </button>
+          <button class="nav-card js-nav" data-target="evaluasi">
+            <span class="tag">03 — 3 studi kasus</span>
+            <h3>Evaluasi &amp; Perkalian</h3>
+            <p>Substitusi nilai pecahan, distribusi polinomial, dan eksponen negatif.</p>
+          </button>
+          <button class="nav-card js-nav" data-target="penyederhanaan">
+            <span class="tag">04 — 4 studi kasus</span>
+            <h3>Penyederhanaan Bertingkat</h3>
+            <p>Dekomposisi pecahan, radikal ke eksponen rasional, hingga kurung bersarang.</p>
+          </button>
+          <button class="nav-card js-nav" data-target="konsolidasi">
+            <span class="tag">05 — 8 latihan</span>
+            <h3>Konsolidasi Mandiri</h3>
+            <p>Revisi berjenjang kesulitan atas seluruh hukum indeks yang telah dipelajari.</p>
+          </button>
+          <button class="nav-card js-nav" data-target="faktorisasi">
+            <span class="tag">06 — 2 studi kasus</span>
+            <h3>Faktorisasi &amp; BODMAS</h3>
+            <p>Ekstraksi faktor persekutuan terbesar dan disiplin urutan operasi.</p>
+          </button>
+        </div>
+
+        <div class="ref-box">"Bahasa aljabar adalah bahasa kedua bagi calon insinyur — sebelum menyederhanakan ekspresi, mahasiswa harus lebih dulu menerjemahkan perintahnya." — kerangka pedagogis modul ini, diadaptasi dari <em>Higher Engineering Mathematics</em>, John Bird.</div>
+      </section>
+
+      <!-- ============ 01 KOSAKATA ============ -->
+      <section class="view" id="view-kosakata">
+        <div class="view-head">
+          <div class="eyebrow">01 · Bridging Vocabulary</div>
+          <h2>Dekode Instruksi Matematis Berbahasa Inggris</h2>
+          <div class="obj"><b>Learning Objective</b> — menerjemahkan instruksi soal berbahasa Inggris ke prosedur pengerjaan yang benar, menghindari misinterpretasi perintah soal.</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Istilah</th><th>Makna</th><th>Konteks Operasi</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">Evaluate</td><td>Tentukan nilai</td><td>Substitusi numerik</td></tr>
+              <tr><td class="mono">Simplify</td><td>Sederhanakan</td><td>Reduksi bentuk aljabar</td></tr>
+              <tr><td class="mono">Multiply (by)</td><td>Kalikan (dengan)</td><td>Distribusi / perkalian</td></tr>
+              <tr><td class="mono">Remove the brackets</td><td>Hilangkan tanda kurung</td><td>Ekspansi tanda kurung bertingkat</td></tr>
+              <tr><td class="mono">Factorize</td><td>Faktorkan</td><td>Ekstraksi faktor persekutuan</td></tr>
+              <tr><td class="mono">When / And</td><td>Jika / Dan</td><td>Kondisi substitusi variabel</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="example-note">
+          <span class="ic">Ex.</span>
+          <span>“Evaluate 4a²bc³ − 2ac when a=2” ⇒ substitusikan nilai, lalu hitung.</span>
+        </div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+      <!-- ============ 02 HUKUM INDEKS ============ -->
+      <section class="view" id="view-hukum-indeks">
+        <div class="view-head">
+          <div class="eyebrow">02 · Teorema Fundamental</div>
+          <h2>Enam Aksioma Hukum Indeks (Laws of Indices)</h2>
+          <div class="obj"><b>Learning Objective</b> — memahami dan menerapkan enam hukum indeks sebagai dasar seluruh manipulasi eksponensial dalam aljabar dan kalkulus lanjut.</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:48px">#</th><th>Hukum</th><th>Keterangan</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">(i)</td><td class="eq mono">aᵐ × aⁿ = aᵐ⁺ⁿ</td><td>Perkalian basis sama</td></tr>
+              <tr><td class="mono">(ii)</td><td class="eq mono">aᵐ / aⁿ = aᵐ⁻ⁿ</td><td>Pembagian basis sama</td></tr>
+              <tr><td class="mono">(iii)</td><td class="eq mono">(aᵐ)ⁿ = aᵐˣⁿ</td><td>Pangkat dari pangkat</td></tr>
+              <tr><td class="mono">(iv)</td><td class="eq mono">a^(m/n) = ⁿ√aᵐ</td><td>Eksponen pecahan ↔ akar</td></tr>
+              <tr><td class="mono">(v)</td><td class="eq mono">a⁻ⁿ = 1 / aⁿ</td><td>Eksponen negatif</td></tr>
+              <tr><td class="mono">(vi)</td><td class="eq mono">a⁰ = 1</td><td>Basis pangkat nol</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="discuss-box">
+          <span class="qm">?</span>
+          <div class="body">
+            <span class="lbl">Diskusi Kelas / HOTS</span>
+            <p>Buktikan mengapa a⁰=1 konsisten dengan hukum (ii), dengan mensubstitusikan m=n. Diskusikan mengapa 0⁰ dianggap bentuk tak tentu.</p>
+          </div>
+        </div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+      <!-- ============ 03 EVALUASI & PERKALIAN ============ -->
+      <section class="view" id="view-evaluasi">
+        <div class="view-head">
+          <div class="eyebrow">03 · Studi Kasus 1–3</div>
+          <h2>Evaluasi &amp; Perkalian</h2>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 1</span><h3>Evaluasi Ekspresi Multi-Variabel: Substitusi Nilai Pecahan</h3></div>
+          <div class="case-obj">mengevaluasi ekspresi aljabar kompleks dengan substitusi nilai pecahan/campuran secara akurat tanpa kesalahan urutan operasi.</div>
+          <div class="soal-box"><span class="lbl">Soal</span><span class="eq">Evaluate 4a²bc³ − 2ac ketika a=2, b=½, c=1½</span></div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">4(2)²(½)(³⁄₂)³ − 2(2)(³⁄₂)</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">(4×2×2×3×3×3)/(2×2×2×2) − 12/2</span></div>
+            <div class="step final"><span class="idx">3</span><span class="eq">27 − 6 = 21</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Jika c diberikan sebagai desimal 1,5 alih-alih pecahan campuran 1½, apakah hasil akhirnya berubah? Mengapa representasi pecahan lebih disukai pada tahap ini?</p></div></div>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 2</span><h3>Perkalian Polinomial: Metode Distribusi Bertingkat</h3></div>
+          <div class="case-obj">mengalikan dua ekspresi binomial menggunakan metode distribusi vertikal, dasar menuju ekspansi polinomial derajat tinggi.</div>
+          <div class="soal-box"><span class="lbl">Soal</span><span class="eq">(3x + 2y)(x − y)</span></div>
+          <div class="mult-grid">
+            <div class="row">3x&nbsp;&nbsp;+&nbsp;&nbsp;2y</div>
+            <div class="row">&nbsp;&nbsp;&nbsp;x&nbsp;&nbsp;−&nbsp;&nbsp;y</div>
+            <div class="rule"></div>
+            <div class="op-line"><span>Kalikan dengan x →</span><span class="mono">3x² + 2xy</span></div>
+            <div class="op-line"><span>Kalikan dengan −y →</span><span class="mono">−3xy − 2y²</span></div>
+          </div>
+          <div class="derivation">
+            <div class="step final"><span class="idx">Σ</span><span class="eq">Jumlahkan: 3x² − xy − 2y²</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Metode distribusi ini setara metode FOIL. Untuk trinomial × binomial, metode mana yang lebih scalable dan mengapa?</p></div></div>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 3</span><h3>Pecahan Eksponensial &amp; Eksponen Negatif</h3></div>
+          <div class="case-obj">menyederhanakan pecahan aljabar yang melibatkan eksponen negatif menggunakan hukum (ii) dan (v), lalu mengevaluasi secara numerik.</div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">a³b²c⁴ / (a·b·c⁻²) = a³⁻¹b²⁻¹c⁴⁻⁽⁻²⁾ = a²bc⁶</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">Ketika a=3, b=⅛, c=2:</span></div>
+            <div class="step final"><span class="idx">3</span><span class="eq">a²bc⁶ = (3)²(⅛)(2)⁶ = (9)(⅛)(64) = 72</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Eksponen c⁻² di penyebut menjadi c⁺⁶ di hasil akhir. Jelaskan mengapa pembagian dengan pangkat negatif setara perkalian dengan pangkat positif.</p></div></div>
+        </div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+      <!-- ============ 04 PENYEDERHANAAN BERTINGKAT ============ -->
+      <section class="view" id="view-penyederhanaan">
+        <div class="view-head">
+          <div class="eyebrow">04 · Studi Kasus 4, 5, 6, 7</div>
+          <h2>Penyederhanaan Bertingkat</h2>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 4</span><h3>Dekomposisi Pecahan: Distribusi Penyebut Tunggal</h3></div>
+          <div class="case-obj">memahami bahwa pembagian oleh monomial dapat didistribusikan ke tiap suku pembilang, menghasilkan bentuk faktor tersederhanakan.</div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">(x²y³ + xy²) / xy</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">→ x²y³/xy + xy²/xy</span></div>
+            <div class="step"><span class="idx">3</span><span class="eq">→ xy² + y</span></div>
+            <div class="step final"><span class="idx">✓</span><span class="eq">Bentuk faktor akhir: y(xy + 1)</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Bandingkan bentuk xy²+y dan bentuk faktor y(xy+1). Dalam konteks apa bentuk faktor lebih disukai dibanding bentuk ekspansi?</p></div></div>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 5</span><h3>Konversi Radikal ke Eksponen Rasional</h3></div>
+          <div class="case-obj">mengonversi ekspresi akar campuran menjadi eksponen rasional, lalu menyederhanakannya menggunakan hukum (i)–(iv) secara simultan. <em>Level lanjut.</em></div>
+          <div class="soal-box"><span class="lbl">Soal</span><span class="eq">(x²√y)(√x · ³√y²) / (x⁵y³)^(½)</span></div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">= x²y^(½) · x^(½)y^(⅔) / x^(⁵⁄₂)y^(³⁄₂)</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">= x^(2+½−⁵⁄₂) y^(½+⅔−³⁄₂) = x⁰y^(−⅓)</span></div>
+            <div class="step final"><span class="idx">3</span><span class="eq">= 1 / ³√y</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Eksponen basis x berakhir tepat 0. Kebetulan struktural, atau dapatkah kalian merancang soal serupa di mana basis x dan y saling meniadakan?</p></div></div>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 6</span><h3>Distribusi Tanda Kurung &amp; Hukum Tanda</h3></div>
+          <div class="case-obj">mendistribusikan tanda minus ke dalam tanda kurung secara konsisten dan mengumpulkan suku sejenis tanpa kesalahan tanda.</div>
+          <div class="soal-box"><span class="lbl">Soal</span><span class="eq">a² − (2a − ab) − a(3b + a)</span></div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">= a² − 2a + ab − 3ab − a²</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">= −2a − 2ab</span></div>
+            <div class="step final"><span class="idx">3</span><span class="eq">= −2a(1 + b)</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Identifikasi tepatnya di langkah mana suku a² dan −a² saling meniadakan. Mengapa penting menuliskan seluruh suku sebelum melakukan pembatalan?</p></div></div>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 7</span><h3>Hierarki Tanda Kurung Bertingkat</h3></div>
+          <div class="soal-box"><span class="lbl">Soal</span><span class="eq">2a − [3{2(4a−b) − 5(a+2b)} + 4a]</span></div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">Kurung ( ) → 2a − [3{8a−2b−5a−10b} + 4a]<span class="note">buka kurung bulat terdalam</span></span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">Kumpulkan suku → 2a − [3{3a−12b} + 4a]</span></div>
+            <div class="step"><span class="idx">3</span><span class="eq">Kurawal { } → 2a − [9a−36b + 4a]</span></div>
+            <div class="step"><span class="idx">4</span><span class="eq">Kumpulkan suku → 2a − [13a−36b]</span></div>
+            <div class="step final"><span class="idx">5</span><span class="eq">Siku [ ] — Hasil: −11a + 36b = 36b − 11a</span></div>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Jika urutan pembongkaran kurung dibalik (mulai dari kurung terluar/siku lebih dahulu), apakah hasil akhirnya tetap sama? Buktikan atau bantah dengan mencoba salah satu jalur alternatif.</p></div></div>
+        </div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+      <!-- ============ 05 KONSOLIDASI ============ -->
+      <section class="view" id="view-konsolidasi">
+        <div class="view-head">
+          <div class="eyebrow">05 · Konsolidasi</div>
+          <h2>Latihan Mandiri: Revisi Operasi Dasar &amp; Hukum Indeks</h2>
+          <div class="obj"><b>Learning Objective</b> — menguji pemahaman mandiri atas seluruh hukum indeks dan teknik penyederhanaan melalui delapan soal berjenjang kesulitan.</div>
+        </div>
+
+        <div class="diff-legend">
+          <span class="item"><span class="dots"><span class="dot on d1"></span><span class="dot"></span><span class="dot"></span></span> Dasar</span>
+          <span class="item"><span class="dots"><span class="dot on d2"></span><span class="dot on d2"></span><span class="dot"></span></span> Menengah</span>
+          <span class="item"><span class="dots"><span class="dot on d3"></span><span class="dot on d3"></span><span class="dot on d3"></span></span> Lanjut</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:40px">No</th><th>Soal</th><th style="width:120px">Tingkat</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="eq mono">2ab + 3bc − abc &nbsp;(a=2, b=−2, c=4)</td><td><span class="dots"><span class="dot on d1"></span><span class="dot"></span><span class="dot"></span></span></td></tr>
+              <tr><td>2</td><td class="eq mono">5pq²r³ &nbsp;(p=⁵⁄₂, q=−2, r=−1)</td><td><span class="dots"><span class="dot on d1"></span><span class="dot"></span><span class="dot"></span></span></td></tr>
+              <tr><td>3</td><td class="eq mono">(4x−3y+2z) − (x+2y−3z)</td><td><span class="dots"><span class="dot on d1"></span><span class="dot"></span><span class="dot"></span></span></td></tr>
+              <tr><td>4</td><td class="eq mono">(2a−5b+c)(3a+b)</td><td><span class="dots"><span class="dot on d2"></span><span class="dot on d2"></span><span class="dot"></span></span></td></tr>
+              <tr><td>5</td><td class="eq mono">(x²y³z)(x³yz²), &nbsp;x=½, y=2, z=3</td><td><span class="dots"><span class="dot on d2"></span><span class="dot on d2"></span><span class="dot"></span></span></td></tr>
+              <tr><td>6</td><td class="eq mono">(a^³⁄²bc⁻³)(a^½b^⁻½c), &nbsp;a=3, b=4, c=2</td><td><span class="dots"><span class="dot on d3"></span><span class="dot on d3"></span><span class="dot on d3"></span></span></td></tr>
+              <tr><td>7</td><td class="eq mono">(a²b + a³b) / a²b²</td><td><span class="dots"><span class="dot on d2"></span><span class="dot on d2"></span><span class="dot"></span></span></td></tr>
+              <tr><td>8</td><td class="eq mono">(a³b^½c^⁻½)(ab)^⅓ / (√a·³√b·c)</td><td><span class="dots"><span class="dot on d3"></span><span class="dot on d3"></span><span class="dot on d3"></span></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Kelompokkan kedelapan soal ini ke dalam 3 kategori berdasarkan hukum indeks dominan yang digunakan. Soal mana yang menggabungkan lebih dari satu hukum?</p></div></div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+      <!-- ============ 06 FAKTORISASI & BODMAS ============ -->
+      <section class="view" id="view-faktorisasi">
+        <div class="view-head">
+          <div class="eyebrow">06 · Studi Kasus 8, 9 &amp; 10</div>
+          <h2>Faktorisasi &amp; BODMAS</h2>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 8</span><h3>Faktorisasi: Ekstraksi Faktor Persekutuan Terbesar</h3></div>
+          <div class="case-obj">mengidentifikasi dan mengekstraksi faktor persekutuan terbesar (GCF) dari suatu ekspresi polinomial.</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th style="width:40px"></th><th>Ekspresi</th><th>Bentuk Faktor</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">(a)</td><td class="eq mono">xy − 3xz</td><td class="eq mono">x(y − 3z)</td></tr>
+                <tr><td class="mono">(b)</td><td class="eq mono">4a² + 16ab³</td><td class="eq mono">4a(a + 4b³)</td></tr>
+                <tr><td class="mono">(c)</td><td class="eq mono">3a²b − 6ab² + 15ab</td><td class="eq mono">3ab(a − 2b + 5)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Untuk soal (c), bagaimana cara sistematis memastikan 3ab adalah faktor persekutuan TERBESAR? Rancang algoritma untuk menemukan GCF pada ekspresi tiga suku bervariabel ganda.</p></div></div>
+        </div>
+
+        <div class="case-card card">
+          <div class="case-head"><span class="case-num">Kasus 9 &amp; 10</span><h3>Disiplin Urutan Operasi: Hukum BODMAS</h3></div>
+          <div class="bodmas-bar">
+            <div class="letter"><b>B</b><span>Brackets</span></div>
+            <div class="letter"><b>O</b><span>Order</span></div>
+            <div class="letter"><b>D</b><span>Division</span></div>
+            <div class="letter"><b>M</b><span>Multiplication</span></div>
+            <div class="letter"><b>A</b><span>Addition</span></div>
+            <div class="letter"><b>S</b><span>Subtraction</span></div>
+          </div>
+
+          <div class="section-sub-label">Contoh A</div>
+          <div class="soal-box"><span class="eq">3c + 2c×4c + c÷5c − 8c</span></div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">= 3c + 2c×4c + (c/5c) − 8c</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">= 3c + 8c² + ⅕ − 8c</span></div>
+            <div class="step final"><span class="idx">3</span><span class="eq">= 8c² − 5c + ⅕</span></div>
+          </div>
+
+          <div class="section-sub-label">Contoh B</div>
+          <div class="soal-box"><span class="eq">(2a−3)÷4a + 5×6 − 3a</span></div>
+          <div class="derivation">
+            <div class="step"><span class="idx">1</span><span class="eq">= (2a−3)/4a + 30 − 3a</span></div>
+            <div class="step"><span class="idx">2</span><span class="eq">= 2a/4a − 3/4a + 30 − 3a</span></div>
+            <div class="step final"><span class="idx">3</span><span class="eq">= 30½ − 3/4a − 3a</span></div>
+          </div>
+
+          <div class="discuss-box"><span class="qm">?</span><div class="body"><span class="lbl">Diskusi Kelas / HOTS</span><p>Pada Contoh A, mengapa c÷5c dihitung sebelum penjumlahan? Jika dihitung dari kiri ke kanan tanpa BODMAS, hasil apa yang salah diperoleh — dan mengapa ini berbahaya dalam pemrograman?</p></div></div>
+        </div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+      <!-- ============ 07 SINTESIS ============ -->
+      <section class="view" id="view-sintesis">
+        <div class="view-head">
+          <div class="eyebrow">07 · Sintesis &amp; Refleksi</div>
+          <h2>Peta Keterhubungan Konsep Aljabar Dasar</h2>
+        </div>
+
+        <div class="card map-wrap">
+          <svg viewBox="0 0 640 420" role="img" aria-label="Peta konsep: Aljabar Dasar terhubung dengan Hukum Indeks, Evaluasi Numerik, Perkalian Polinomial, Tanda Kurung Bertingkat, Faktorisasi, dan BODMAS">
+            <g stroke="var(--border)" stroke-width="1.5" fill="none">
+              <line x1="320" y1="210" x2="320" y2="88"></line>
+              <line x1="320" y1="210" x2="440" y2="150"></line>
+              <line x1="320" y1="210" x2="440" y2="270"></line>
+              <line x1="320" y1="210" x2="320" y2="332"></line>
+              <line x1="320" y1="210" x2="200" y2="270"></line>
+              <line x1="320" y1="210" x2="200" y2="150"></line>
+            </g>
+            <g>
+              <circle cx="320" cy="210" r="62" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.6"></circle>
+              <text x="320" y="205" text-anchor="middle" font-family="IBM Plex Serif, serif" font-size="15" font-weight="600" fill="var(--brand)">Aljabar</text>
+              <text x="320" y="224" text-anchor="middle" font-family="IBM Plex Serif, serif" font-size="15" font-weight="600" fill="var(--brand)">Dasar</text>
+            </g>
+            <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600">
+              <g><rect x="255" y="62" width="130" height="46" rx="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
+                <text x="320" y="90" text-anchor="middle" fill="var(--ink)">Hukum Indeks</text></g>
+              <g><rect x="405" y="126" width="140" height="46" rx="9" fill="var(--surface)" stroke="var(--border)" stroke-width="1.4"></rect>
+                <text x="475" y="145" text-anchor="middle" fill="var(--ink)">Evaluasi</text>
+                <text x="475" y="161" text-anchor="middle" fill="var(--ink)">Numerik</text></g>
+              <g><rect x="405" y="246" width="140" height="46" rx="9" fill="var(--surface)" stroke="var(--border)" stroke-width="1.4"></rect>
+                <text x="475" y="265" text-anchor="middle" fill="var(--ink)">Perkalian</text>
+                <text x="475" y="281" text-anchor="middle" fill="var(--ink)">Polinomial</text></g>
+              <g><rect x="250" y="309" width="140" height="46" rx="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
+                <text x="320" y="328" text-anchor="middle" fill="var(--ink)">Tanda Kurung</text>
+                <text x="320" y="344" text-anchor="middle" fill="var(--ink)">Bertingkat</text></g>
+              <g><rect x="95" y="246" width="140" height="46" rx="9" fill="var(--surface)" stroke="var(--border)" stroke-width="1.4"></rect>
+                <text x="165" y="274" text-anchor="middle" fill="var(--ink)">Faktorisasi</text></g>
+              <g><rect x="95" y="126" width="140" height="46" rx="9" fill="var(--surface)" stroke="var(--border)" stroke-width="1.4"></rect>
+                <text x="165" y="154" text-anchor="middle" fill="var(--ink)">BODMAS</text></g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="reflect-box">
+          <span class="lbl">Refleksi Penutup</span>
+          <p>Dari seluruh materi hari ini, konsep mana yang akan paling sering muncul kembali di kalkulus, aljabar linear, atau mata kuliah rekayasa lanjutan?</p>
+        </div>
+
+        <div class="content-footer" data-footer></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const ORDER = [
+    {id:'ringkasan', label:'Ringkasan Modul'},
+    {id:'kosakata', label:'Kosakata Teknis'},
+    {id:'hukum-indeks', label:'Hukum Indeks'},
+    {id:'evaluasi', label:'Evaluasi & Perkalian'},
+    {id:'penyederhanaan', label:'Penyederhanaan Bertingkat'},
+    {id:'konsolidasi', label:'Konsolidasi Mandiri'},
+    {id:'faktorisasi', label:'Faktorisasi & BODMAS'},
+    {id:'sintesis', label:'Sintesis & Refleksi'}
+  ];
+
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+  hamburgerBtn.addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  function footerHTML(idx){
+    const prev = ORDER[idx-1];
+    const next = ORDER[idx+1];
+    let html = '';
+    html += prev
+      ? `<button class="foot-btn prev js-nav" data-target="${prev.id}"><span class="lbl">← Sebelumnya</span><span class="name">${prev.label}</span></button>`
+      : `<span class="foot-btn prev" hidden></span>`;
+    html += next
+      ? `<button class="foot-btn next js-nav" data-target="${next.id}"><span class="lbl">Berikutnya →</span><span class="name">${next.label}</span></button>`
+      : `<span class="foot-btn next" hidden></span>`;
+    return html;
+  }
+
+  function showView(target){
+    const idx = ORDER.findIndex(o => o.id === target);
+    if(idx === -1) return;
+    document.querySelectorAll('section.view').forEach(s => s.classList.remove('active'));
+    const view = document.getElementById('view-' + target);
+    if(view){
+      view.classList.add('active');
+      const footer = view.querySelector('[data-footer]');
+      if(footer) footer.innerHTML = footerHTML(idx);
+      view.querySelectorAll('.js-nav').forEach(btn=>{
+        btn.addEventListener('click', ()=> { showView(btn.dataset.target); });
+      });
+    }
+    document.querySelectorAll('.nav-btn[data-target]').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.target === target);
+    });
+    document.getElementById('mainScroll').scrollIntoView({block:'start'});
+    closeSidebar();
+  }
+
+  document.querySelectorAll('.js-nav').forEach(btn=>{
+    btn.addEventListener('click', ()=> showView(btn.dataset.target));
+  });
+
+  showView('ringkasan');
+</script>
