@@ -34,6 +34,10 @@
   .chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;align-content:flex-start;}
   .chips span{font-size:12px;background:var(--chip);color:var(--soft);padding:3px 9px;border-radius:20px;}
   .open{font-weight:700;font-size:13.5px;color:var(--cyan);}
+  .arsip{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:26px;}
+  .arsip a{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;}
+  .arsip a:hover{border-color:var(--cyan);}
+  .arsip small{display:block;color:var(--soft);font-weight:400;font-size:12px;}
   footer{border-top:1px solid var(--line);padding:18px 0 40px;font-size:12.5px;color:var(--soft);}
 </style>
 </head>
@@ -52,6 +56,14 @@
     <a class="btn" href="dasbor/master-12-pertemuan.html">▶ Buka Master</a>
   </section>
   <div id="groups"></div>
+
+  <h2 class="sec">Arsip slide lama (PDF)</h2>
+  <section class="arsip">
+    <a href="arsip/segi-empat-dan-lingkaran.pdf" target="_blank" rel="noopener">📄<span>Segi Empat & Lingkaran<small>Geometri · 26 halaman</small></span></a>
+    <a href="arsip/matriks-operasi-dasar.pdf" target="_blank" rel="noopener">📄<span>Matriks: Operasi Dasar<small>Matriks & Determinan · 9 halaman</small></span></a>
+    <a href="arsip/determinan-dan-invers.pdf" target="_blank" rel="noopener">📄<span>Determinan & Invers Matriks<small>Matriks & Determinan · 24 halaman</small></span></a>
+    <a href="arsip/spl-dengan-matriks.pdf" target="_blank" rel="noopener">📄<span>Solusi Persamaan Simultan dengan Matriks<small>Matriks & Determinan · 9 halaman</small></span></a>
+  </section>
 </main>
 
 <footer class="wrap">
